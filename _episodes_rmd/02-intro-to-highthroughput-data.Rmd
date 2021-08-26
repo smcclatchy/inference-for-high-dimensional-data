@@ -1,6 +1,6 @@
 ---
 source: Rmd
-title: "Introduction to Advanced Statistics for the Life Sciences"
+title: "Advanced Statistics for the Life Sciences"
 teaching: 0
 exercises: 0
 questions:
@@ -27,7 +27,6 @@ library(devtools)
 install_github("genomicsclass/GSE5859Subset")
 ```
 
-
 #### The three tables
 
 Most of the data we use as examples in this book are created with high-throughput technologies. These technologies measure thousands of _features_. Examples of features are genes, single base locations of the genome, genomic regions, or image pixel intensities. Each specific measurement product is defined by a specific set of features. For example, a specific gene expression microarray product is defined by the set of genes that it measures. 
@@ -40,14 +39,13 @@ Because a dataset is typically defined by a set of experimental units and a prod
 
 Here is an example from a gene expression dataset:
 
-```{r}
+```{r, eval=FALSE}
 library(GSE5859Subset)
 data(GSE5859Subset) ##this loads the three tables
 dim(geneExpression)
 ```
 
 We have RNA expression measurements for 8793 genes from blood taken from 24 individuals (the experimental units). For most statistical analyses, we will also need information about the individuals. For example, in this case the data was originally collected to compare gene expression across ethnic groups. However, we have created a subset of this dataset for illustration and separated the data into two groups:
-
 
 ```{r}
 dim(sampleInfo)

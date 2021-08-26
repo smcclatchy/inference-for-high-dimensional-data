@@ -11,9 +11,12 @@ High-throughput technologies have changed basic biology and the biomedical scien
 
 > ## Prerequisites
 >
->  This lesson assumes basic skills in the R statistical programming language and statistical concepts including population sampling and interpreting p-values.
-
-To get started, follow the directions in the Setup tab to get access to the required software and data for this workshop.
+>  This lesson assumes basic skills in the R statistical programming language and statistical
+> concepts including population sampling and interpreting p-values.
+>
+> To get started, follow the directions in the Setup tab to get access to the required software 
+> and data for this workshop.
+>
 {: .prereq}
 
 {% include links.md %}
