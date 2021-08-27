@@ -35,7 +35,7 @@ A specific study will typically use one product to make measurements on several 
 
 So a high-throughput experiment is usually defined by three tables: one with the high-throughput measurements and two tables with information about the columns and rows of this first table respectively.
 
-Because a dataset is typically defined by a set of experimental units and a product defines a fixed set of features, the high-throughput measurements can be stored in an $n \times m$ matrix, with $n$ the number of units and $m$ the number of features. In R, the convention has been to store the transpose of these matrices. 
+Because a dataset is typically defined by a set of experimental units and a product defines a fixed set of features, the high-throughput measurements can be stored in an <i>n x m</i> matrix, with <i>n</i> the number of units and <i>m</i> the number of features. In R, the convention has been to store the transpose of these matrices, in which all the rows become columns and the columns become the rows. 
 
 Here is an example from a gene expression dataset:
 
@@ -68,8 +68,55 @@ head(geneAnnotation)
 ```
 
 The table includes an ID that permits us to connect the rows of this table with the rows of the measurement table:
+
 ```{r}
 head(match(geneAnnotation$PROBEID, rownames(geneExpression)))
 ```
 
 The table also includes biological information about the features, namely chromosome location and the gene "name" used by biologists.
+
+For the remaining parts of this lesson we will be downloading larger datasets than those we have been using. Most of these datasets are not available as part of the standard R installation or packages such as UsingR. For some of these packages, we have created packages and offer them via GitHub. To download these you will need to install the devtools package. Once you do this, you can install packages such as the GSE5859Subset which we will be using here:
+
+library(devtools)
+install_github("genomicsclass/GSE5859Subset")
+library(GSE5859Subset)
+data(GSE5859Subset)
+
+This package loads three tables: geneAnnotation, geneExpression, and sampleInfo. Answer the following questions to familiarize yourself with the data set:
+
+> ## Exercise 1: How many samples where processed on 2005-06-27?
+>
+> > ## Solution
+> >
+> > ```{r}
+> > unique(sampleInfo$date) # check date format
+> > sampleInfo[sampleInfo$date == "2005-06-27",]  
+> > sum(sampleInfo$date == "2005-06-27") # sum of TRUEs     
+> > ```
+> {: .solution}
+{: .challenge}
+> ## Exercise 2: How many of the genes represented in this particular technology 
+are on chromosome Y?
+>
+> > ## Solution
+> >
+> > ```{r, echo=FALSE}
+> > unique(geneAnnotation$CHR) # check chromosome spelling  
+> > sum(geneAnnotation$CHR == "chrY", na.rm = TRUE) # remove missing values 
+> > (NAs) to sum TRUEs
+> > ```
+> {: .solution}
+{: .challenge}
+> ## Exercise 3: What is the log expression value for gene ARPC1A on the one 
+subject that we measured on 2005-06-10 ?
+>
+> > ## Solution
+> >
+> > ```{r, echo=FALSE}
+> > sampleInfo[sampleInfo$date == "2005-06-10",] # June 10 sample 
+> > sampleFileName <- sampleInfo[sampleInfo$date == "2005-06-10", "filename"] # save file name   
+> > sampleProbeID <- geneAnnotation[which(geneAnnotation$SYMBOL == "ARPC1A"), "PROBEID"] # save probe ID   
+> > geneExpression[sampleProbeID, sampleFileName]
+> > ```
+> {: .solution}
+{: .challenge}

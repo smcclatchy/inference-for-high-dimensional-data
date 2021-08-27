@@ -38,7 +38,7 @@ A specific study will typically use one product to make measurements on several 
 
 So a high-throughput experiment is usually defined by three tables: one with the high-throughput measurements and two tables with information about the columns and rows of this first table respectively.
 
-Because a dataset is typically defined by a set of experimental units and a product defines a fixed set of features, the high-throughput measurements can be stored in an $n \times m$ matrix, with $n$ the number of units and $m$ the number of features. In R, the convention has been to store the transpose of these matrices. 
+Because a dataset is typically defined by a set of experimental units and a product defines a fixed set of features, the high-throughput measurements can be stored in an <i>n x m</i> matrix, with <i>n</i> the number of units and <i>m</i> the number of features. In R, the convention has been to store the transpose of these matrices, in which all the rows become columns and the columns become the rows. 
 
 Here is an example from a gene expression dataset:
 
@@ -49,10 +49,6 @@ data(GSE5859Subset) ##this loads the three tables
 dim(geneExpression)
 ```
 
-```
-## [1] 8793   24
-```
-
 We have RNA expression measurements for 8793 genes from blood taken from 24 individuals (the experimental units). For most statistical analyses, we will also need information about the individuals. For example, in this case the data was originally collected to compare gene expression across ethnic groups. However, we have created a subset of this dataset for illustration and separated the data into two groups:
 
 
@@ -61,7 +57,7 @@ dim(sampleInfo)
 ```
 
 ```
-## [1] 24  4
+## Error in eval(expr, envir, enclos): object 'sampleInfo' not found
 ```
 
 ```r
@@ -69,13 +65,7 @@ head(sampleInfo)
 ```
 
 ```
-##     ethnicity       date         filename group
-## 107       ASN 2005-06-23 GSM136508.CEL.gz     1
-## 122       ASN 2005-06-27 GSM136530.CEL.gz     1
-## 113       ASN 2005-06-27 GSM136517.CEL.gz     1
-## 163       ASN 2005-10-28 GSM136576.CEL.gz     1
-## 153       ASN 2005-10-07 GSM136566.CEL.gz     1
-## 161       ASN 2005-10-07 GSM136574.CEL.gz     1
+## Error in head(sampleInfo): object 'sampleInfo' not found
 ```
 
 ```r
@@ -83,7 +73,7 @@ sampleInfo$group
 ```
 
 ```
-##  [1] 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0
+## Error in eval(expr, envir, enclos): object 'sampleInfo' not found
 ```
 
 One of the columns, filenames, permits us to connect the rows of this table to the columns of the measurement table.
@@ -94,7 +84,7 @@ match(sampleInfo$filename, colnames(geneExpression))
 ```
 
 ```
-##  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
+## Error in match(sampleInfo$filename, colnames(geneExpression)): object 'sampleInfo' not found
 ```
 
 
@@ -106,7 +96,7 @@ dim(geneAnnotation)
 ```
 
 ```
-## [1] 8793    4
+## Error in eval(expr, envir, enclos): object 'geneAnnotation' not found
 ```
 
 ```r
@@ -114,23 +104,95 @@ head(geneAnnotation)
 ```
 
 ```
-##      PROBEID  CHR     CHRLOC SYMBOL
-## 1  1007_s_at chr6   30852327   DDR1
-## 30   1053_at chr7  -73645832   RFC2
-## 31    117_at chr1  161494036  HSPA6
-## 32    121_at chr2 -113973574   PAX8
-## 33 1255_g_at chr6   42123144 GUCA1A
-## 34   1294_at chr3  -49842638   UBA7
+## Error in head(geneAnnotation): object 'geneAnnotation' not found
 ```
 
 The table includes an ID that permits us to connect the rows of this table with the rows of the measurement table:
+
 
 ```r
 head(match(geneAnnotation$PROBEID, rownames(geneExpression)))
 ```
 
 ```
-## [1] 1 2 3 4 5 6
+## Error in match(geneAnnotation$PROBEID, rownames(geneExpression)): object 'geneAnnotation' not found
 ```
 
 The table also includes biological information about the features, namely chromosome location and the gene "name" used by biologists.
+
+For the remaining parts of this lesson we will be downloading larger datasets than those we have been using. Most of these datasets are not available as part of the standard R installation or packages such as UsingR. For some of these packages, we have created packages and offer them via GitHub. To download these you will need to install the devtools package. Once you do this, you can install packages such as the GSE5859Subset which we will be using here:
+
+library(devtools)
+install_github("genomicsclass/GSE5859Subset")
+library(GSE5859Subset)
+data(GSE5859Subset)
+
+This package loads three tables: geneAnnotation, geneExpression, and sampleInfo. Answer the following questions to familiarize yourself with the data set:
+
+> ## Exercise 1: How many samples where processed on 2005-06-27?
+>
+> > ## Solution
+> >
+> > 
+> > ```r
+> > unique(sampleInfo$date) # check date format
+> > ```
+> > 
+> > ```
+> > ## Error in unique(sampleInfo$date): object 'sampleInfo' not found
+> > ```
+> > 
+> > ```r
+> > sampleInfo[sampleInfo$date == "2005-06-27",]  
+> > ```
+> > 
+> > ```
+> > ## Error in eval(expr, envir, enclos): object 'sampleInfo' not found
+> > ```
+> > 
+> > ```r
+> > sum(sampleInfo$date == "2005-06-27") # sum of TRUEs     
+> > ```
+> > 
+> > ```
+> > ## Error in eval(expr, envir, enclos): object 'sampleInfo' not found
+> > ```
+> {: .solution}
+{: .challenge}
+> ## Exercise 2: How many of the genes represented in this particular technology 
+are on chromosome Y?
+>
+> > ## Solution
+> >
+> > 
+> > ```
+> > ## Error: <text>:3:5: unexpected symbol
+> > ## 2: sum(geneAnnotation$CHR == "chrY", na.rm = TRUE) # remove missing (NAs) to 
+> > ## 3: sum TRUEs
+> > ##        ^
+> > ```
+> {: .solution}
+{: .challenge}
+> ## Exercise 3: What is the log expression value for gene ARPC1A on the one 
+subject that we measured on 2005-06-10 ?
+>
+> > ## Solution
+> >
+> > 
+> > ```
+> > ## Error in eval(expr, envir, enclos): object 'sampleInfo' not found
+> > ```
+> > 
+> > ```
+> > ## Error in eval(expr, envir, enclos): object 'sampleInfo' not found
+> > ```
+> > 
+> > ```
+> > ## Error in eval(expr, envir, enclos): object 'geneAnnotation' not found
+> > ```
+> > 
+> > ```
+> > ## Error in eval(expr, envir, enclos): object 'geneExpression' not found
+> > ```
+> {: .solution}
+{: .challenge}
