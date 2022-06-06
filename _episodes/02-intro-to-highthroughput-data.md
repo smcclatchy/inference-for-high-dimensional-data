@@ -17,10 +17,20 @@ keypoints:
 
 # Inference for High Dimensional Data
 
-Since there is a vast number of available public datasets, we use several gene expression examples. Nonetheless, the statistical techniques you will learn have also proven useful in other fields that make use of high-throughput technologies. Technologies such as microarrays, next generation sequencing, fMRI, and mass spectrometry all produce data to answer questions for which what we learn here will be indispensable. 
+Since there is a vast number of available public datasets, we use several gene 
+expression examples. Nonetheless, the statistical techniques you will learn have 
+also proven useful in other fields that make use of high-throughput technologies. 
+Technologies such as microarrays, next generation sequencing, fMRI, and mass 
+spectrometry all produce data to answer questions for which what we learn here 
+will be indispensable. 
 
 #### Data packages
-Several of the  examples we are going to use in the following sections are best obtained through R packages. These are available from GitHub and can be installed using the `install_github` function from the `devtools` package. Microsoft Windows users might need to follow [these instructions](https://github.com/genomicsclass/windows) to properly install `devtools`. 
+Several of the  examples we are going to use in the following sections are best 
+obtained through R packages. These are available from GitHub and can be 
+installed using the `install_github` function from the `devtools` package. 
+Microsoft Windows users might need to follow 
+[these instructions](https://github.com/genomicsclass/windows) to properly 
+install `devtools`. 
 
 Once `devtools` is installed, you can then install the data packages like this:
 
@@ -32,13 +42,30 @@ install_github("genomicsclass/GSE5859Subset")
 
 #### The three tables
 
-Most of the data we use as examples in this book are created with high-throughput technologies. These technologies measure thousands of _features_. Examples of features are genes, single base locations of the genome, genomic regions, or image pixel intensities. Each specific measurement product is defined by a specific set of features. For example, a specific gene expression microarray product is defined by the set of genes that it measures. 
+Most of the data we use as examples in this book are created with 
+high-throughput technologies. These technologies measure thousands of _features_. 
+Examples of features are genes, single base locations of the genome, genomic 
+regions, or image pixel intensities. Each specific measurement product is 
+defined by a specific set of features. For example, a specific gene expression 
+microarray product is defined by the set of genes that it measures. 
 
-A specific study will typically use one product to make measurements on several experimental units, such as individuals. The most common experimental unit will be the individual, but they can also be defined by other entities, for example different parts of a tumor. We often call the experimental units _samples_ following experimental jargon. It is important that these are not confused with samples as referred to in previous chapters, for example "random sample". 
+A specific study will typically use one product to make measurements on several 
+experimental units, such as individuals. The most common experimental unit will 
+be the individual, but they can also be defined by other entities, for example 
+different parts of a tumor. We often call the experimental units _samples_ 
+following experimental jargon. It is important that these are not confused with 
+samples as referred to in previous chapters, for example "random sample". 
 
-So a high-throughput experiment is usually defined by three tables: one with the high-throughput measurements and two tables with information about the columns and rows of this first table respectively.
+So a high-throughput experiment is usually defined by three tables: one with the 
+high-throughput measurements and two tables with information about the columns 
+and rows of this first table respectively.
 
-Because a dataset is typically defined by a set of experimental units and a product defines a fixed set of features, the high-throughput measurements can be stored in an <i>n x m</i> matrix, with <i>n</i> the number of units and <i>m</i> the number of features. In R, the convention has been to store the transpose of these matrices, in which all the rows become columns and the columns become the rows. 
+Because a dataset is typically defined by a set of experimental units and a 
+product defines a fixed set of features, the high-throughput measurements can be 
+stored in an <i>n x m</i> matrix, with <i>n</i> the number of units and <i>m</i> 
+the number of features. In R, the convention has been to store the transpose of 
+these matrices, in which all the rows become columns and the columns become the 
+rows. 
 
 Here is an example from a gene expression dataset:
 
@@ -49,7 +76,12 @@ data(GSE5859Subset) ##this loads the three tables
 dim(geneExpression)
 ```
 
-We have RNA expression measurements for 8793 genes from blood taken from 24 individuals (the experimental units). For most statistical analyses, we will also need information about the individuals. For example, in this case the data was originally collected to compare gene expression across ethnic groups. However, we have created a subset of this dataset for illustration and separated the data into two groups:
+We have RNA expression measurements for 8793 genes from blood taken from 24 
+individuals (the experimental units). For most statistical analyses, we will 
+also need information about the individuals. For example, in this case the data 
+was originally collected to compare gene expression across ethnic groups. 
+However, we have created a subset of this dataset for illustration and separated 
+the data into two groups:
 
 
 ```r
@@ -76,7 +108,8 @@ sampleInfo$group
 ## Error in eval(expr, envir, enclos): object 'sampleInfo' not found
 ```
 
-One of the columns, filenames, permits us to connect the rows of this table to the columns of the measurement table.
+One of the columns, filenames, permits us to connect the rows of this table to 
+the columns of the measurement table.
 
 
 ```r
@@ -107,7 +140,8 @@ head(geneAnnotation)
 ## Error in head(geneAnnotation): object 'geneAnnotation' not found
 ```
 
-The table includes an ID that permits us to connect the rows of this table with the rows of the measurement table:
+The table includes an ID that permits us to connect the rows of this table with 
+the rows of the measurement table:
 
 
 ```r
@@ -118,16 +152,27 @@ head(match(geneAnnotation$PROBEID, rownames(geneExpression)))
 ## Error in match(geneAnnotation$PROBEID, rownames(geneExpression)): object 'geneAnnotation' not found
 ```
 
-The table also includes biological information about the features, namely chromosome location and the gene "name" used by biologists.
+The table also includes biological information about the features, namely 
+chromosome location and the gene "name" used by biologists.
 
-For the remaining parts of this lesson we will be downloading larger datasets than those we have been using. Most of these datasets are not available as part of the standard R installation or packages such as UsingR. For some of these packages, we have created packages and offer them via GitHub. To download these you will need to install the devtools package. Once you do this, you can install packages such as the GSE5859Subset which we will be using here:
+For the remaining parts of this lesson we will be downloading larger datasets 
+than those we have been using. Most of these datasets are not available as part 
+of the standard R installation or packages such as UsingR. For some of these 
+packages, we have created packages and offer them via GitHub. To download these 
+you will need to install the devtools package. Once you do this, you can install 
+packages such as the GSE5859Subset which we will be using here:
 
+
+```r
 library(devtools)
 install_github("genomicsclass/GSE5859Subset")
 library(GSE5859Subset)
 data(GSE5859Subset)
+```
 
-This package loads three tables: geneAnnotation, geneExpression, and sampleInfo. Answer the following questions to familiarize yourself with the data set:
+This package loads three tables: geneAnnotation, geneExpression, and sampleInfo. 
+Answer the following questions to familiarize yourself with the data set:
+
 
 > ## Exercise 1: How many samples where processed on 2005-06-27?
 >
@@ -166,10 +211,10 @@ are on chromosome Y?
 > >
 > > 
 > > ```
-> > ## Error: <text>:3:5: unexpected symbol
-> > ## 2: sum(geneAnnotation$CHR == "chrY", na.rm = TRUE) # remove missing (NAs) to 
-> > ## 3: sum TRUEs
-> > ##        ^
+> > ## Error: <text>:3:7: unexpected symbol
+> > ## 2: sum(geneAnnotation$CHR == "chrY", na.rm = TRUE) # remove missing values 
+> > ## 3: (NAs) to
+> > ##          ^
 > > ```
 > {: .solution}
 {: .challenge}

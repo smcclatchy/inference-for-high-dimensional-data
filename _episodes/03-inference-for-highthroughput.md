@@ -11,17 +11,29 @@ objectives:
 - "Explain how to ...."
 - "Demonstrate how to ...."
 keypoints:
-- "Edit the ..."
+- "P-values are random variables."
 - "Run ..."
 ---
 
 ## Inference in Practice
 
-Suppose we were given high-throughput gene expression data that was measured for several individuals in two populations. We are asked to report which genes have different average expression levels in the two populations. If instead of thousands of genes, we were handed data from just one gene, we could simply apply the inference techniques that we have learned before. We could, for example, use a t-test or some other test. Here we review what changes when we consider high-throughput data.
+Suppose we were given high-throughput gene expression data that was measured for 
+several individuals in two populations. We are asked to report which genes have 
+different average expression levels in the two populations. If instead of 
+thousands of genes, we were handed data from just one gene, we could simply 
+apply the inference techniques that we have learned before. We could, for 
+example, use a t-test or some other test. Here we review what changes when we 
+consider high-throughput data.
 
 #### p-values are random variables
 
-An important concept to remember in order to understand the concepts presented in this chapter is that p-values are random variables. To see this,  consider the example in which we define a p-value from a t-test with a large enough sample size to use the CLT approximation. Then our p-value is defined as the probability that a normally distributed random variable is larger, in absolute value, than the observed t-test, call it $Z$. So for a two sided test the p-value is: 
+An important concept to remember in order to understand the concepts presented 
+in this chapter is that p-values are random variables. To see this, consider 
+the example in which we define a p-value from a t-test with a large enough 
+sample size to use the CLT approximation. Then our p-value is defined as the 
+probability that a normally distributed random variable is larger, in absolute 
+value, than the observed t-test, call it <i>Z</i>. So for a two sided test the 
+p-value is: 
 
 $$
 p = 2 \{ 1 - \Phi(\mid Z \mid)\}
@@ -30,14 +42,17 @@ $$
 In R, we write:
 
 ```r
-2*( 1-pnorm( abs(Z) ) )
+2 * (1 - pnorm(abs(Z)))
 ```
 
-Now because $Z$ is a random variable and $\Phi$ is a deterministic
-function, $p$ is also a random variable. We will create a Monte Carlo
-simulation showing how the values of $p$ change. We use `femaleControlsPopulation.csv` from earlier chapters.
+Now because <i>Z</i> is a random variable and $\Phi$ is a deterministic
+function, <i>p</i> is also a random variable. We will create a Monte Carlo
+simulation showing how the values of <i>p</i> change. We use `femaleControlsPopulation.csv` from earlier chapters.
 
 
+```r
+filename <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
+```
 
 We read in the data, and use `replicate` to repeatedly create p-values.
 
@@ -45,6 +60,13 @@ We read in the data, and use `replicate` to repeatedly create p-values.
 ```r
 set.seed(1)
 population = unlist( read.csv(filename) )
+```
+
+```
+## Error in read.table(file = file, header = header, sep = sep, quote = quote, : object 'filename' not found
+```
+
+```r
 N <- 12
 B <- 10000
 pvals <- replicate(B, {
@@ -52,12 +74,23 @@ pvals <- replicate(B, {
   treatment = sample(population, N)
   t.test(treatment, control)$p.val 
   })
+```
+
+```
+## Error in sample(population, N): object 'population' not found
+```
+
+```r
 hist(pvals)
 ```
 
-![P-value histogram for 10,000 tests in which null hypothesis is true.](figure/pvalue_hist-1.png)
+```
+## Error in hist(pvals): object 'pvals' not found
+```
 
-As implied by the histogram, in this case the distribution of the p-value is uniformly distributed. In fact, we can show theoretically that when the null hypothesis is true, this is always the case. For the case in which we use the CLT, we have that the null hypothesis $H_0$ implies that our test statistic $Z$  follows a normal distribution with mean 0 and SD 1 thus:
+As implied by the histogram, in this case the distribution of the p-value is 
+uniformly distributed. In fact, we can show theoretically that when the null hypothesis is true, this is always the case. For the case in which we use the 
+CLT, we have that the null hypothesis <i>H<sub>0</sub></i> implies that our test statistic <i>Z</i>  follows a normal distribution with mean 0 and SD 1 thus:
 
 $$
 p_a = \mbox{Pr}(Z < a \mid H_0) = \Phi(a)
@@ -89,7 +122,10 @@ g
 ##  [1] 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0
 ```
 
-If we were interested in a particular gene, let's arbitrarily pick the one on the 25th row, we would simply compute a t-test. To compute a p-value, we will use the t-distribution approximation and therefore we need the population data to be approximately normal. We check this assumption with a qq-plot:
+If we were interested in a particular gene, let's arbitrarily pick the one on 
+the 25th row, we would simply compute a t-test. To compute a p-value, we will 
+use the t-distribution approximation and therefore we need the population data 
+to be approximately normal. We check this assumption with a qq-plot:
 
 
 ```r
@@ -107,7 +143,9 @@ qqline(e[g==0])
 
 ![Normal qq-plots for one gene. Left plot shows first group and right plot shows second group.](figure/qqplots_for_one_gene-1.png)
 
-The qq-plots show that the data is well approximated by the normal approximation. The t-test does not find this gene to be statistically significant:
+The qq-plots show that the data is well approximated by the normal 
+approximation. The t-test does not find this gene to be statistically 
+significant:
 
 
 ```r
@@ -130,7 +168,7 @@ We can now see which genes have p-values less than, say, 0.05. For example, righ
 
 
 ```r
-sum(pvals<0.05)
+sum(pvals < 0.05)
 ```
 
 ```
@@ -146,7 +184,7 @@ However, as we will describe in more detail below, we have to be careful in inte
 set.seed(1)
 m <- nrow(geneExpression)
 n <- ncol(geneExpression)
-randomData <- matrix(rnorm(n*m), m, n)
+randomData <- matrix(rnorm(n * m), m, n)
 nullpvals <- apply(randomData, 1, myttest)
 sum(nullpvals < 0.05)
 ```
@@ -155,7 +193,7 @@ sum(nullpvals < 0.05)
 ## [1] 419
 ```
 
-As we will explain later in the chapter, this is to be expected: 419 is roughly 0.05*8192 and we will describe the theory that tells us why this prediction works.
+As we will explain later in the chapter, this is to be expected: 419 is roughly 0.05 * 8192 and we will describe the theory that tells us why this prediction works.
 
 #### Faster t-test implementation
 
@@ -182,4 +220,84 @@ max(abs(pvals - results$p))
 ## [1] 6.528111e-14
 ```
 
+## Exercises
+These exercises will help clarify that p-values are random variables and some of 
+the properties of these p-values. Note that just like the sample average is a 
+random variable because it is based on a random sample, the p-values are based 
+on random variables (sample mean and sample standard deviation for example) and 
+thus it is also a random variable.  
+To see this, let’s see how p-values change when we take different samples.
 
+
+```r
+set.seed(1)
+library(downloader)
+url = "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extda\ ta/femaleControlsPopulation.csv"
+filename = "femaleControlsPopulation.csv"
+if (!file.exists(filename)) download(url,destfile=filename)
+population = read.csv(filename)
+pvals <- replicate(1000,{
+control = sample(population[,1],12) treatment = sample(population[,1],12) t.test(treatment,control)$p.val
+})
+head(pvals)
+hist(pvals)
+```
+
+> ## Exercise 1: What proportion of the p-values is below 0.05?
+>
+> > ## Solution
+> >
+> {: .solution}
+{: .challenge}
+> ## Exercise 2: What proportion of the p-values is below 0.01?
+>
+> > ## Solution
+> >
+> {: .solution}
+{: .challenge}
+> ## Exercise 3: Assume you are testing the effectiveness of 20 diets on mice 
+> weight. For each of the 20 diets, you run an experiment with 10 control mice 
+> and 10 treated mice. Assume the null hypothesis, that the diet has no effect, 
+> is true for all 20 diets and that mice weights follow a normal distribution, 
+> with mean 30 grams and a standard deviation of 2 grams. Run a Monte Carlo 
+> simulation for one of these studies:
+>  
+>  ```r
+>  cases = rnorm(10, 30, 2)
+>  controls = rnorm(10, 30, 2) 
+>  t.test(cases, controls)     
+>  ```
+>  
+>  ```
+>  ## 
+>  ## 	Welch Two Sample t-test
+>  ## 
+>  ## data:  cases and controls
+>  ## t = 1.1271, df = 17.169, p-value = 0.2752
+>  ## alternative hypothesis: true difference in means is not equal to 0
+>  ## 95 percent confidence interval:
+>  ##  -0.8000016  2.6379668
+>  ## sample estimates:
+>  ## mean of x mean of y 
+>  ##  31.16447  30.24549
+>  ```
+>  Now run a Monte Carlo simulation imitating the results for the experiment for 
+>  all 20 diets. If you set the seed at 100, set.seed(100), how many of p-values 
+>  are below 0.05?
+> > ## Solution
+> >
+
+> {: .solution}
+{: .challenge}
+> ## Exercise 4: How many samples where processed on 2005-06-27?
+>
+> > ## Solution
+> >
+> {: .solution}
+{: .challenge}
+> ## Exercise 5: How many samples where processed on 2005-06-27?
+>
+> > ## Solution
+> >
+> {: .solution}
+{: .challenge}

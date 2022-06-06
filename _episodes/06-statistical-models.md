@@ -60,7 +60,7 @@ prop.table(tab)
 ```
 ## winners
 ##     0     1     2     3     4 
-## 0.597 0.308 0.076 0.016 0.003
+## 0.613 0.306 0.067 0.013 0.001
 ```
 
 For cases like this, where $N$ is very large, but $p$ is small enough to make $N \times p$ (call it $\lambda$) a number between 0 and, for example, 10, then $S$ can be shown to follow a Poisson distribution, which has a simple parametric form:
@@ -307,7 +307,7 @@ techsds=rowSds(techreps)
 ```
 
 ```
-## Error in rowVars(x, rows = rows, cols = cols, na.rm = na.rm, center = center, : object 'techreps' not found
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'rowSds': object 'techreps' not found
 ```
 
 ```r
@@ -315,7 +315,7 @@ biosds=rowSds(bioreps)
 ```
 
 ```
-## Error in rowVars(x, rows = rows, cols = cols, na.rm = na.rm, center = center, : object 'bioreps' not found
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'rowSds': object 'bioreps' not found
 ```
 
 We can now explore the sample standard deviation:
