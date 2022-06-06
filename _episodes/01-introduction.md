@@ -3,7 +3,9 @@ title: "Introduction"
 teaching: 0
 exercises: 0
 questions:
-- "Key question (FIXME)"
+- "What is statistical inference in the context of high-dimensional data?"
+- "Why is it important to know about statistical inference when analyzing
+high-dimensional data?"
 objectives:
 - "First learning objective. (FIXME)"
 keypoints:

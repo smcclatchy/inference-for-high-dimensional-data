@@ -37,7 +37,19 @@ Once `devtools` is installed, you can then install the data packages like this:
 
 ```r
 library(devtools)
+```
+
+```
+## Loading required package: usethis
+```
+
+```r
 install_github("genomicsclass/GSE5859Subset")
+```
+
+```
+## Skipping install of 'GSE5859Subset' from a github remote, the SHA1 (8ada5f4f) has not changed since last install.
+##   Use `force = TRUE` to force installation
 ```
 
 #### The three tables
@@ -76,6 +88,10 @@ data(GSE5859Subset) ##this loads the three tables
 dim(geneExpression)
 ```
 
+```
+## [1] 8793   24
+```
+
 We have RNA expression measurements for 8793 genes from blood taken from 24 
 individuals (the experimental units). For most statistical analyses, we will 
 also need information about the individuals. For example, in this case the data 
@@ -89,7 +105,7 @@ dim(sampleInfo)
 ```
 
 ```
-## Error in eval(expr, envir, enclos): object 'sampleInfo' not found
+## [1] 24  4
 ```
 
 ```r
@@ -97,7 +113,13 @@ head(sampleInfo)
 ```
 
 ```
-## Error in head(sampleInfo): object 'sampleInfo' not found
+##     ethnicity       date         filename group
+## 107       ASN 2005-06-23 GSM136508.CEL.gz     1
+## 122       ASN 2005-06-27 GSM136530.CEL.gz     1
+## 113       ASN 2005-06-27 GSM136517.CEL.gz     1
+## 163       ASN 2005-10-28 GSM136576.CEL.gz     1
+## 153       ASN 2005-10-07 GSM136566.CEL.gz     1
+## 161       ASN 2005-10-07 GSM136574.CEL.gz     1
 ```
 
 ```r
@@ -105,7 +127,7 @@ sampleInfo$group
 ```
 
 ```
-## Error in eval(expr, envir, enclos): object 'sampleInfo' not found
+##  [1] 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0
 ```
 
 One of the columns, filenames, permits us to connect the rows of this table to 
@@ -117,7 +139,7 @@ match(sampleInfo$filename, colnames(geneExpression))
 ```
 
 ```
-## Error in match(sampleInfo$filename, colnames(geneExpression)): object 'sampleInfo' not found
+##  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
 ```
 
 
@@ -129,7 +151,7 @@ dim(geneAnnotation)
 ```
 
 ```
-## Error in eval(expr, envir, enclos): object 'geneAnnotation' not found
+## [1] 8793    4
 ```
 
 ```r
@@ -137,7 +159,13 @@ head(geneAnnotation)
 ```
 
 ```
-## Error in head(geneAnnotation): object 'geneAnnotation' not found
+##      PROBEID  CHR     CHRLOC SYMBOL
+## 1  1007_s_at chr6   30852327   DDR1
+## 30   1053_at chr7  -73645832   RFC2
+## 31    117_at chr1  161494036  HSPA6
+## 32    121_at chr2 -113973574   PAX8
+## 33 1255_g_at chr6   42123144 GUCA1A
+## 34   1294_at chr3  -49842638   UBA7
 ```
 
 The table includes an ID that permits us to connect the rows of this table with 
@@ -149,7 +177,7 @@ head(match(geneAnnotation$PROBEID, rownames(geneExpression)))
 ```
 
 ```
-## Error in match(geneAnnotation$PROBEID, rownames(geneExpression)): object 'geneAnnotation' not found
+## [1] 1 2 3 4 5 6
 ```
 
 The table also includes biological information about the features, namely 
@@ -184,7 +212,7 @@ Answer the following questions to familiarize yourself with the data set:
 > > ```
 > > 
 > > ```
-> > ## Error in unique(sampleInfo$date): object 'sampleInfo' not found
+> > ## [1] "2005-06-23" "2005-06-27" "2005-10-28" "2005-10-07" "2005-06-10"
 > > ```
 > > 
 > > ```r
@@ -192,7 +220,12 @@ Answer the following questions to familiarize yourself with the data set:
 > > ```
 > > 
 > > ```
-> > ## Error in eval(expr, envir, enclos): object 'sampleInfo' not found
+> > ##     ethnicity       date         filename group
+> > ## 122       ASN 2005-06-27 GSM136530.CEL.gz     1
+> > ## 113       ASN 2005-06-27 GSM136517.CEL.gz     1
+> > ## 118       ASN 2005-06-27 GSM136523.CEL.gz     0
+> > ## 117       ASN 2005-06-27 GSM136522.CEL.gz     0
+> > ## 119       ASN 2005-06-27 GSM136524.CEL.gz     0
 > > ```
 > > 
 > > ```r
@@ -200,7 +233,7 @@ Answer the following questions to familiarize yourself with the data set:
 > > ```
 > > 
 > > ```
-> > ## Error in eval(expr, envir, enclos): object 'sampleInfo' not found
+> > ## [1] 5
 > > ```
 > {: .solution}
 {: .challenge}
@@ -225,19 +258,12 @@ subject that we measured on 2005-06-10 ?
 > >
 > > 
 > > ```
-> > ## Error in eval(expr, envir, enclos): object 'sampleInfo' not found
+> > ##     ethnicity       date         filename group
+> > ## 207       CEU 2005-06-10 GSM136727.CEL.gz     0
 > > ```
 > > 
 > > ```
-> > ## Error in eval(expr, envir, enclos): object 'sampleInfo' not found
-> > ```
-> > 
-> > ```
-> > ## Error in eval(expr, envir, enclos): object 'geneAnnotation' not found
-> > ```
-> > 
-> > ```
-> > ## Error in eval(expr, envir, enclos): object 'geneExpression' not found
+> > ## [1] 8.233599
 > > ```
 > {: .solution}
 {: .challenge}

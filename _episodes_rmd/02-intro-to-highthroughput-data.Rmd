@@ -32,7 +32,7 @@ install `devtools`.
 
 Once `devtools` is installed, you can then install the data packages like this:
 
-```{r, eval=FALSE, warning=FALSE}
+```{r, warning=FALSE}
 library(devtools)
 install_github("genomicsclass/GSE5859Subset")
 ```
@@ -66,7 +66,7 @@ rows.
 
 Here is an example from a gene expression dataset:
 
-```{r, eval=FALSE}
+```{r}
 library(GSE5859Subset)
 data(GSE5859Subset) ##this loads the three tables
 dim(geneExpression)
