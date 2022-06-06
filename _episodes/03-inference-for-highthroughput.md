@@ -45,6 +45,10 @@ In R, we write:
 2 * (1 - pnorm(abs(Z)))
 ```
 
+```
+## Error in pnorm(abs(Z)): object 'Z' not found
+```
+
 Now because <i>Z</i> is a random variable and $\Phi$ is a deterministic
 function, <i>p</i> is also a random variable. We will create a Monte Carlo
 simulation showing how the values of <i>p</i> change. We use `femaleControlsPopulation.csv` from earlier chapters.
@@ -60,13 +64,6 @@ We read in the data, and use `replicate` to repeatedly create p-values.
 ```r
 set.seed(1)
 population = unlist( read.csv(filename) )
-```
-
-```
-## Error in read.table(file = file, header = header, sep = sep, quote = quote, : object 'filename' not found
-```
-
-```r
 N <- 12
 B <- 10000
 pvals <- replicate(B, {
@@ -74,19 +71,10 @@ pvals <- replicate(B, {
   treatment = sample(population, N)
   t.test(treatment, control)$p.val 
   })
-```
-
-```
-## Error in sample(population, N): object 'population' not found
-```
-
-```r
 hist(pvals)
 ```
 
-```
-## Error in hist(pvals): object 'pvals' not found
-```
+![P-value histogram for 10,000 tests in which null hypothesis is true.](figure/pvalue_hist-1.png)
 
 As implied by the histogram, in this case the distribution of the p-value is 
 uniformly distributed. In fact, we can show theoretically that when the null hypothesis is true, this is always the case. For the case in which we use the 
@@ -241,6 +229,13 @@ control = sample(population[,1],12) treatment = sample(population[,1],12) t.test
 })
 head(pvals)
 hist(pvals)
+```
+
+```
+## Error: <text>:8:37: unexpected symbol
+## 7: pvals <- replicate(1000,{
+## 8: control = sample(population[,1],12) treatment
+##                                        ^
 ```
 
 > ## Exercise 1: What proportion of the p-values is below 0.05?
