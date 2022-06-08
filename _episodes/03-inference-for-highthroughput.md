@@ -72,8 +72,9 @@ hist(pvals)
 ![P-value histogram for 10,000 tests in which null hypothesis is true.](figure/pvalue_hist-1.png)
 
 As implied by the histogram, in this case the distribution of the p-value is 
-uniformly distributed. In fact, we can show theoretically that when the null hypothesis is true, this is always the case. For the case in which we use the 
-CLT, we have that the null hypothesis <i>H<sub>0</sub></i> implies that our test statistic <i>Z</i>  follows a normal distribution with mean 0 and SD 1 thus:
+uniformly distributed. In fact, we can show theoretically that when the null 
+hypothesis is true, this is always the case. For the case in which we use the 
+CLT, we have that the null hypothesis <i>H<sub>0</sub></i> implies that our test statistic <i>Z</i> follows a normal distribution with mean 0 and SD 1 thus:
 
 ![](../fig/psubaequals.png) 
 This implies that:
@@ -131,15 +132,20 @@ t.test(e[g==1], e[g==0])$p.value
 ## [1] 0.779303
 ```
 
-To answer the question for each gene, we simply repeat the above for each gene. Here we will define our own function and use `apply`:
+To answer the question for each gene, we simply repeat the above for each gene. 
+Here we will define our own function and use `apply`:
 
 
 ```r
-myttest <- function(x) t.test(x[g==1], x[g==0], var.equal=TRUE)$p.value
+myttest <- function(x) 
+  t.test(x[g==1], 
+         x[g==0], 
+         var.equal=TRUE)$p.value
 pvals <- apply(geneExpression, 1, myttest)
 ```
 
-We can now see which genes have p-values less than, say, 0.05. For example, right away we see that...
+We can now see which genes have p-values less than, say, 0.05. For example, 
+right away we see that...
 
 
 ```r
@@ -152,7 +158,9 @@ sum(pvals < 0.05)
 
 ... genes had p-values less than 0.05.
 
-However, as we will describe in more detail below, we have to be careful in interpreting this result because we have performed over 8,000 tests. If we performed the same procedure on random data, for which the null hypothesis is true for all features, we obtain the following results:
+However, as we will describe in more detail below, we have to be careful in interpreting this result because we have performed over 8,000 tests. If we 
+performed the same procedure on random data, for which the null hypothesis is 
+true for all features, we obtain the following results:
 
 
 ```r
@@ -168,11 +176,14 @@ sum(nullpvals < 0.05)
 ## [1] 419
 ```
 
-As we will explain later in the chapter, this is to be expected: 419 is roughly 0.05 * 8192 and we will describe the theory that tells us why this prediction works.
+As we will explain later in the chapter, this is to be expected: 419 is roughly 
+0.05 * 8192 and we will describe the theory that tells us why this prediction 
+works.
 
 #### Faster t-test implementation
 
-Before we continue, we should point out that the above implementation is very inefficient. There are several faster implementations that perform t-test for high-throughput data. We make use of a function that is not available from CRAN, but rather from the Bioconductor project. 
+Before we continue, we should point out that the above implementation is very inefficient. There are several faster implementations that perform t-test for high-throughput data. We make use of a function that is not available from CRAN, 
+but rather from the Bioconductor project. 
 
 To download and install packages from Bioconductor, we can use the `install_bioc` function in `rafalib` to install the package:
 
@@ -182,7 +193,8 @@ To download and install packages from Bioconductor, we can use the `install_bioc
 install_bioc("genefilter")
 ```
 
-Now we can show that this function is much faster than our code above and produce practically the same answer:
+Now we can show that this function is much faster than our code above and 
+produce practically the same answer:
 
 
 ```r
