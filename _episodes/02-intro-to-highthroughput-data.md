@@ -237,6 +237,7 @@ Answer the following questions to familiarize yourself with the data set:
 > > ```
 > {: .solution}
 {: .challenge}
+
 > ## Exercise 2: How many of the genes represented in this particular technology 
 are on chromosome Y?
 >
@@ -251,6 +252,7 @@ are on chromosome Y?
 > > ```
 > {: .solution}
 {: .challenge}
+
 > ## Exercise 3: What is the log expression value for gene ARPC1A on the one 
 subject that we measured on 2005-06-10 ?
 >

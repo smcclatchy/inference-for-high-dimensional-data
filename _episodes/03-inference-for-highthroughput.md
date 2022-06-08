@@ -45,11 +45,7 @@ In R, we write:
 2 * (1 - pnorm(abs(Z)))
 ```
 
-```
-## Error in pnorm(abs(Z)): object 'Z' not found
-```
-
-Now because <i>Z</i> is a random variable and $\Phi$ is a deterministic
+Now because <i>Z</i> is a random variable and <i>&Phi;</i> $\Phi$ is a deterministic
 function, <i>p</i> is also a random variable. We will create a Monte Carlo
 simulation showing how the values of <i>p</i> change. We use `femaleControlsPopulation.csv` from earlier chapters.
 
@@ -80,18 +76,10 @@ As implied by the histogram, in this case the distribution of the p-value is
 uniformly distributed. In fact, we can show theoretically that when the null hypothesis is true, this is always the case. For the case in which we use the 
 CLT, we have that the null hypothesis <i>H<sub>0</sub></i> implies that our test statistic <i>Z</i>  follows a normal distribution with mean 0 and SD 1 thus:
 
-$$
-p_a = \mbox{Pr}(Z < a \mid H_0) = \Phi(a)
-$$
-
+![](../fig/psubaequals.png) 
 This implies that:
 
-$$
-\begin{align*}
-\mbox{Pr}(p < p_a) &= \mbox{Pr}[ \Phi^{-1}(p) < \Phi^{-1}(p_a) ] \\
-  & = \mbox{Pr}(Z < a) = p_a
-\end{align*}
-$$
+![](../fig/probpltpsuba.png)
 
 which is the definition of a uniform distribution.
 
@@ -220,22 +208,24 @@ To see this, let’s see how p-values change when we take different samples.
 ```r
 set.seed(1)
 library(downloader)
-url = "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extda\ ta/femaleControlsPopulation.csv"
+url = "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
 filename = "femaleControlsPopulation.csv"
-if (!file.exists(filename)) download(url,destfile=filename)
+if (!file.exists(filename)) 
+  download(url,destfile=filename)
 population = read.csv(filename)
 pvals <- replicate(1000,{
-control = sample(population[,1],12) treatment = sample(population[,1],12) t.test(treatment,control)$p.val
-})
+  control = sample(population[,1],12) 
+  treatment = sample(population[,1],12) t.test(treatment,control)$p.val
+  })
 head(pvals)
 hist(pvals)
 ```
 
 ```
-## Error: <text>:8:37: unexpected symbol
-## 7: pvals <- replicate(1000,{
-## 8: control = sample(population[,1],12) treatment
-##                                        ^
+## Error: <text>:10:41: unexpected symbol
+## 9:   control = sample(population[,1],12) 
+## 10:   treatment = sample(population[,1],12) t.test
+##                                             ^
 ```
 
 > ## Exercise 1: What proportion of the p-values is below 0.05?
@@ -244,18 +234,21 @@ hist(pvals)
 > >
 > {: .solution}
 {: .challenge}
+
 > ## Exercise 2: What proportion of the p-values is below 0.01?
 >
 > > ## Solution
 > >
 > {: .solution}
 {: .challenge}
+
 > ## Exercise 3: Assume you are testing the effectiveness of 20 diets on mice 
 > weight. For each of the 20 diets, you run an experiment with 10 control mice 
 > and 10 treated mice. Assume the null hypothesis, that the diet has no effect, 
 > is true for all 20 diets and that mice weights follow a normal distribution, 
 > with mean 30 grams and a standard deviation of 2 grams. Run a Monte Carlo 
 > simulation for one of these studies:
+>
 >  
 >  ```r
 >  cases = rnorm(10, 30, 2)
@@ -276,20 +269,23 @@ hist(pvals)
 >  ## mean of x mean of y 
 >  ##  31.16447  30.24549
 >  ```
+>
 >  Now run a Monte Carlo simulation imitating the results for the experiment for 
 >  all 20 diets. If you set the seed at 100, set.seed(100), how many of p-values 
 >  are below 0.05?
+>
 > > ## Solution
 > >
-
 > {: .solution}
 {: .challenge}
+
 > ## Exercise 4: How many samples where processed on 2005-06-27?
 >
 > > ## Solution
 > >
 > {: .solution}
 {: .challenge}
+
 > ## Exercise 5: How many samples where processed on 2005-06-27?
 >
 > > ## Solution
