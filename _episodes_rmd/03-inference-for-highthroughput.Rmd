@@ -4,13 +4,14 @@ title: "Basic inference for high-throughput data"
 teaching: 0
 exercises: 0
 questions:
-- "How to ...?"
+- "How are inferences from high-throughput data different from inferences from smaller samples?"
+- "How is the interpretation of p-values affected by high-throughput data?"
 objectives:
-- "Explain how to ...."
-- "Demonstrate how to ...."
+- "Demonstrate that p-values are random variables."
+- "Simulate p-values from multiple analyses of high-throughput data."
 keypoints:
 - "P-values are random variables."
-- "Run ..."
+- "Very small p-values can occur by random chance when analyzing high-throughput data."
 ---
 
 ## Inference in Practice
@@ -33,16 +34,14 @@ probability that a normally distributed random variable is larger, in absolute
 value, than the observed t-test, call it <i>Z</i>. So for a two sided test the 
 p-value is: 
 
-$$
-p = 2 \{ 1 - \Phi(\mid Z \mid)\}
-$$
+![](../fig/pequals.png) 
 
 In R, we write:
 ```{r, eval=FALSE}
 2 * (1 - pnorm(abs(Z)))
 ```
 
-Now because <i>Z</i> is a random variable and <i>&Phi;</i> $\Phi$ is a deterministic
+Now because <i>Z</i> is a random variable and <i>&Phi;</i> is a deterministic
 function, <i>p</i> is also a random variable. We will create a Monte Carlo
 simulation showing how the values of <i>p</i> change. We use `femaleControlsPopulation.csv` from earlier chapters.
 
@@ -177,7 +176,8 @@ if (!file.exists(filename))
 population = read.csv(filename)
 pvals <- replicate(1000,{
   control = sample(population[,1],12) 
-  treatment = sample(population[,1],12) t.test(treatment,control)$p.val
+  treatment = sample(population[,1],12) 
+  t.test(treatment,control)$p.val
   })
 head(pvals)
 hist(pvals)
@@ -219,14 +219,14 @@ hist(pvals)
 > {: .solution}
 {: .challenge}
 
-> ## Exercise 4: How many samples where processed on 2005-06-27?
+> ## Exercise 4: How many samples were processed on 2005-06-27?
 >
 > > ## Solution
 > >
 > {: .solution}
 {: .challenge}
 
-> ## Exercise 5: How many samples where processed on 2005-06-27?
+> ## Exercise 5: How many samples were processed on 2005-06-27?
 >
 > > ## Solution
 > >

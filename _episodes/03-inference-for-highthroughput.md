@@ -6,13 +6,14 @@ title: "Basic inference for high-throughput data"
 teaching: 0
 exercises: 0
 questions:
-- "How to ...?"
+- "How are inferences from high-throughput data different from inferences from smaller samples?"
+- "How is the interpretation of p-values affected by high-throughput data?"
 objectives:
-- "Explain how to ...."
-- "Demonstrate how to ...."
+- "Demonstrate that p-values are random variables."
+- "Simulate p-values from multiple analyses of high-throughput data."
 keypoints:
 - "P-values are random variables."
-- "Run ..."
+- "Very small p-values can occur by random chance when analyzing high-throughput data."
 ---
 
 ## Inference in Practice
@@ -35,9 +36,7 @@ probability that a normally distributed random variable is larger, in absolute
 value, than the observed t-test, call it <i>Z</i>. So for a two sided test the 
 p-value is: 
 
-$$
-p = 2 \{ 1 - \Phi(\mid Z \mid)\}
-$$
+![](../fig/pequals.png) 
 
 In R, we write:
 
@@ -45,7 +44,7 @@ In R, we write:
 2 * (1 - pnorm(abs(Z)))
 ```
 
-Now because <i>Z</i> is a random variable and <i>&Phi;</i> $\Phi$ is a deterministic
+Now because <i>Z</i> is a random variable and <i>&Phi;</i> is a deterministic
 function, <i>p</i> is also a random variable. We will create a Monte Carlo
 simulation showing how the values of <i>p</i> change. We use `femaleControlsPopulation.csv` from earlier chapters.
 
@@ -215,18 +214,22 @@ if (!file.exists(filename))
 population = read.csv(filename)
 pvals <- replicate(1000,{
   control = sample(population[,1],12) 
-  treatment = sample(population[,1],12) t.test(treatment,control)$p.val
+  treatment = sample(population[,1],12) 
+  t.test(treatment,control)$p.val
   })
 head(pvals)
-hist(pvals)
 ```
 
 ```
-## Error: <text>:10:41: unexpected symbol
-## 9:   control = sample(population[,1],12) 
-## 10:   treatment = sample(population[,1],12) t.test
-##                                             ^
+## [1] 0.3191557945 0.2683723148 0.0003358878 0.0312671917 0.1410320545
+## [6] 0.9478677657
 ```
+
+```r
+hist(pvals)
+```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png)
 
 > ## Exercise 1: What proportion of the p-values is below 0.05?
 >
@@ -261,13 +264,13 @@ hist(pvals)
 >  ## 	Welch Two Sample t-test
 >  ## 
 >  ## data:  cases and controls
->  ## t = 1.1271, df = 17.169, p-value = 0.2752
+>  ## t = -1.1638, df = 15.913, p-value = 0.2617
 >  ## alternative hypothesis: true difference in means is not equal to 0
 >  ## 95 percent confidence interval:
->  ##  -0.8000016  2.6379668
+>  ##  -2.6864853  0.7827979
 >  ## sample estimates:
 >  ## mean of x mean of y 
->  ##  31.16447  30.24549
+>  ##  29.43712  30.38896
 >  ```
 >
 >  Now run a Monte Carlo simulation imitating the results for the experiment for 
@@ -279,14 +282,14 @@ hist(pvals)
 > {: .solution}
 {: .challenge}
 
-> ## Exercise 4: How many samples where processed on 2005-06-27?
+> ## Exercise 4: How many samples were processed on 2005-06-27?
 >
 > > ## Solution
 > >
 > {: .solution}
 {: .challenge}
 
-> ## Exercise 5: How many samples where processed on 2005-06-27?
+> ## Exercise 5: How many samples were processed on 2005-06-27?
 >
 > > ## Solution
 > >
