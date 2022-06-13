@@ -176,6 +176,15 @@ sum(nullpvals < 0.05)
 ## [1] 419
 ```
 
+> ## Discussion: Turn to a partner and explain what you did and found in the 
+> previous two analyses. What do you think the results mean? Next, share your 
+> responses with the group.
+>
+> > ## Solution
+> >
+> {: .solution}
+{: .challenge}
+
 As we will explain later in the chapter, this is to be expected: 419 is roughly 
 0.05 * 8192 and we will describe the theory that tells us why this prediction 
 works.
@@ -192,7 +201,6 @@ To download and install packages from Bioconductor, we can use the `install_bioc
 ```r
 install_bioc("genefilter")
 ```
-
 Now we can show that this function is much faster than our code above and 
 produce practically the same answer:
 
@@ -218,23 +226,25 @@ To see this, let’s see how p-values change when we take different samples.
 
 ```r
 set.seed(1)
-library(downloader)
-url = "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
-filename = "femaleControlsPopulation.csv"
-if (!file.exists(filename)) 
-  download(url,destfile=filename)
-population = read.csv(filename)
-pvals <- replicate(1000,{
+pvals <- replicate(1000, { # recreate pvalues as from above
   control = sample(population[,1],12) 
   treatment = sample(population[,1],12) 
   t.test(treatment,control)$p.val
-  })
+  }
+  )
+```
+
+```
+## Error in population[, 1]: incorrect number of dimensions
+```
+
+```r
 head(pvals)
 ```
 
 ```
-## [1] 0.3191557945 0.2683723148 0.0003358878 0.0312671917 0.1410320545
-## [6] 0.9478677657
+##  1007_s_at    1053_at     117_at     121_at  1255_g_at    1294_at 
+## 0.04553344 0.03370683 0.13604026 0.59413846 0.96849102 0.08489586
 ```
 
 ```r
@@ -276,13 +286,13 @@ hist(pvals)
 >  ## 	Welch Two Sample t-test
 >  ## 
 >  ## data:  cases and controls
->  ## t = -1.1638, df = 15.913, p-value = 0.2617
+>  ## t = -0.27858, df = 16.469, p-value = 0.784
 >  ## alternative hypothesis: true difference in means is not equal to 0
 >  ## 95 percent confidence interval:
->  ##  -2.6864853  0.7827979
+>  ##  -2.004434  1.537865
 >  ## sample estimates:
 >  ## mean of x mean of y 
->  ##  29.43712  30.38896
+>  ##  30.26441  30.49769
 >  ```
 >
 >  Now run a Monte Carlo simulation imitating the results for the experiment for 

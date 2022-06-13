@@ -145,6 +145,15 @@ nullpvals <- apply(randomData, 1, myttest)
 sum(nullpvals < 0.05)
 ```
 
+> ## Discussion: Turn to a partner and explain what you did and found in the 
+> previous two analyses. What do you think the results mean? Next, share your 
+> responses with the group.
+>
+> > ## Solution
+> >
+> {: .solution}
+{: .challenge}
+
 As we will explain later in the chapter, this is to be expected: 419 is roughly 
 0.05 * 8192 and we will describe the theory that tells us why this prediction 
 works.
@@ -160,7 +169,6 @@ To download and install packages from Bioconductor, we can use the `install_bioc
 ```{r, eval=FALSE}
 install_bioc("genefilter")
 ```
-
 Now we can show that this function is much faster than our code above and 
 produce practically the same answer:
 
@@ -178,11 +186,11 @@ on random variables (sample mean and sample standard deviation for example) and
 thus it is also a random variable.  
 To see this, let’s see how p-values change when we take different samples.
 
-```{r}
+```{r p_value_histogram}
 set.seed(1)
-pvals <- replicate(1000, {
-  control = sample(population[,1],12) 
-  treatment = sample(population[,1],12) 
+pvals <- replicate(1000, { # recreate p-values as from above
+  control = sample(population, 12) 
+  treatment = sample(population, 12) 
   t.test(treatment,control)$p.val
   }
   )
