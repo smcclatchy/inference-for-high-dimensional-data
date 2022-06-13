@@ -69,8 +69,8 @@ pvals <- replicate(B, {
 hist(pvals)
 ```
 
-![P-value histogram for 10,000 tests in which null hypothesis is true.](figure/pvalue_hist-1.png)
-
+![plot of chunk pvalue_hist"](figure/pvalue_hist"-1.png)
+![P-value histogram for 10,000 tests in which null hypothesis is true.](../fig/pvalue_hist-1.png) 
 As implied by the histogram, in this case the distribution of the p-value is 
 uniformly distributed. In fact, we can show theoretically that when the null 
 hypothesis is true, this is always the case. For the case in which we use the 
@@ -117,8 +117,8 @@ qqnorm(e[g==0])
 qqline(e[g==0])
 ```
 
-![Normal qq-plots for one gene. Left plot shows first group and right plot shows second group.](figure/qqplots_for_one_gene-1.png)
-
+![plot of chunk qqplots_for_one_gene](figure/qqplots_for_one_gene-1.png)
+![Normal qq-plots for one gene. Left plot shows first group and right plot shows second group.](../fig/qqplots_for_one_gene-1.png) 
 The qq-plots show that the data is well approximated by the normal 
 approximation. The t-test does not find this gene to be statistically 
 significant:
@@ -176,9 +176,10 @@ sum(nullpvals < 0.05)
 ## [1] 419
 ```
 
-> ## Discussion: Turn to a partner and explain what you did and found in the 
-> previous two analyses. What do you think the results mean? Next, share your 
-> responses with the group.
+> ## Discussion
+> Turn to a partner and explain what you did and found in the previous two 
+> analyses. What do you think the results mean? Then, share your responses with 
+> the group through the collaborative document.
 >
 > > ## Solution
 > >
@@ -226,50 +227,46 @@ To see this, let’s see how p-values change when we take different samples.
 
 ```r
 set.seed(1)
-pvals <- replicate(1000, { # recreate pvalues as from above
-  control = sample(population[,1],12) 
-  treatment = sample(population[,1],12) 
+pvals <- replicate(1000, { # recreate p-values as from above
+  control = sample(population, 12) 
+  treatment = sample(population, 12) 
   t.test(treatment,control)$p.val
   }
   )
-```
-
-```
-## Error in population[, 1]: incorrect number of dimensions
-```
-
-```r
 head(pvals)
 ```
 
 ```
-##  1007_s_at    1053_at     117_at     121_at  1255_g_at    1294_at 
-## 0.04553344 0.03370683 0.13604026 0.59413846 0.96849102 0.08489586
+## [1] 0.3191557945 0.2683723148 0.0003358878 0.0312671917 0.1410320545
+## [6] 0.9478677657
 ```
 
 ```r
 hist(pvals)
 ```
 
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png)
-
+![plot of chunk p_value_histogram](figure/p_value_histogram-1.png)
+![P-value histogram for 1,000 t-tests of samples of size 12.](../fig/p_value_histogram-1.png) 
 > ## Exercise 1: What proportion of the p-values is below 0.05?
 >
 > > ## Solution
-> >
+> > `sum(pvals < 0.05)/length(pvals)`
+> > 50 of the p-values are less than 0.05 of a total
+> > 1000 p-values
 > {: .solution}
 {: .challenge}
 
 > ## Exercise 2: What proportion of the p-values is below 0.01?
 >
 > > ## Solution
-> >
+
 > {: .solution}
 {: .challenge}
 
-> ## Exercise 3: Assume you are testing the effectiveness of 20 diets on mice 
-> weight. For each of the 20 diets, you run an experiment with 10 control mice 
-> and 10 treated mice. Assume the null hypothesis, that the diet has no effect, 
+> ## Exercise 3
+> Assume you are testing the effectiveness of 20 diets on mice weight. For each 
+> of the 20 diets, you run an experiment with 10 control mice and 10 treated 
+> mice. Assume the null hypothesis, that the diet has no effect, 
 > is true for all 20 diets and that mice weights follow a normal distribution, 
 > with mean 30 grams and a standard deviation of 2 grams. Run a Monte Carlo 
 > simulation for one of these studies:
@@ -286,13 +283,13 @@ hist(pvals)
 >  ## 	Welch Two Sample t-test
 >  ## 
 >  ## data:  cases and controls
->  ## t = -0.27858, df = 16.469, p-value = 0.784
+>  ## t = -1.1638, df = 15.913, p-value = 0.2617
 >  ## alternative hypothesis: true difference in means is not equal to 0
 >  ## 95 percent confidence interval:
->  ##  -2.004434  1.537865
+>  ##  -2.6864853  0.7827979
 >  ## sample estimates:
 >  ## mean of x mean of y 
->  ##  30.26441  30.49769
+>  ##  29.43712  30.38896
 >  ```
 >
 >  Now run a Monte Carlo simulation imitating the results for the experiment for 

@@ -51,7 +51,7 @@ filename <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst
 
 We read in the data, and use `replicate` to repeatedly create p-values.
 
-```{r pvalue_hist, fig.cap="P-value histogram for 10,000 tests in which null hypothesis is true."}
+```{r pvalue_hist"}
 set.seed(1)
 population = unlist( read.csv(filename) )
 N <- 12
@@ -63,7 +63,7 @@ pvals <- replicate(B, {
   })
 hist(pvals)
 ```
-
+![P-value histogram for 10,000 tests in which null hypothesis is true.](../fig/pvalue_hist-1.png) 
 As implied by the histogram, in this case the distribution of the p-value is 
 uniformly distributed. In fact, we can show theoretically that when the null 
 hypothesis is true, this is always the case. For the case in which we use the 
@@ -91,7 +91,7 @@ the 25th row, we would simply compute a t-test. To compute a p-value, we will
 use the t-distribution approximation and therefore we need the population data 
 to be approximately normal. We check this assumption with a qq-plot:
 
-```{r qqplots_for_one_gene, fig.cap="Normal qq-plots for one gene. Left plot shows first group and right plot shows second group.",fig.width=10.5,fig.height=5.25}
+```{r qqplots_for_one_gene}
 e <- geneExpression[25, ]
 
 library(rafalib)
@@ -103,7 +103,7 @@ qqline(e[g==1])
 qqnorm(e[g==0])
 qqline(e[g==0])
 ```
-
+![Normal qq-plots for one gene. Left plot shows first group and right plot shows second group.](../fig/qqplots_for_one_gene-1.png) 
 The qq-plots show that the data is well approximated by the normal 
 approximation. The t-test does not find this gene to be statistically 
 significant:
@@ -145,9 +145,10 @@ nullpvals <- apply(randomData, 1, myttest)
 sum(nullpvals < 0.05)
 ```
 
-> ## Discussion: Turn to a partner and explain what you did and found in the 
-> previous two analyses. What do you think the results mean? Next, share your 
-> responses with the group.
+> ## Discussion
+> Turn to a partner and explain what you did and found in the previous two 
+> analyses. What do you think the results mean? Then, share your responses with 
+> the group through the collaborative document.
 >
 > > ## Solution
 > >
@@ -197,24 +198,27 @@ pvals <- replicate(1000, { # recreate p-values as from above
 head(pvals)
 hist(pvals)
 ```
-
+![P-value histogram for 1,000 t-tests of samples of size 12.](../fig/p_value_histogram-1.png) 
 > ## Exercise 1: What proportion of the p-values is below 0.05?
 >
 > > ## Solution
-> >
+> > `sum(pvals < 0.05)/length(pvals)`
+> > `r sum(pvals < 0.05)` of the p-values are less than 0.05 of a total
+> > `r length(pvals)` p-values
 > {: .solution}
 {: .challenge}
 
 > ## Exercise 2: What proportion of the p-values is below 0.01?
 >
 > > ## Solution
-> >
+
 > {: .solution}
 {: .challenge}
 
-> ## Exercise 3: Assume you are testing the effectiveness of 20 diets on mice 
-> weight. For each of the 20 diets, you run an experiment with 10 control mice 
-> and 10 treated mice. Assume the null hypothesis, that the diet has no effect, 
+> ## Exercise 3
+> Assume you are testing the effectiveness of 20 diets on mice weight. For each 
+> of the 20 diets, you run an experiment with 10 control mice and 10 treated 
+> mice. Assume the null hypothesis, that the diet has no effect, 
 > is true for all 20 diets and that mice weights follow a normal distribution, 
 > with mean 30 grams and a standard deviation of 2 grams. Run a Monte Carlo 
 > simulation for one of these studies:

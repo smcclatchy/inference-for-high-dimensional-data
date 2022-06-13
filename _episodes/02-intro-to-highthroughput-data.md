@@ -6,13 +6,13 @@ title: "Advanced Statistics for the Life Sciences"
 teaching: 0
 exercises: 0
 questions:
-- "?"
+- "What data will be be using for our analyses?"
 objectives:
-- "Explain ...."
-- "Demonstrate how to ...."
+- "Explore a high-throughput dataset composed of three tables."
+- "Examine the features (high-throughput measurements) of the data you explored."
 keypoints:
-- "Edit ..."
-- "Run ..."
+- "High-throughput data measures thousands of features."
+- "High-throughput data is typically composed of multiple tables."
 ---
 
 # Inference for High Dimensional Data
@@ -267,5 +267,17 @@ subject that we measured on 2005-06-10 ?
 > > ```
 > > ## [1] 8.233599
 > > ```
+> {: .solution}
+{: .challenge}
+
+> ## Discussion
+> What kinds of research questions might you ask of this data?
+> What are the dependent (response) and independent variables?
+> Turn to a partner and discuss, then share with the group in the collaborative
+> document.
+>
+> > ## Solution
+> >
+> > 
 > {: .solution}
 {: .challenge}
