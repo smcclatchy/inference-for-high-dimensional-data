@@ -16,6 +16,9 @@ keypoints:
 
 ## Inference in Practice
 
+We have just downloaded high-throughput gene expression data and learned that it contained thousands of features. How do we bring in prior knowledge regarding random variables like p-values and simple small data vs complex large data analyses?
+
+
 Suppose we were given high-throughput gene expression data that was measured for 
 several individuals in two populations. We are asked to report which genes have 
 different average expression levels in the two populations. If instead of 
@@ -27,12 +30,37 @@ consider high-throughput data.
 #### p-values are random variables
 
 An important concept to remember in order to understand the concepts presented 
-in this chapter is that p-values are random variables. To see this, consider 
-the example in which we define a p-value from a t-test with a large enough 
-sample size to use the CLT approximation. Then our p-value is defined as the 
-probability that a normally distributed random variable is larger, in absolute 
-value, than the observed t-test, call it <i>Z</i>. So for a two sided test the 
-p-value is: 
+in this chapter is that p-values are random variables. Let’s revisit random 
+variables as addressed in 
+[this Statistical Inference for Biology episode](https://smcclatchy.github.io/statistical-inference-for-biology/02-inference-rv-dists/index.html).
+We have a dataset that we imagine contains the weights of all control female 
+mice. We refer to this as the population, even though it is impossible to have 
+data for all mice in population. For illustrative purposes we imagine having 
+access to an entire population, though in practice we cannot.
+
+To illustrate a random variable, sample 12 mice from the population three times 
+and watch how the average changes.
+
+```{r load_data}
+population <- read.csv(file = "../data/femaleControlsPopulation.csv")
+```
+
+
+```{r sample_means}
+control <- sample(population$Bodyweight, 12)
+mean(control)
+control <- sample(population$Bodyweight, 12)
+mean(control)
+control <- sample(population$Bodyweight, 12)
+mean(control)
+```
+
+Notice that the mean is a random variable. To explore p-values as random 
+variables, consider the example in which we define a p-value from a t-test with 
+a large enough sample size to use the CLT approximation. Then our p-value is 
+defined as the probability that a normally distributed random variable is 
+larger, in absolute value, than the observed t-test, call it <i>Z</i>. So for a 
+two sided test the p-value is: 
 
 ![](../fig/pequals.png) 
 
@@ -45,15 +73,10 @@ Now because <i>Z</i> is a random variable and <i>&Phi;</i> is a deterministic
 function, <i>p</i> is also a random variable. We will create a Monte Carlo
 simulation showing how the values of <i>p</i> change. We use `femaleControlsPopulation.csv` from earlier chapters.
 
-```{r}
-filename <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
-```
-
 We read in the data, and use `replicate` to repeatedly create p-values.
 
-```{r pvalue_hist"}
+```{r pvalue_hist}
 set.seed(1)
-population = unlist( read.csv(filename) )
 N <- 12
 B <- 10000
 pvals <- replicate(B, {

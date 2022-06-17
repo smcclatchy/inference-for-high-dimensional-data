@@ -18,6 +18,9 @@ keypoints:
 
 ## Inference in Practice
 
+We have just downloaded high-throughput gene expression data and learned that it contained thousands of features. How do we bring in prior knowledge regarding random variables like p-values and simple small data vs complex large data analyses?
+
+
 Suppose we were given high-throughput gene expression data that was measured for 
 several individuals in two populations. We are asked to report which genes have 
 different average expression levels in the two populations. If instead of 
@@ -29,12 +32,57 @@ consider high-throughput data.
 #### p-values are random variables
 
 An important concept to remember in order to understand the concepts presented 
-in this chapter is that p-values are random variables. To see this, consider 
-the example in which we define a p-value from a t-test with a large enough 
-sample size to use the CLT approximation. Then our p-value is defined as the 
-probability that a normally distributed random variable is larger, in absolute 
-value, than the observed t-test, call it <i>Z</i>. So for a two sided test the 
-p-value is: 
+in this chapter is that p-values are random variables. Let’s revisit random 
+variables as addressed in 
+[this Statistical Inference for Biology episode](https://smcclatchy.github.io/statistical-inference-for-biology/02-inference-rv-dists/index.html).
+We have a dataset that we imagine contains the weights of all control female 
+mice. We refer to this as the population, even though it is impossible to have 
+data for all mice in population. For illustrative purposes we imagine having 
+access to an entire population, though in practice we cannot.
+
+To illustrate a random variable, sample 12 mice from the population three times 
+and watch how the average changes.
+
+
+```r
+population <- read.csv(file = "../data/femaleControlsPopulation.csv")
+```
+
+
+
+```r
+control <- sample(population$Bodyweight, 12)
+mean(control)
+```
+
+```
+## [1] 25.10083
+```
+
+```r
+control <- sample(population$Bodyweight, 12)
+mean(control)
+```
+
+```
+## [1] 24.07917
+```
+
+```r
+control <- sample(population$Bodyweight, 12)
+mean(control)
+```
+
+```
+## [1] 22.3275
+```
+
+Notice that the mean is a random variable. To explore p-values as random 
+variables, consider the example in which we define a p-value from a t-test with 
+a large enough sample size to use the CLT approximation. Then our p-value is 
+defined as the probability that a normally distributed random variable is 
+larger, in absolute value, than the observed t-test, call it <i>Z</i>. So for a 
+two sided test the p-value is: 
 
 ![](../fig/pequals.png) 
 
@@ -48,17 +96,11 @@ Now because <i>Z</i> is a random variable and <i>&Phi;</i> is a deterministic
 function, <i>p</i> is also a random variable. We will create a Monte Carlo
 simulation showing how the values of <i>p</i> change. We use `femaleControlsPopulation.csv` from earlier chapters.
 
-
-```r
-filename <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
-```
-
 We read in the data, and use `replicate` to repeatedly create p-values.
 
 
 ```r
 set.seed(1)
-population = unlist( read.csv(filename) )
 N <- 12
 B <- 10000
 pvals <- replicate(B, {
@@ -66,10 +108,19 @@ pvals <- replicate(B, {
   treatment = sample(population, N)
   t.test(treatment, control)$p.val 
   })
+```
+
+```
+## Error in sample.int(length(x), size, replace, prob): cannot take a sample larger than the population when 'replace = FALSE'
+```
+
+```r
 hist(pvals)
 ```
 
-![plot of chunk pvalue_hist"](figure/pvalue_hist"-1.png)
+```
+## Error in hist(pvals): object 'pvals' not found
+```
 ![P-value histogram for 10,000 tests in which null hypothesis is true.](../fig/pvalue_hist-1.png) 
 As implied by the histogram, in this case the distribution of the p-value is 
 uniformly distributed. In fact, we can show theoretically that when the null 
@@ -233,12 +284,19 @@ pvals <- replicate(1000, { # recreate p-values as from above
   t.test(treatment,control)$p.val
   }
   )
+```
+
+```
+## Error in sample.int(length(x), size, replace, prob): cannot take a sample larger than the population when 'replace = FALSE'
+```
+
+```r
 head(pvals)
 ```
 
 ```
-## [1] 0.3191557945 0.2683723148 0.0003358878 0.0312671917 0.1410320545
-## [6] 0.9478677657
+##  1007_s_at    1053_at     117_at     121_at  1255_g_at    1294_at 
+## 0.04553344 0.03370683 0.13604026 0.59413846 0.96849102 0.08489586
 ```
 
 ```r
@@ -251,8 +309,8 @@ hist(pvals)
 >
 > > ## Solution
 > > `sum(pvals < 0.05)/length(pvals)`
-> > 50 of the p-values are less than 0.05 of a total
-> > 1000 p-values
+> > 1383 of the p-values are less than 0.05 of a total
+> > 8793 p-values
 > {: .solution}
 {: .challenge}
 
@@ -283,13 +341,13 @@ hist(pvals)
 >  ## 	Welch Two Sample t-test
 >  ## 
 >  ## data:  cases and controls
->  ## t = -1.1638, df = 15.913, p-value = 0.2617
+>  ## t = -0.27858, df = 16.469, p-value = 0.784
 >  ## alternative hypothesis: true difference in means is not equal to 0
 >  ## 95 percent confidence interval:
->  ##  -2.6864853  0.7827979
+>  ##  -2.004434  1.537865
 >  ## sample estimates:
 >  ## mean of x mean of y 
->  ##  29.43712  30.38896
+>  ##  30.26441  30.49769
 >  ```
 >
 >  Now run a Monte Carlo simulation imitating the results for the experiment for 
