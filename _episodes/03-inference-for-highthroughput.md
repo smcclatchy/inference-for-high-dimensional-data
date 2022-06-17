@@ -18,9 +18,6 @@ keypoints:
 
 ## Inference in Practice
 
-We have just downloaded high-throughput gene expression data and learned that it contained thousands of features. How do we bring in prior knowledge regarding random variables like p-values and simple small data vs complex large data analyses?
-
-
 Suppose we were given high-throughput gene expression data that was measured for 
 several individuals in two populations. We are asked to report which genes have 
 different average expression levels in the two populations. If instead of 
@@ -56,7 +53,7 @@ mean(control)
 ```
 
 ```
-## [1] 25.10083
+## [1] 25.83333
 ```
 
 ```r
@@ -65,7 +62,7 @@ mean(control)
 ```
 
 ```
-## [1] 24.07917
+## [1] 23.70167
 ```
 
 ```r
@@ -74,15 +71,23 @@ mean(control)
 ```
 
 ```
-## [1] 22.3275
+## [1] 23.93333
 ```
 
 Notice that the mean is a random variable. To explore p-values as random 
 variables, consider the example in which we define a p-value from a t-test with 
-a large enough sample size to use the CLT approximation. Then our p-value is 
+a large enough sample size to use the 
+[Central Limit Theorem (CLT) approximation](https://smcclatchy.github.io/statistical-inference-for-biology/04-inference-clt/index.html). 
+The CLT says that when the sample size is large, the average Y&#772; of a random 
+sample follows a normal distribution centered at the population average 
+&mu;<sub>Y</sub> and with standard deviation equal to the population standard 
+deviation &sigma;<sub>Y</sub>, divided by the square root of the sample size 
+*N*.Then our p-value is 
 defined as the probability that a normally distributed random variable is 
-larger, in absolute value, than the observed t-test, call it <i>Z</i>. So for a 
-two sided test the p-value is: 
+larger, in absolute value, [than the observed t-test](https://smcclatchy.github.io/statistical-inference-for-biology/06-inference-ttests-practice/index.html), 
+call it <i>Z</i>. Recall that a t-statistic is the ratio of the observed effect
+size and the standard error. Because it’s the ratio of two random variables, it
+too is a random variable. So for a two sided test the p-value is: 
 
 ![](../fig/pequals.png) 
 
