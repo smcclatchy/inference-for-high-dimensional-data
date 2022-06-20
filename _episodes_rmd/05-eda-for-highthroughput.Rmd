@@ -74,14 +74,16 @@ In a later chapter we will see that the columns in this dataset are not independ
 
 #### Data boxplots and histograms
 
-With high-throughput data, we have thousands of measurements for each experimental unit. As mentioned earlier, this can help us detect quality issues. For example, if one sample has a completely different distribution than the rest, we might suspect there are problems. Although a complete change in distribution could be due to real biological differences, more often than not it is due to a technical problem. Here we load a large gene expression experiment available from Bioconductor. We "accidentally" use log instead of log2 on one of the samples.
+With high-throughput data, we have thousands of measurements for each experimental unit. As mentioned earlier, this can help us detect quality issues. For example, if one sample has a completely different distribution than the rest, we might suspect there are problems. Although a complete change in distribution could be due to real biological differences, more often than not it is due to a technical problem. Here we load a large gene expression experiment available on Github. We "accidentally" use log instead of log2 on one of the samples.
 
 ```{r, message=FALSE}
-library(Biobase)
+library(devtools)
+install_github("genomicsclass/GSE5859")
 library(GSE5859) 
 data(GSE5859) 
 ge <- exprs(e) ##ge for gene expression
 ge[,49] <- ge[,49]/log2(exp(1)) ##imitate error
+ge[,49]
 ```
 
 A quick look at a summary of the distribution using boxplots immediately highlights the mistake:

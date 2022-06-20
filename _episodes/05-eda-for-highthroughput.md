@@ -87,36 +87,31 @@ In a later chapter we will see that the columns in this dataset are not independ
 
 #### Data boxplots and histograms
 
-With high-throughput data, we have thousands of measurements for each experimental unit. As mentioned earlier, this can help us detect quality issues. For example, if one sample has a completely different distribution than the rest, we might suspect there are problems. Although a complete change in distribution could be due to real biological differences, more often than not it is due to a technical problem. Here we load a large gene expression experiment available from Bioconductor. We "accidentally" use log instead of log2 on one of the samples.
+With high-throughput data, we have thousands of measurements for each experimental unit. As mentioned earlier, this can help us detect quality issues. For example, if one sample has a completely different distribution than the rest, we might suspect there are problems. Although a complete change in distribution could be due to real biological differences, more often than not it is due to a technical problem. Here we load a large gene expression experiment available on Github. We "accidentally" use log instead of log2 on one of the samples.
 
 
 ```r
-library(Biobase)
+library(devtools)
+install_github("genomicsclass/GSE5859")
 library(GSE5859) 
-```
-
-```
-## Error in library(GSE5859): there is no package called 'GSE5859'
-```
-
-```r
 data(GSE5859) 
-```
-
-```
-## Warning in data(GSE5859): data set 'GSE5859' not found
-```
-
-```r
 ge <- exprs(e) ##ge for gene expression
 ```
 
 ```
-## Error in h(simpleError(msg, call)): error in evaluating the argument 'object' in selecting a method for function 'exprs': object 'e' not found
+## Error in exprs(e): could not find function "exprs"
 ```
 
 ```r
 ge[,49] <- ge[,49]/log2(exp(1)) ##imitate error
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'ge' not found
+```
+
+```r
+ge[,49]
 ```
 
 ```
@@ -133,7 +128,7 @@ boxplot(ge,range=0,names=1:ncol(e),col=ifelse(1:ncol(ge)==49,1,2))
 ```
 
 ```
-## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'boxplot': object 'ge' not found
+## Error in boxplot(ge, range = 0, names = 1:ncol(e), col = ifelse(1:ncol(ge) == : object 'ge' not found
 ```
 
 Note that the number of samples is a bit too large here, making it hard to see the boxes. One can instead simply show the boxplot summaries without the boxes:
@@ -144,7 +139,7 @@ qs <- t(apply(ge,2,quantile,prob=c(0.05,0.25,0.5,0.75,0.95)))
 ```
 
 ```
-## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 't': object 'ge' not found
+## Error in apply(ge, 2, quantile, prob = c(0.05, 0.25, 0.5, 0.75, 0.95)): object 'ge' not found
 ```
 
 ```r
@@ -215,7 +210,7 @@ sd(y - x)
 ```
 
 ```
-## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'sd': object 'y' not found
+## Error in is.data.frame(x): object 'y' not found
 ```
 
 becomes immediate. The scatterplot shows very strong correlation, which is not necessarily informative here.
