@@ -59,8 +59,8 @@ prop.table(tab)
 
 ```
 ## winners
-##     0     1     2     3     4 
-## 0.579 0.326 0.083 0.010 0.002
+##     0     1     2     3 
+## 0.601 0.312 0.076 0.011
 ```
 
 For cases like this, where $N$ is very large, but $p$ is small enough to make $N \times p$ (call it $\lambda$) a number between 0 and, for example, 10, then $S$ can be shown to follow a Poisson distribution, which has a simple parametric form:
@@ -227,95 +227,33 @@ As an example, we use an experimental data that included both technical and biol
 
 ```r
 library(Biobase) ##available from Bioconductor
+install_github("genomicsclass/maPooling")
+```
+
+```
+## Error in install_github("genomicsclass/maPooling"): could not find function "install_github"
+```
+
+```r
 library(maPooling) ##available from course github repo
-```
 
-```
-## Error in library(maPooling): there is no package called 'maPooling'
-```
-
-```r
 data(maPooling)
-```
-
-```
-## Warning in data(maPooling): data set 'maPooling' not found
-```
-
-```r
 pd=pData(maPooling)
-```
 
-```
-## Error in h(simpleError(msg, call)): error in evaluating the argument 'object' in selecting a method for function 'pData': object 'maPooling' not found
-```
-
-```r
 ##determine which samples are bio reps and which are tech reps
 strain=factor(as.numeric(grepl("b", rownames(pd))))
-```
-
-```
-## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'grepl': error in evaluating the argument 'x' in selecting a method for function 'rownames': object 'pd' not found
-```
-
-```r
 pooled=which(rowSums(pd)==12 & strain==1)
-```
-
-```
-## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'which': error in evaluating the argument 'x' in selecting a method for function 'rowSums': object 'pd' not found
-```
-
-```r
 techreps=exprs(maPooling[,pooled])
-```
-
-```
-## Error in h(simpleError(msg, call)): error in evaluating the argument 'object' in selecting a method for function 'exprs': object 'maPooling' not found
-```
-
-```r
 individuals=which(rowSums(pd)==1 & strain==1)
-```
 
-```
-## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'which': error in evaluating the argument 'x' in selecting a method for function 'rowSums': object 'pd' not found
-```
-
-```r
 ##remove replicates
 individuals=individuals[-grep("tr", names(individuals))]
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'individuals' not found
-```
-
-```r
 bioreps=exprs(maPooling)[,individuals]
-```
 
-```
-## Error in h(simpleError(msg, call)): error in evaluating the argument 'object' in selecting a method for function 'exprs': object 'maPooling' not found
-```
-
-```r
 ###now compute the gene specific standard deviations
 library(matrixStats)
 techsds=rowSds(techreps)
-```
-
-```
-## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'rowSds': object 'techreps' not found
-```
-
-```r
 biosds=rowSds(bioreps)
-```
-
-```
-## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'rowSds': object 'bioreps' not found
 ```
 
 We can now explore the sample standard deviation:
@@ -326,27 +264,11 @@ We can now explore the sample standard deviation:
 library(rafalib)
 mypar()
 shist(biosds,unit=0.1,col=1,xlim=c(0,1.5))
-```
-
-```
-## Error in is.data.frame(z): object 'biosds' not found
-```
-
-```r
 shist(techsds,unit=0.1,col=2,add=TRUE)
-```
-
-```
-## Error in is.data.frame(z): object 'techsds' not found
-```
-
-```r
 legend("topright",c("Biological","Technical"), col=c(1,2),lty=c(1,1))
 ```
 
-```
-## Error in strwidth(legend, units = "user", cex = cex, font = text.font): plot.new has not been called yet
-```
+![Histograms of biological variance and technical variance.](figure/bio_sd_versus_tech_sd-1.png)
 
 An important observation here is that the biological variability is substantially higher than the technical variability. This provides strong evidence that genes do in fact have gene-specific biological variability. 
 
@@ -356,19 +278,10 @@ A qqplot shows this very clearly:
 
 ```r
 qqnorm(biosds)
-```
-
-```
-## Error in qqnorm(biosds): object 'biosds' not found
-```
-
-```r
 qqline(biosds)
 ```
 
-```
-## Error in quantile(y, probs, names = FALSE, type = qtype, na.rm = TRUE): object 'biosds' not found
-```
+![Normal qq-plot for sample standard deviations.](figure/sd_qqplot-1.png)
 
 There are parametric distributions that possess these properties (strictly positive and _heavy_ right tails). Two examples are the _gamma_ and _F_ distributions. The density of the gamma distribution is defined by: 
 
@@ -417,9 +330,7 @@ for(d in c(1,5,10)){
 }
 ```
 
-```
-## Error in hist(biosds, main = paste("s_0 =", s0, "d =", d), xlab = "sd", : object 'biosds' not found
-```
+![Histograms of sample standard deviations and densities of estimated distributions.](figure/modeling_variance-1.png)
 
 Now which $s_0$ and $d$ fit our data best? This is a rather advanced topic as the MLE does not perform well for this particular distribution (we refer to Smyth (2004)). The Bioconductor `limma` package provides a function to estimate these parameters:
 
@@ -427,26 +338,9 @@ Now which $s_0$ and $d$ fit our data best? This is a rather advanced topic as th
 ```r
 library(limma)
 estimates=fitFDist(biosds^2, 11)
-```
 
-```
-## Error in fitFDist(biosds^2, 11): object 'biosds' not found
-```
-
-```r
 theoretical<- sqrt(qf((seq(0, 999) + 0.5)/1000, 11, estimates$df2) * estimates$scale)
-```
-
-```
-## Error in qf((seq(0, 999) + 0.5)/1000, 11, estimates$df2): object 'estimates' not found
-```
-
-```r
 observed <- biosds
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'biosds' not found
 ```
 
 The fitted models do appear to provide a reasonable approximation, as demonstrated by the qq-plot and histogram:
@@ -455,50 +349,13 @@ The fitted models do appear to provide a reasonable approximation, as demonstrat
 ```r
 mypar(1,2)
 qqplot(theoretical,observed)
-```
-
-```
-## Error in sort(y): object 'observed' not found
-```
-
-```r
 abline(0,1)
-```
-
-```
-## Error in int_abline(a = a, b = b, h = h, v = v, untf = untf, ...): plot.new has not been called yet
-```
-
-```r
 tmp=hist(biosds,main=paste("s_0 =", signif(estimates[[1]],2),
                   "d =", signif(estimates[[2]],2)),
   xlab="sd", ylab="density", freq=FALSE, nc=100, xlim=c(0,1), ylim=c(0,9))
-```
-
-```
-## Error in hist(biosds, main = paste("s_0 =", signif(estimates[[1]], 2), : object 'biosds' not found
-```
-
-```r
 dd=df(sds^2/estimates$scale,11,estimates$df2)
-```
-
-```
-## Error in df(sds^2/estimates$scale, 11, estimates$df2): object 'estimates' not found
-```
-
-```r
 k=sum(tmp$density)/sum(dd) ##a normalizing constant to assure same area in plot
-```
-
-```
-## Error in tmp$density: $ operator is invalid for atomic vectors
-```
-
-```r
 lines(sds, dd*k, type="l", col=2, lwd=2)
 ```
 
-```
-## Error in xy.coords(x, y): object 'dd' not found
-```
+![qq-plot (left) and density (right) demonstrate that model fits data well.](figure/variance_model_fit-1.png)

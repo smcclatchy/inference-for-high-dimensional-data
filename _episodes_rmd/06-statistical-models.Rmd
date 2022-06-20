@@ -177,6 +177,7 @@ As an example, we use an experimental data that included both technical and biol
 
 ```{r, message=FALSE}
 library(Biobase) ##available from Bioconductor
+install_github("genomicsclass/maPooling")
 library(maPooling) ##available from course github repo
 
 data(maPooling)
