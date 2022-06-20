@@ -42,57 +42,36 @@ and watch how the average changes.
 
 
 ```r
-population <- unlist(read.csv(file = "../data/femaleControlsPopulation.csv"))
+population <- read.csv(file = "../data/femaleControlsPopulation.csv")
 ```
 
 
 
 ```r
 control <- sample(population$Bodyweight, 12)
-```
-
-```
-## Error in population$Bodyweight: $ operator is invalid for atomic vectors
-```
-
-```r
 mean(control)
 ```
 
 ```
-## Error in mean(control): object 'control' not found
+## [1] 23.35583
 ```
 
 ```r
 control <- sample(population$Bodyweight, 12)
-```
-
-```
-## Error in population$Bodyweight: $ operator is invalid for atomic vectors
-```
-
-```r
 mean(control)
 ```
 
 ```
-## Error in mean(control): object 'control' not found
+## [1] 24.52917
 ```
 
 ```r
 control <- sample(population$Bodyweight, 12)
-```
-
-```
-## Error in population$Bodyweight: $ operator is invalid for atomic vectors
-```
-
-```r
 mean(control)
 ```
 
 ```
-## Error in mean(control): object 'control' not found
+## [1] 24.145
 ```
 
 Notice that the mean is a random variable. To explore p-values as random 
@@ -136,8 +115,6 @@ pvals <- replicate(B, {
   })
 hist(pvals)
 ```
-
-![plot of chunk pvalue_hist](figure/pvalue_hist-1.png)
 ![P-value histogram for 10,000 tests in which null hypothesis is true.](../fig/pvalue_hist-1.png) 
 As implied by the histogram, in this case the distribution of the p-value is 
 uniformly distributed. In fact, we can show theoretically that when the null 
@@ -188,8 +165,6 @@ qqline(e[g==1])
 qqnorm(e[g==0])
 qqline(e[g==0])
 ```
-
-![plot of chunk qqplots_for_one_gene](figure/qqplots_for_one_gene-1.png)
 ![Normal qq-plots for one gene. Left plot shows first group and right plot shows second group.](../fig/qqplots_for_one_gene-1.png) 
 The qq-plots show that the data is well approximated by the normal 
 approximation. The t-test does not find this gene to be statistically 
@@ -201,7 +176,7 @@ t.test(e[g==1], e[g==0])$p.value
 ```
 
 ```
-## [1] 0.779303
+## Error in t.test(e[g == 1], e[g == 0]): object 'e' not found
 ```
 
 To answer the question for each gene, we simply repeat the above for each gene. 
@@ -306,26 +281,33 @@ pvals <- replicate(1000, { # recreate p-values as from above
   t.test(treatment,control)$p.val
   }
   )
+```
+
+```
+## Error in sample.int(length(x), size, replace, prob): cannot take a sample larger than the population when 'replace = FALSE'
+```
+
+```r
 head(pvals)
 ```
 
 ```
-## [1] 0.3191557945 0.2683723148 0.0003358878 0.0312671917 0.1410320545
-## [6] 0.9478677657
+##  1007_s_at    1053_at     117_at     121_at  1255_g_at    1294_at 
+## 0.04553344 0.03370683 0.13604026 0.59413846 0.96849102 0.08489586
 ```
+
 
 ```r
 hist(pvals)
 ```
 
-![plot of chunk p_value_histogram](figure/p_value_histogram-1.png)
 ![P-value histogram for 1,000 t-tests of samples of size 12.](../fig/p_value_histogram-1.png) 
 > ## Exercise 1: What proportion of the p-values is below 0.05?
 >
 > > ## Solution
 > > `sum(pvals < 0.05)/length(pvals)`  
-> > 50 of the p-values are less than 0.05 of a total  
-> > 1000 p-values
+> > 1383 of the p-values are less than 0.05 of a total  
+> > 8793 p-values
 > {: .solution}
 {: .challenge}
 
@@ -333,8 +315,8 @@ hist(pvals)
 >
 > > ## Solution
 > > `sum(pvals < 0.01)/length(pvals)`  
-> > 11 of the p-values are less than 0.01 of a total  
-> > 1000 p-values
+> > 417 of the p-values are less than 0.01 of a total  
+> > 8793 p-values
 > {: .solution}
 {: .challenge}
 
@@ -358,13 +340,13 @@ hist(pvals)
 >  ## 	Welch Two Sample t-test
 >  ## 
 >  ## data:  cases and controls
->  ## t = -1.1638, df = 15.913, p-value = 0.2617
+>  ## t = -0.27858, df = 16.469, p-value = 0.784
 >  ## alternative hypothesis: true difference in means is not equal to 0
 >  ## 95 percent confidence interval:
->  ##  -2.6864853  0.7827979
+>  ##  -2.004434  1.537865
 >  ## sample estimates:
 >  ## mean of x mean of y 
->  ##  29.43712  30.38896
+>  ##  30.26441  30.49769
 >  ```
 >
 >  Now run a Monte Carlo simulation imitating the results for the experiment for 
@@ -389,15 +371,29 @@ hist(pvals)
 > {: .solution}
 {: .challenge}
 
-> ## Exercise 4: How many samples were processed on 2005-06-27?
+> ## Exercise 4
+> Now create a simulation to learn about the distribution of the 
+> number of p-values that are less than 0.05. In question 3, we ran the 20 diet 
+> experiment once. Now we will run the
+> experiment 1,000 times and each time save the number of p-values that are less 
+> than 0.05.
+> Set the seed at 100, set.seed(100), run the code from Question 3 1,000 times, 
+> and save the number of times the p-value is less than 0.05 for each of the 
+> 1,000 instances. What is the average of these numbers? This is the expected 
+> number of tests (out of the 20 we run) that we will reject when the null is 
+> true.
 >
 > > ## Solution
 > >
 > {: .solution}
 {: .challenge}
 
-> ## Exercise 5: How many samples were processed on 2005-06-27?
->
+> ## Exercise 5
+> What this says is that on average, we expect some p-value to be 0.05 even when 
+> the null is true for all diets. Use the same simulation data and report for 
+> what percent of the 1,000 replications did we make more than 0 false 
+> positives?
+> 
 > > ## Solution
 > >
 > {: .solution}

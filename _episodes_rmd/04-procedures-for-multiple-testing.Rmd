@@ -1,0 +1,40 @@
+---
+source: Rmd
+title: "Procedures for Multiple Comparisons"
+teaching: 0
+exercises: 0
+questions:
+- "What are multiple comparisons?"
+objectives:
+- "Define multiple comparisons and the resulting problems."
+keypoints:
+- "..."
+- "..."
+---
+
+## Procedures
+
+In the previous section we learned how p-values are no longer a useful quantity 
+to interpret when dealing with high-dimensional data. This is because we are 
+testing many _features_ at the same time. We refer to this as the 
+_multiple comparison_ or _multiple testing_ or _multiplicity_ problem. The 
+definition of a p-value does not provide a useful quantification here. Again, 
+because when we test many hypotheses simultaneously, a list based simply on a 
+small p-value cut-off of, say 0.01, can result in many false positives with high 
+probability. Here we define terms that are more appropriate in the context of 
+high-throughput data.
+
+The most widely used approach to the multiplicity problem is to define a 
+_procedure_ and then estimate or _control_ an informative _error rate_ for this 
+procedure. What we mean by _control_ here is that we adapt the procedure to 
+guarantee an _error rate_ below a predefined value. The procedures are typically 
+flexible through parameters or cutoffs that let us control specificity and 
+sensitivity. An example of a procedure is: 
+
+* Compute a p-value for each gene.
+* Call significant all genes with p-values smaller than $\alpha$.
+
+Note that changing the $\alpha$ permits us to adjust specificity and 
+sensitivity. 
+
+Next we define the _error rates_  that we will try to estimate and control.

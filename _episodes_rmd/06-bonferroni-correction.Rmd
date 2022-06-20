@@ -1,0 +1,88 @@
+---
+source: Rmd
+title: "The Bonferroni Correction"
+teaching: 0
+exercises: 0
+questions:
+- "What are multiple comparisons?"
+- "Why are multiple comparisons a problem when drawing inferences from high-throughput data?"
+- "How we can we address the multiple comparisons problem?"
+objectives:
+- "Define multiple comparisons and the resulting problems."
+- "Describe two ways to deal with multiple comparisons."
+keypoints:
+- "..."
+- "..."
+---
+
+## The Bonferroni Correction 
+
+Now that we have learned about the Family Wise Error Rate (FWER), we describe what we can actually do to control it.  In practice, we want to choose a _procedure_ that guarantees the FWER is smaller than a predetermined value such as 0.05. We can keep it general and instead of 0.05, use $\alpha$ in our derivations.
+
+Since we are now describing what we do in practice, we no longer have the advantage of knowing _the truth_. Instead, we pose a procedure and try to estimate the FWER.  Let's consider the naive procedure: "reject all the hypotheses with p-value <0.01". For illustrative purposes we will assume all the tests are independent (in the case of testing diets this is a safe assumption; in the case of genes it is not so safe since some groups of genes act together). Let $p_1,\dots,p_{10000}$ be the the p-values we get from each test. These are independent random variables so: 
+
+$$
+\begin{align*}
+\mbox{Pr}(\mbox{at least one rejection}) &= 1 -\mbox{Pr}(\mbox{no rejections}) \\
+&= 1 - \prod_{i=1}^{1000} \mbox{Pr}(p_i>0.01) \\
+&= 1-0.99^{1000} \approx 1
+\end{align*}
+$$
+
+Or if you want to use simulations:
+
+```{r}
+B<-10000
+minpval <- replicate(B, min(runif(10000, 0, 1)) < 0.01)
+mean(minpval >= 1)
+```
+
+So our FWER is 1! This is not what we were hoping for. If we wanted it to be lower than $\alpha=0.05$, we failed miserably. 
+
+So what do we do to make the probability of a mistake lower than $\alpha$ ? Using the derivation above we can change the procedure by selecting a more stringent cutoff, previously 0.01, to lower our probability of at least one mistake to be 5%. Namely, by noting that: 
+
+$$\mbox{Pr}(\mbox{at least one rejection}) =  1-(1-k)^{10000}$$
+
+and solving for $k$, we get $1-(1-k)^{10000}=0.01 \implies k = 1-0.99^{1/10000} \approx 1e-6$
+
+This now gives a specific example of a _procedure_. This one is actually called Sidak's procedure. Specifically, we define a set of instructions, such as "reject all the null hypothesis for which p-values < 1e-6". Then, knowing the p-values are random variables, we use statistical theory to compute how many mistakes, on average, we are expected to make if we follow this procedure. More precisely, we compute bounds on these rates; that is, we show that they are smaller than some predetermined value. There is a preference in the life sciences to err on the side of being conservative.
+
+A problem with Sidak's procedure is that it assumes the tests are independent. It therefore only controls FWER when this assumption holds. The Bonferroni correction is more general in that it controls FWER even if the tests are not independent. 
+As with Sidak's procedure we start by noting that: 
+
+$$FWER = \mbox{Pr}(V>0) \leq \mbox{Pr}(V>0 \mid \mbox{all nulls are true})$$
+
+or using the notation from the table above:
+
+$$\mbox{Pr}(V>0) \leq \mbox{Pr}(V>0 \mid m_1=0)$$
+
+The Bonferroni procedure sets $k=\alpha/m$ since we can show that:
+
+$$
+\begin{align*}
+\mbox{Pr}(V>0 \,\mid \, m_1=0) &= \mbox{Pr}\left( \min_i \{p_i\} \leq \frac{\alpha}{m} \mid m_1=0 \right)\\
+ &\leq \sum_{i=1}^m \mbox{Pr}\left(p_i \leq \frac{\alpha}{m} \right)\\
+ &= m \frac{\alpha}{m}=\alpha
+\end{align*}
+$$
+
+Controlling the FWER at 0.05 is a very conservative approach. Using the p-values computed in the previous section...
+
+```{r}
+set.seed(1)
+pvals <- sapply(1:m, function(i){
+  control <- sample(population, N)
+  treatment <- sample(population, N)
+  if(!nullHypothesis[i]) treatment <- treatment + delta
+  t.test(treatment, control)$p.value
+})
+```
+
+...we note that only:
+
+```{r}
+sum(pvals < 0.05/10000)
+```
+
+are called significant after applying the Bonferroni procedure, despite having 
+1,000 diets that work. 

@@ -39,7 +39,7 @@ To illustrate a random variable, sample 12 mice from the population three times
 and watch how the average changes.
 
 ```{r load_data}
-population <- unlist(read.csv(file = "../data/femaleControlsPopulation.csv"))
+population <- read.csv(file = "../data/femaleControlsPopulation.csv")
 ```
 
 
@@ -80,7 +80,7 @@ simulation showing how the values of <i>p</i> change.
 
 We use `replicate` to repeatedly create p-values.
 
-```{r pvalue_hist}
+```{r pvalue_hist, eval=FALSE}
 set.seed(1)
 N <- 12
 B <- 10000
@@ -123,7 +123,7 @@ sample sizes aren't large enough), we can
 
 We check our assumption that the population is normal with a qq-plot:
 
-```{r qqplots_for_one_gene}
+```{r qqplots_for_one_gene, eval=FALSE}
 e <- geneExpression[25, ]
 
 library(rafalib)
@@ -220,7 +220,7 @@ on random variables (sample mean and sample standard deviation for example) and
 thus it is also a random variable.  
 To see this, let’s see how p-values change when we take different samples.
 
-```{r p_value_histogram}
+```{r p_value_head}
 set.seed(1)
 pvals <- replicate(1000, { # recreate p-values as from above
   control = sample(population, 12) 
@@ -229,8 +229,12 @@ pvals <- replicate(1000, { # recreate p-values as from above
   }
   )
 head(pvals)
+```
+
+```{r p_value_histogram, eval=FALSE}
 hist(pvals)
 ```
+
 ![P-value histogram for 1,000 t-tests of samples of size 12.](../fig/p_value_histogram-1.png) 
 > ## Exercise 1: What proportion of the p-values is below 0.05?
 >
@@ -286,15 +290,29 @@ hist(pvals)
 > {: .solution}
 {: .challenge}
 
-> ## Exercise 4: How many samples were processed on 2005-06-27?
+> ## Exercise 4
+> Now create a simulation to learn about the distribution of the 
+> number of p-values that are less than 0.05. In question 3, we ran the 20 diet 
+> experiment once. Now we will run the
+> experiment 1,000 times and each time save the number of p-values that are less 
+> than 0.05.
+> Set the seed at 100, set.seed(100), run the code from Question 3 1,000 times, 
+> and save the number of times the p-value is less than 0.05 for each of the 
+> 1,000 instances. What is the average of these numbers? This is the expected 
+> number of tests (out of the 20 we run) that we will reject when the null is 
+> true.
 >
 > > ## Solution
 > >
 > {: .solution}
 {: .challenge}
 
-> ## Exercise 5: How many samples were processed on 2005-06-27?
->
+> ## Exercise 5
+> What this says is that on average, we expect some p-value to be 0.05 even when 
+> the null is true for all diets. Use the same simulation data and report for 
+> what percent of the 1,000 replications did we make more than 0 false 
+> positives?
+> 
 > > ## Solution
 > >
 > {: .solution}
