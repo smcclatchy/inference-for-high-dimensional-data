@@ -42,10 +42,12 @@ nullpvals <- rowttests(randomData, g)$p.value
 
 As we described earlier, reporting only p-values is a mistake when we can also report effect sizes. With high-throughput data, we can visualize the results by making a _volcano plot_. The idea behind a volcano plot is to show these for all features. In the y-axis we plot -log (base 10) p-values and on the x-axis we plot the effect size. By using -log (base 10), the "highly significant" features appear at the top of the plot. Using log also permits us to better distinguish between small and very small p-values, for example 0.01 and $10^6$.  Here is the volcano plot for our results above:
 
-```{r volcano_plot, fig.align="Volcano plot. Negative log (base 10) p-values plotted against effect size estimates."}
+```{r volcano_plot, fig.align=""}
 plot(results$dm,-log10(results$p.value),
      xlab="Effect size",ylab="- log (base 10) p-values")
 ```
+
+![Volcano plot. Negative log (base 10) p-values plotted against effect size estimates.](../fig/volcano_plot.png)
 
 Many features with very small p-values, but small effect sizes as we see here, are sometimes indicative of problematic data.
 
@@ -53,22 +55,26 @@ Many features with very small p-values, but small effect sizes as we see here, a
 
 Another plot we can create to get an overall idea of the results is to make histograms of p-values. When we generate completely null data the histogram follows a uniform distribution. With our original dataset we see a higher frequency of smaller p-values. 
 
-```{r pval-hist, fig.cap="P-value histogram. We show a simulated case in which all null hypotheses are true (left) and p-values from the gene expression described above.",fig.width=10.5,fig.height=5.25}
+```{r pval-hist, fig.cap="",fig.width=10.5,fig.height=5.25}
 library(rafalib)
 mypar(1,2)
 hist(nullpvals,ylim=c(0,1400))
 hist(pvals,ylim=c(0,1400))
 ```
 
+![P-value histogram. We show a simulated case in which all null hypotheses are true (left) and p-values from the gene expression described above.](../fig/pval-hist.png)
+
 When we expect most hypotheses to be null and don't see a uniform p-value distribution, it might be indicative of unexpected properties, such as correlated samples. 
 
 If we permute the outcomes and calculate p-values then, if the samples are independent, we should see a uniform distribution. With these data we do not:
 
-```{r pval-hist2, fig.cap="Histogram obtained after permuting labels."}
+```{r pval-hist2, fig.cap=""}
 permg <- sample(g)
 permresults <- rowttests(geneExpression,permg)
 hist(permresults$p.value)
 ```
+
+![Histogram obtained after permuting labels.](../fig/pval-hist2.png)
 
 In a later chapter we will see that the columns in this dataset are not independent and thus the assumptions used to compute the p-values here are incorrect.
 
@@ -89,39 +95,48 @@ ge[,49]
 
 A quick look at a summary of the distribution using boxplots immediately highlights the mistake:
 
-```{r boxplots, fig.cap="Boxplot for log-scale expression for all samples.",fig.width=10.5,fig.height=5.25}
+```{r boxplots, fig.cap="",fig.width=10.5,fig.height=5.25}
 library(rafalib)
 mypar(1,1)
 boxplot(ge,range=0,names=1:ncol(e),col=ifelse(1:ncol(ge)==49,1,2))
 ```
 
+![Boxplot for log-scale expression for all samples.](../fig/boxplots.png)
+
+
 Note that the number of samples is a bit too large here, making it hard to see the boxes. One can instead simply show the boxplot summaries without the boxes:
 
-```{r kaboxplot, fig.cap="The 0.05, 0.25, 0.5, 0.75, and 0.95 quantiles are plotted for each sample.",fig.width=10.5,fig.height=5.25}
+```{r kaboxplot, fig.cap="",fig.width=10.5,fig.height=5.25}
 qs <- t(apply(ge,2,quantile,prob=c(0.05,0.25,0.5,0.75,0.95)))
 matplot(qs,type="l",lty=1)
 ```
+
+![The 0.05, 0.25, 0.5, 0.75, and 0.95 quantiles are plotted for each sample.](../fig/kaboxplot.png)
 
 We refer to this figure as a _kaboxplot_ because Karl Broman was the first we saw use it as an alternative to boxplots.
 
 We can also plot all the histograms. Because we have so much data, we create histograms using small bins, then smooth the heights of the bars and then plot _smooth histograms_. We re-calibrate the height of these smooth curves so that if a bar is made with base of size "unit" and height given by the curve at $x_0$, the area approximates the number of points in region of size "unit" centered at $x_0$:
 
-```{r shist, fig.cap="Smooth histograms for each sample."} 
+```{r shist, fig.cap=""} 
 mypar(1,1)
 shist(ge,unit=0.5)
 ```
+
+![Smooth histograms for each sample.](../fig/shist.png)
 
 #### MA plot
 
 Scatterplots and correlation are not the best tools to detect replication problems. A better measure of replication can be obtained from examining the differences between the values that should be the same. Therefore, a better plot is a rotation of the scatterplot containing the differences on the y-axis and the averages on the x-axis. This plot was originally named a Bland-Altman plot, but in genomics it is commonly referred to as an MA-plot. The name MA comes from plots of red log intensity minus (M) green intensities versus average (A) log intensities used with microarrays (MA) data.
 
-```{r maplot, fig.cap="Scatter plot (left) and M versus A plot (right) for the same data.", fig.width=10.5,fig.height=5.25}
+```{r maplot, fig.cap="", fig.width=10.5,fig.height=5.25}
 x <- ge[,1]
 y <- ge[,2]
 mypar(1, 2)
 plot(x, y)
 plot((x + y)/2, x - y)
 ```
+
+![Scatter plot (left) and M versus A plot (right) for the same data.](../fig/maplot.png)
 
 Note that once we rotate the plot, the fact that these data have differences of about:
 

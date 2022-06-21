@@ -54,6 +54,8 @@ plot(results$dm,-log10(results$p.value),
 
 <img src="figure/volcano_plot-1.png" title="plot of chunk volcano_plot" alt="plot of chunk volcano_plot"  />
 
+![Volcano plot. Negative log (base 10) p-values plotted against effect size estimates.](../fig/volcano_plot.png)
+
 Many features with very small p-values, but small effect sizes as we see here, are sometimes indicative of problematic data.
 
 #### p-value Histograms
@@ -68,7 +70,9 @@ hist(nullpvals,ylim=c(0,1400))
 hist(pvals,ylim=c(0,1400))
 ```
 
-![P-value histogram. We show a simulated case in which all null hypotheses are true (left) and p-values from the gene expression described above.](figure/pval-hist-1.png)
+![](figure/pval-hist-1.png)
+
+![P-value histogram. We show a simulated case in which all null hypotheses are true (left) and p-values from the gene expression described above.](../fig/pval-hist.png)
 
 When we expect most hypotheses to be null and don't see a uniform p-value distribution, it might be indicative of unexpected properties, such as correlated samples. 
 
@@ -81,7 +85,9 @@ permresults <- rowttests(geneExpression,permg)
 hist(permresults$p.value)
 ```
 
-![Histogram obtained after permuting labels.](figure/pval-hist2-1.png)
+![](figure/pval-hist2-1.png)
+
+![Histogram obtained after permuting labels.](../fig/pval-hist2.png)
 
 In a later chapter we will see that the columns in this dataset are not independent and thus the assumptions used to compute the p-values here are incorrect.
 
@@ -8907,7 +8913,10 @@ mypar(1,1)
 boxplot(ge,range=0,names=1:ncol(e),col=ifelse(1:ncol(ge)==49,1,2))
 ```
 
-![Boxplot for log-scale expression for all samples.](figure/boxplots-1.png)
+![](figure/boxplots-1.png)
+
+![Boxplot for log-scale expression for all samples.](../fig/boxplots.png)
+
 
 Note that the number of samples is a bit too large here, making it hard to see the boxes. One can instead simply show the boxplot summaries without the boxes:
 
@@ -8917,7 +8926,9 @@ qs <- t(apply(ge,2,quantile,prob=c(0.05,0.25,0.5,0.75,0.95)))
 matplot(qs,type="l",lty=1)
 ```
 
-![The 0.05, 0.25, 0.5, 0.75, and 0.95 quantiles are plotted for each sample.](figure/kaboxplot-1.png)
+![](figure/kaboxplot-1.png)
+
+![The 0.05, 0.25, 0.5, 0.75, and 0.95 quantiles are plotted for each sample.](../fig/kaboxplot.png)
 
 We refer to this figure as a _kaboxplot_ because Karl Broman was the first we saw use it as an alternative to boxplots.
 
@@ -8929,7 +8940,9 @@ mypar(1,1)
 shist(ge,unit=0.5)
 ```
 
-![Smooth histograms for each sample.](figure/shist-1.png)
+![](figure/shist-1.png)
+
+![Smooth histograms for each sample.](../fig/shist.png)
 
 #### MA plot
 
@@ -8944,7 +8957,9 @@ plot(x, y)
 plot((x + y)/2, x - y)
 ```
 
-![Scatter plot (left) and M versus A plot (right) for the same data.](figure/maplot-1.png)
+![](figure/maplot-1.png)
+
+![Scatter plot (left) and M versus A plot (right) for the same data.](../fig/maplot.png)
 
 Note that once we rotate the plot, the fact that these data have differences of about:
 
