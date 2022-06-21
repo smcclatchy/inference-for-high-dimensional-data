@@ -202,3 +202,4 @@ probability is very practically 1. When $m=1$, this probability is equivalent to
 the p-value. When we have a multiple tests situation, we call it the Family Wise 
 Error Rate (FWER) and it relates to a technique that is widely used: The 
 Bonferroni Correction.
+

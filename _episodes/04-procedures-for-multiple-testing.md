@@ -40,3 +40,52 @@ Note that changing the $\alpha$ permits us to adjust specificity and
 sensitivity. 
 
 Next we define the _error rates_  that we will try to estimate and control.
+
+## Exercises
+With these exercises we hope to help you further grasp the concept that p-values 
+are random variables and start laying the ground work for the development of 
+procedures that control error rates. The calculations to compute error rates 
+require us to understand the random behavior of p-values.
+We are going to ask you to perform some calculations related to introductory 
+probability theory. One particular concept you need to understand is statistical 
+independence. You also will need to know that the probability of two random e
+vents that are statistically independent occurring is P (A and B) = P (A)P (B). 
+This is a consequence of the more general formula P (A and B) = P (A)P (B|A).
+
+> ## Exercise 1
+> Assume the null is true and denote the p-value you would get if you ran a test
+> as P. Define the function f (x) = Pr(P > x) . What does f (x) look like?   
+> A) A uniform distribution.  
+> B) The identity line.  
+> C) A constant at 0.05.  
+> D) P is not a random value.
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 2
+> In the previous exercises, we saw how the probability of incorrectly rejecting
+> the null for at least one of 20 experiments for which the null is true, is 
+> well over 5%. Now let’s consider a case in which we run thousands of tests, as 
+> we would do in a high throughput experiment.
+> We previously learned that under the null, the probability of a p-value < p is 
+> p. If we run 8,793 independent tests, what it the probability of incorrectly 
+> rejecting at least one of the null hypothesis?
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 3
+> Suppose we need to run 8,793 statistical tests and we want to make the 
+> probability of a mistake very small, say 5%. Use the answer to Exercise 2 to 
+> determine how small we have to change the cutoff, previously 0.05, to lower 
+> our probability of at least one mistake to be 5%.
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}

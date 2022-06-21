@@ -116,8 +116,8 @@ The reason for this is that the variability plotted here includes biological var
 To illustrate the concept of maximum likelihood estimates (MLE), we use a relatively simple dataset containing palindrome locations in the HMCV genome. We read in the locations of the palindrome and then count the number of palindromes in each 4,000 basepair segments.
 
 ```{r, palindrome_count_histogram, fig.cap="Palindrome count histogram."}
-datadir="http://www.biostat.jhsph.edu/bstcourse/bio751/data"
-x=read.csv(file.path(datadir,"hcmv.csv"))[,2]
+datadir="https://github.com/genomicsclass/dagdata/blob/master/data/"
+x=read.csv(file.path(datadir,"hcmv.rda"))[,2]
 
 breaks=seq(0,4000*round(max(x)/4000),4000)
 tmp=cut(x,breaks)

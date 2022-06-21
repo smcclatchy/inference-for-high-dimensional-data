@@ -34,6 +34,27 @@ Here is a volcano showing effect sizes and p-value from applying a t-test to dat
 
 
 ```r
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("SpikeInSubset")
+```
+
+```
+## Warning: package(s) not installed when version(s) same as current; use `force = TRUE` to
+##   re-install: 'SpikeInSubset'
+```
+
+```r
+BiocManager::install("genefilter")
+```
+
+```
+## Warning: package(s) not installed when version(s) same as current; use `force = TRUE` to
+##   re-install: 'genefilter'
+```
+
+```r
 library(SpikeInSubset) ##Available from Bioconductor
 data(rma95)
 library(genefilter)

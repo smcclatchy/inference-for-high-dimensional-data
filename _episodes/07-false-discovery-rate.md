@@ -23,6 +23,9 @@ There are many situations for which requiring an FWER of 0.05 does not make sens
 
 
 ```r
+population <- read.csv(file = "../data/femaleControlsPopulation.csv")
+m <- 10000
+delta <- 3
 set.seed(1)
 pvals <- sapply(1:m, function(i){
   control <- sample(population, 6)
@@ -33,7 +36,7 @@ pvals <- sapply(1:m, function(i){
 ```
 
 ```
-## Error in lapply(X = X, FUN = FUN, ...): object 'm' not found
+## Error in sample.int(length(x), size, replace, prob): cannot take a sample larger than the population when 'replace = FALSE'
 ```
 
 ```r
@@ -53,16 +56,11 @@ Before running the simulation, we are going to _vectorize_ the code. This means 
 
 ```r
 library(genefilter) ##rowttests is here
+alpha <- 0.05
+N <- 12
 set.seed(1)
 ##Define groups to be used with rowttests
 g <- factor( c(rep(0, N), rep(1, N)) )
-```
-
-```
-## Error in factor(c(rep(0, N), rep(1, N))): object 'N' not found
-```
-
-```r
 B <- 1000 ##number of simulations
 Qs <- replicate(B, {
   ##matrix with control data (rows are tests, columns are mice)
@@ -85,7 +83,7 @@ Qs <- replicate(B, {
 ```
 
 ```
-## Error in sample(population, N * m, replace = TRUE): object 'population' not found
+## Error in which(!nullHypothesis): object 'nullHypothesis' not found
 ```
 
 #### Controlling FDR
@@ -131,42 +129,21 @@ To visually see why the FDR is high, we can make a histogram of the p-values. We
 ```r
 set.seed(1)
 controls <- matrix(sample(population, N*m, replace=TRUE), nrow=m)
-```
-
-```
-## Error in sample(population, N * m, replace = TRUE): object 'population' not found
-```
-
-```r
 treatments <-  matrix(sample(population, N*m, replace=TRUE), nrow=m)
-```
-
-```
-## Error in sample(population, N * m, replace = TRUE): object 'population' not found
-```
-
-```r
 treatments[which(!nullHypothesis),] <- treatments[which(!nullHypothesis),] + delta
 ```
 
 ```
-## Error in eval(expr, envir, enclos): object 'treatments' not found
+## Error in which(!nullHypothesis): object 'nullHypothesis' not found
 ```
 
 ```r
 dat <- cbind(controls, treatments)
-```
-
-```
-## Error in cbind(controls, treatments): object 'controls' not found
-```
-
-```r
 pvals <- rowttests(dat, g)$p.value 
 ```
 
 ```
-## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'rowttests': object 'dat' not found
+## Error in rowcoltt(x, fac, tstatOnly, 1L, na.rm): Invalid argument 'x': must be a real matrix.
 ```
 
 ```r
@@ -351,7 +328,7 @@ res <- replicate(B,{
 ```
 
 ```
-## Error in sample(population, N * m, replace = TRUE): object 'population' not found
+## Error in which(!nullHypothesis): object 'nullHypothesis' not found
 ```
 
 ```r
@@ -426,3 +403,70 @@ It is important to remember that these options offer not just different approach
 ```
 
 In summary, requiring that FDR $\leq$ 0.05 is a much more lenient requirement FWER $\leq$ 0.05. Although we will end up with more false positives, FDR gives us much more power. This makes it particularly appropriate for discovery phase experiments where we may accept FDR levels much higher than 0.05.
+
+## Exercises
+The following exercises should help you understand the concept of an error 
+controlling procedure. You can think of it as defining a set of instructions, 
+such as “reject all the null hypothesis for which p-values < 0.0001” or “reject 
+the null hypothesis for the 10 features with smallest p-values”. Then, knowing 
+the p-values are random variables, we use statistical theory to compute how many 
+mistakes, on average, we will make if we follow this procedure. More precisely, 
+we commonly find bounds on these rates, meaning that we show that they are 
+smaller than some predetermined value.
+As described in the text, we can compute different error rates. The FWER tells 
+us the probability of having at least one false positive. The FDR is the 
+expected rate of rejected null hypothesis.
+
+Note 1: the FWER and FDR are not procedures, but error rates. We will review 
+procedures here and use Monte Carlo simulations to estimate their error rates.
+
+Note 2: We sometimes use the colloquial term “pick genes that” meaning “reject 
+the null hypothesis for genes that”.
+
+> ## Exercise 1
+> We have learned about the family wide error rate FWER. This is the probability 
+> of incorrectly rejecting the null at least once. Using the notation in the 
+> video, this probability is written like this: Pr(V > 0).
+> What we want to do in practice is choose a procedure that guarantees this 
+> probability is smaller than a predetermined value such as 0.05. Here we keep 
+> it general and, instead of 0.05, we use α.
+> We have already learned that the procedure “pick all the genes with p-value <
+> 0.05” fails miserably as we have seen that Pr(V > 0) ≈ 1. So what else can we 
+> do?
+> The Bonferroni procedure assumes we have computed p-values for each test and 
+> asks what constant k should we pick so that the procedure “pick all genes with 
+> p-value less than k “ has Pr(V > 0) = 0.05. Furthermore, we typically want to 
+> be conservative rather than lenient, so we accept a procedure that has 
+> Pr(V > 0) ≤ 0.05.
+> So the first result we rely on is that this probability is largest when all 
+> the null hypotheses are true:
+> Pr(V > 0) ≤ Pr(V > 0|all nulls are true)
+> or:
+> Pr(V > 0) ≤ Pr(V > 0 | m1 = 0) 
+> We showed that if the tests are independent then:
+> Pr(V > 0|m1) = 1−(1−k)m 
+> And we pick k so that 1 − (1 − k)m = α =⇒ k=1−(1−α)1/m
+> Now this requires the tests to be independent. The Bonferroni procedure does 
+> not make this assumption and, as we previously saw, sets k = α/m and shows 
+> that with this choice of k this procedure results in P r(V > 0) ≤ α.
+> In R define
+> alphas <- seq(0,0.25,0.01)
+> Make a plot of α/m and 1 − (1 − α)1/m for various values of m > 1.
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 2
+> To simulate the p-value results of, say 8,792 t-tests for which the null is 
+> true, we don’t actually have to generate the original data. We can generate 
+> p-values for a uniform distribution like this: `pvals <- runif(8793,0,1)`. 
+> Using what we have learned, set the cutoff using the Bonferroni correction and 
+> report back the FWER. Set the seed at 1 and run 10,000 simulation.
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+

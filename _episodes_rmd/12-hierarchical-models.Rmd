@@ -31,6 +31,12 @@ an example.
 Here is a volcano showing effect sizes and p-value from applying a t-test to data from an experiment running six replicated samples with 16 genes artificially made to be different in two groups of three samples each. These 16 genes are the only genes for which the alternative hypothesis is true. In the plot they are shown in blue.
 
 ```{r volcano-plot,message=FALSE, fig.cap="Volcano plot for t-test comparing two groups. Spiked-in genes are denoted with blue. Among the rest of the genes, those with p-value < 0.01 are denoted with red."}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("SpikeInSubset")
+BiocManager::install("genefilter")
+
 library(SpikeInSubset) ##Available from Bioconductor
 data(rma95)
 library(genefilter)

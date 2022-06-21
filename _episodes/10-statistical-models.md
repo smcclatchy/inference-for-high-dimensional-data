@@ -62,8 +62,8 @@ prop.table(tab)
 
 ```
 ## winners
-##     0     1     2     3     4     5 
-## 0.591 0.325 0.067 0.012 0.003 0.002
+##     0     1     2     3     4 
+## 0.573 0.330 0.083 0.012 0.002
 ```
 
 For cases like this, where $N$ is very large, but $p$ is small enough to make $N \times p$ (call it $\lambda$) a number between 0 and, for example, 10, then $S$ can be shown to follow a Poisson distribution, which has a simple parametric form:
@@ -141,17 +141,17 @@ To illustrate the concept of maximum likelihood estimates (MLE), we use a relati
 
 
 ```r
-datadir="http://www.biostat.jhsph.edu/bstcourse/bio751/data"
-x=read.csv(file.path(datadir,"hcmv.csv"))[,2]
+datadir="https://github.com/genomicsclass/dagdata/blob/master/data/"
+x=read.csv(file.path(datadir,"hcmv.rda"))[,2]
 ```
 
 ```
-## Warning in file(file, "rt"): cannot open URL 'https://www.biostat.jhsph.edu/
-## bstcourse/bio751/data/hcmv.csv': HTTP status was '403 Forbidden'
+## Warning in scan(file = file, what = what, sep = sep, quote = quote, dec = dec, :
+## EOF within quoted string
 ```
 
 ```
-## Error in file(file, "rt"): cannot open the connection to 'http://www.biostat.jhsph.edu/bstcourse/bio751/data/hcmv.csv'
+## Error in `[.data.frame`(read.csv(file.path(datadir, "hcmv.rda")), , 2): undefined columns selected
 ```
 
 ```r

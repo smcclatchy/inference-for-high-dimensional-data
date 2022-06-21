@@ -78,6 +78,7 @@ With high-throughput data, we have thousands of measurements for each experiment
 
 ```{r, message=FALSE}
 library(devtools)
+library(Biobase)
 install_github("genomicsclass/GSE5859")
 library(GSE5859) 
 data(GSE5859) 

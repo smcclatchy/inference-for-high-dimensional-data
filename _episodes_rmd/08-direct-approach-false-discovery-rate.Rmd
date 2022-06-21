@@ -37,6 +37,26 @@ $$
 
 There are more sophisticated procedures than this, but they follow the same general idea. Here is an example setting $\lambda=0.1$. Using the p-values computed above we have:
 
+```{r dependencies}
+# re-create p-values from earlier if needed
+alpha <- 0.05
+B <- 1000 ##number of simulations. We should increase for more precision 
+res <- replicate(B, {
+  controls <- matrix(sample(population, N*m, replace=TRUE),nrow=m)
+  treatments <- matrix(sample(population, N*m, replace=TRUE),nrow=m)
+  treatments[which(!nullHypothesis),]<-treatments[which(!nullHypothesis),]+delta 
+  dat <- cbind(controls,treatments)
+  pvals <- rowttests(dat,g)$p.value
+  ##then the FDR
+  calls <- p.adjust(pvals,method="fdr") < alpha
+  R=sum(calls)
+  Q=ifelse(R>0,sum(nullHypothesis & calls)/R,0)
+  return(c(R,Q))
+  }
+  )
+Qs <- res[2,]
+```
+
 ```{r pi0_estimate, fig.cap="p-value histogram with pi0 estimate."}
 hist(pvals,breaks=seq(0,1,0.05),freq=FALSE)
 lambda = 0.1
@@ -70,6 +90,72 @@ This function uses a more sophisticated approach at estimating $\pi_0$ than what
 #### Note on estimating $\pi_0$
 In our experience the estimation of $\pi_0$ can be unstable and adds a step of uncertainty to the data analysis pipeline. Although more conservative, the Benjamini-Hochberg procedure is computationally more stable. 
 
+## Exercises
+In the following exercises, we will define error controlling procedures for 
+experimental data. We will make a list of genes based on q-values. We will also 
+assess your understanding of false positives rates and false negative rates by 
+asking you to create a Monte Carlo simulation.
 
+> ## Exercise 1
+> Load the gene expression data:  
+> `library(GSE5859Subset)`  
+> `data(GSE5859Subset)`  
+> We are interested in comparing gene expression between the two groups defined 
+> in the sampleInfo table.
+> Compute a p-value for each gene using the function `rowttests` from the 
+> genefilter package. 
+> 
+> `library(genefilter)`
+> `?rowttests`
+> 
+> How many genes have p-values smaller than 0.05?
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
 
+> ## Exercise 2
+> Apply the Bonferroni correction to achieve a FWER of 0.05. How many genes are 
+> called significant under this procedure?
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
 
+> ## Exercise 3
+> The FDR is a property of a list of features, not each specific feature. The
+> q-value relates FDR to individual features. To define the q-value, we order 
+> features we tested by p-value, then compute the FDRs for a list with the most 
+> significant, the two most significant, the three most significant, etc. The 
+> FDR of the list with the, say, m most significant tests is defined as the 
+> q-value of the m-th most significant feature. In other words, the q-value of a 
+> feature, is the FDR of the biggest list that includes that gene.
+> In R, we can compute q-values using the p.adjust function with the FDR option. 
+> Read the help file for p.adjust and compute how many genes achieve a q-value < 
+> 0.05 for our gene expression dataset.
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 4
+> Now use the qvalue function, in the Bioconductor qvalue package, to estimate 
+> q-values using the procedure described by Storey. How many genes have q-values 
+> below 0.05?
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 5
+> Read the help file for qvalue and report the estimated proportion of genes for 
+> which the null hypothesis is true π0 = m0/m
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}

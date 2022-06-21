@@ -35,7 +35,7 @@ Or if you want to use simulations:
 
 
 ```r
-B<-10000
+B <- 10000
 minpval <- replicate(B, min(runif(10000, 0, 1)) < 0.01)
 mean(minpval >= 1)
 ```
@@ -77,6 +77,10 @@ Controlling the FWER at 0.05 is a very conservative approach. Using the p-values
 
 
 ```r
+population <- read.csv(file = "../data/femaleControlsPopulation.csv")
+m <- 10000
+N <- 12
+delta <- 3
 set.seed(1)
 pvals <- sapply(1:m, function(i){
   control <- sample(population, N)
@@ -87,7 +91,7 @@ pvals <- sapply(1:m, function(i){
 ```
 
 ```
-## Error in lapply(X = X, FUN = FUN, ...): object 'm' not found
+## Error in sample.int(length(x), size, replace, prob): cannot take a sample larger than the population when 'replace = FALSE'
 ```
 
 ...we note that only:
