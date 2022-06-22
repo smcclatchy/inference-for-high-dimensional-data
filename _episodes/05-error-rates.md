@@ -6,12 +6,11 @@ title: "Error Rates"
 teaching: 0
 exercises: 0
 questions:
-- "What are multiple comparisons?"
-- "Why are multiple comparisons a problem when drawing inferences from high-throughput data?"
-- "How we can we address the multiple comparisons problem?"
+- "Why are type I and II error rates a problem in inferential statistics?"
 objectives:
-- "Define multiple comparisons and the resulting problems."
-- "Describe two ways to deal with multiple comparisons."
+- "Calculate error rates in simulated data."
+- "Calculate the number of false positives that occur in a given data set."
+- "Define family wise error rates."
 keypoints:
 - "..."
 - "..."

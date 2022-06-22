@@ -4,12 +4,10 @@ title: "False Discovery Rate"
 teaching: 0
 exercises: 0
 questions:
-- "What are multiple comparisons?"
-- "Why are multiple comparisons a problem when drawing inferences from high-throughput data?"
-- "How we can we address the multiple comparisons problem?"
+- "How can you control false discovery rates?"
 objectives:
-- "Define multiple comparisons and the resulting problems."
-- "Describe two ways to deal with multiple comparisons."
+- "Calculate the false discovery rate."
+- "Explain the limitations of restricting family wise error rates in a study."
 keypoints:
 - "..."
 - "..."

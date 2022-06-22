@@ -6,12 +6,9 @@ title: "The Bonferroni Correction"
 teaching: 0
 exercises: 0
 questions:
-- "What are multiple comparisons?"
-- "Why are multiple comparisons a problem when drawing inferences from high-throughput data?"
-- "How we can we address the multiple comparisons problem?"
+- "What is one way to control family wise error rate?"
 objectives:
-- "Define multiple comparisons and the resulting problems."
-- "Describe two ways to deal with multiple comparisons."
+- "Apply the Bonferroni procedure to identify the true positives."
 keypoints:
 - "..."
 - "..."

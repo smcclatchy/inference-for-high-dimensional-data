@@ -39,6 +39,25 @@ sensitivity.
 
 Next we define the _error rates_  that we will try to estimate and control.
 
+Review the matrix below to understand sensitivity, specificity, and error rates.
+
+![confusion matrix showing specificity, sensitivity and Type I and Type II errors](../fig/confusion-matrix-1.png)
+
+> ## Discussion
+> Turn to a partner and explain the following:  
+> Type I error  
+> Type II error  
+> sensitivity  
+> specificity  
+> When you are finished discussing,  share with the group in the collaborative
+> document.
+>
+> > ## Solution
+> >
+> > 
+> {: .solution}
+{: .challenge}
+
 ## Exercises
 With these exercises we hope to help you further grasp the concept that p-values 
 are random variables and start laying the ground work for the development of 

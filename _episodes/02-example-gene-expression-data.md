@@ -235,11 +235,12 @@ Answer the following questions to familiarize yourself with the data set:
 > > ```
 > > ## [1] 5
 > > ```
+> >
 > {: .solution}
 {: .challenge}
 
 > ## Exercise 2: How many of the genes represented in this particular technology 
-are on chromosome Y?
+> are on chromosome Y?
 >
 > > ## Solution
 > >
@@ -250,6 +251,7 @@ are on chromosome Y?
 > > ## 3: (NAs) to
 > > ##          ^
 > > ```
+> >
 > {: .solution}
 {: .challenge}
 
@@ -267,6 +269,7 @@ subject that we measured on 2005-06-10?
 > > ```
 > > ## [1] 8.233599
 > > ```
+> >
 > {: .solution}
 {: .challenge}
 
