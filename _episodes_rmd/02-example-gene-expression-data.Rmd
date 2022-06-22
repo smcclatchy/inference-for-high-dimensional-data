@@ -137,11 +137,12 @@ Answer the following questions to familiarize yourself with the data set:
 > > sampleInfo[sampleInfo$date == "2005-06-27",]  
 > > sum(sampleInfo$date == "2005-06-27") # sum of TRUEs     
 > > ```
+> >
 > {: .solution}
 {: .challenge}
 
 > ## Exercise 2: How many of the genes represented in this particular technology 
-are on chromosome Y?
+> are on chromosome Y?
 >
 > > ## Solution
 > >
@@ -150,6 +151,7 @@ are on chromosome Y?
 > > sum(geneAnnotation$CHR == "chrY", na.rm = TRUE) # remove missing values 
 > > (NAs) to sum TRUEs
 > > ```
+> >
 > {: .solution}
 {: .challenge}
 
@@ -164,6 +166,7 @@ subject that we measured on 2005-06-10?
 > > sampleProbeID <- geneAnnotation[which(geneAnnotation$SYMBOL == "ARPC1A"), "PROBEID"] # save probe ID   
 > > geneExpression[sampleProbeID, sampleFileName]
 > > ```
+> >
 > {: .solution}
 {: .challenge}
 

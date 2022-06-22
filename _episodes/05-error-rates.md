@@ -24,6 +24,25 @@ terminology. We will also refer to them as false positives and false negatives
 respectively. We also use the more general terms specificity, which relates to 
 type I error, and sensitivity, which relates to type II errors.
 
+#### Types of Error
+Whenever we perform a statistical test, we are aware that we may make a mistake. 
+This is why our p-values are not 0. Under the null, there is always a positive, 
+perhaps very small, but still positive chance that we will reject the null when 
+it is true. If the p-value is 0.05, it will happen 1 out of 20 times. This 
+*error* is called _type I error_ by statisticians.  
+
+![Null distribution showing type I error as alpha](../fig/null-hypothesis.png)
+
+A type I error is defined as rejecting the null when we should not. This is also 
+referred to as a false positive. So why do we then use 0.05? Shouldn't we use 
+0.000001 to be really sure? The reason we don't use infinitesimal cut-offs to 
+avoid type I errors at all cost is that there is another error we can commit: to 
+not reject the null when we should. This is called a _type II error_ or a false 
+negative. 
+
+![Alternative hypothesis showing type II error as beta](../fig/alternative-hypothesis.png)
+
+
 In the context of high-throughput data we can make several type I errors and 
 several type II errors in one experiment, as opposed to one or the other as seen 
 in Chapter 1. In this table, we summarize the possibilities using the notation 
