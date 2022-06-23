@@ -3,8 +3,8 @@
 # Instead, please edit 04-procedures-for-multiple-testing.md in _episodes_rmd/
 source: Rmd
 title: "Procedures for Multiple Comparisons"
-teaching: 0
-exercises: 0
+teaching: 10
+exercises: 20
 questions:
 - "What are multiple comparisons?"
 objectives:

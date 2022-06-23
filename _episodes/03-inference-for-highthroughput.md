@@ -3,8 +3,8 @@
 # Instead, please edit 03-inference-for-highthroughput.md in _episodes_rmd/
 source: Rmd
 title: "Basic inference for high-throughput data"
-teaching: 0
-exercises: 0
+teaching: 25
+exercises: 35
 questions:
 - "How are inferences from high-throughput data different from inferences from smaller samples?"
 - "How is the interpretation of p-values affected by high-throughput data?"
@@ -53,7 +53,7 @@ mean(control)
 ```
 
 ```
-## [1] 23.20417
+## [1] 24.26333
 ```
 
 ```r
@@ -62,7 +62,7 @@ mean(control)
 ```
 
 ```
-## [1] 25.325
+## [1] 24.41167
 ```
 
 ```r
@@ -71,7 +71,7 @@ mean(control)
 ```
 
 ```
-## [1] 24.935
+## [1] 23.22917
 ```
 
 Notice that the mean is a random variable. To explore p-values as random 

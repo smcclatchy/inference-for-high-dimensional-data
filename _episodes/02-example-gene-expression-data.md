@@ -3,8 +3,8 @@
 # Instead, please edit 02-example-gene-expression-data.md in _episodes_rmd/
 source: Rmd
 title: "Example Gene Expression Datasets"
-teaching: 0
-exercises: 0
+teaching: 15
+exercises: 20
 questions:
 - "What data will be be using for our analyses?"
 objectives:

@@ -3,8 +3,8 @@
 # Instead, please edit 05-error-rates.md in _episodes_rmd/
 source: Rmd
 title: "Error Rates"
-teaching: 0
-exercises: 0
+teaching: 20
+exercises: 10
 questions:
 - "Why are type I and II error rates a problem in inferential statistics?"
 objectives:

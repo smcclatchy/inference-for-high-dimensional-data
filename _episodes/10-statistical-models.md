@@ -63,7 +63,7 @@ prop.table(tab)
 ```
 ## winners
 ##     0     1     2     3     4 
-## 0.600 0.300 0.079 0.019 0.002
+## 0.601 0.300 0.084 0.013 0.002
 ```
 
 For cases like this, where $N$ is very large, but $p$ is small enough to make $N \times p$ (call it $\lambda$) a number between 0 and, for example, 10, then $S$ can be shown to follow a Poisson distribution, which has a simple parametric form:
@@ -362,3 +362,615 @@ lines(sds, dd*k, type="l", col=2, lwd=2)
 ```
 
 ![qq-plot (left) and density (right) demonstrate that model fits data well.](figure/variance_model_fit-1.png)
+
+## Dimension Reduction Motivation
+
+Visualizing data is one of the most, if not the most, important step in the analysis of high-throughput data. The right visualization method may reveal problems with the experimental data that can render the results from a standard analysis, although typically appropriate, completely useless. 
+
+We have shown methods for visualizing global properties of the columns or rows, but plots that reveal relationships between columns or between rows are more complicated due to the high dimensionality of data. For example, to compare each of the 189 samples to each other, we would have to create, for example, 17,766 MA-plots. Creating one single scatterplot of the data is impossible since points are very high dimensional. 
+
+We will describe powerful techniques for exploratory data analysis based on _dimension reduction_. The general idea is to reduce the dataset to have fewer dimensions, yet approximately preserve important properties, such as the distance between samples. If we are able to reduce down to, say, two dimensions, we can then easily make plots. The technique behind it all, the singular value decomposition (SVD), is also useful in other contexts. Before introducing the rather complicated mathematics behind the SVD, we will motivate the ideas behind it with a simple example.
+
+#### Example: Reducing two dimensions to one
+
+We consider an example with twin heights. Here we simulate 100 two dimensional points that represent the number of standard deviations each individual is from the mean height. Each point is a pair of twins:
+
+![Simulated twin pair heights.](figure/simulate_twin_heights-1.png)
+
+To help with the illustration, think of this as high-throughput gene expression data with the twin pairs representing the $N$ samples and the two heights representing gene expression from two genes. 
+
+We are interested in the distance between any two samples. We can compute this using `dist`. For example, here is the distance between the two orange points in the figure above:
+
+
+```r
+d=dist(t(y))
+as.matrix(d)[1,2]
+```
+
+```
+## [1] 1.140897
+```
+
+What if making two dimensional plots was too complex and we were only able to make 1 dimensional plots. Can we, for example, reduce the data to a one dimensional matrix that preserves distances between points?
+
+If we look back at the plot, and visualize a line between any pair of points, the length of this line is the distance between the two points. These lines tend to go along the direction of the diagonal. We have seen before that we can "rotate" the plot so that the diagonal is in the x-axis by making a MA-plot instead:
+
+
+
+```r
+z1 = (y[1,]+y[2,])/2 #the sum 
+z2 = (y[1,]-y[2,])   #the difference
+
+z = rbind( z1, z2) #matrix now same dimensions as y
+
+thelim <- c(-3,3)
+mypar(1,2)
+
+plot(y[1,],y[2,],xlab="Twin 1 (standardized height)",
+     ylab="Twin 2 (standardized height)",
+     xlim=thelim,ylim=thelim)
+points(y[1,1:2],y[2,1:2],col=2,pch=16)
+
+plot(z[1,],z[2,],xlim=thelim,ylim=thelim,xlab="Average height",ylab="Difference in height")
+points(z[1,1:2],z[2,1:2],col=2,pch=16)
+```
+
+![Twin height scatterplot (left) and MA-plot (right).](figure/rotation-1.png)
+
+
+Later, we will start using linear algebra to represent transformation of the data such as this. Here we can see that to get `z` we multiplied `y` by the matrix:
+
+$$
+A = \,
+\begin{pmatrix}
+1/2&1/2\\
+1&-1\\
+\end{pmatrix}
+\implies
+z = A y
+$$
+
+Remember that we can transform back by simply multiplying by $A^{-1}$ as follows:
+
+$$
+A^{-1} = \,
+\begin{pmatrix}
+1&1/2\\
+1&-1/2\\
+\end{pmatrix}
+\implies
+y = A^{-1} z
+$$
+
+#### Rotations 
+
+In the plot above, the distance between the two orange points remains roughly the same, relative to the distance between other points. This is true for all pairs of points. A simple re-scaling of the transformation we performed above will actually make the distances exactly the same. What we will do is multiply by a scalar so that the standard deviations of each point is preserved. If you think of the columns of `y` as independent random variables with standard deviation $\sigma$, then note that the standard deviations of $M$ and $A$ are:
+
+$$
+\mbox{sd}[ Z_1 ] = \mbox{sd}[ (Y_1 + Y_2) / 2 ] = \frac{1}{\sqrt{2}} \sigma \mbox{ and } \mbox{sd}[ Z_2] = \mbox{sd}[ Y_1 - Y_2  ] = {\sqrt{2}} \sigma 
+$$
+
+This implies that if we change the transformation above to:
+
+$$
+A = \frac{1}{\sqrt{2}}
+\begin{pmatrix}
+1&1\\
+1&-1\\
+\end{pmatrix}
+$$
+
+then the SD of the columns of $Y$ are the same as the variance of the columns $Z$. Also, notice that $A^{-1}A=I$. We call matrices with these properties _orthogonal_ and it guarantees the SD-preserving properties described above. The distances are now exactly preserved:
+
+
+```r
+A <- 1/sqrt(2)*matrix(c(1,1,1,-1),2,2)
+z <- A%*%y
+d <- dist(t(y))
+d2 <- dist(t(z))
+mypar(1,1)
+plot(as.numeric(d),as.numeric(d2)) #as.numeric turns distances into long vector
+abline(0,1,col=2)
+```
+
+![Distance computed from original data and after rotation is the same.](figure/rotation_preserves_dist-1.png)
+
+We call this particular transformation a _rotation_ of `y`. 
+
+
+```r
+mypar(1,2)
+
+thelim <- c(-3,3)
+plot(y[1,],y[2,],xlab="Twin 1 (standardized height)",
+     ylab="Twin 2 (standardized height)",
+     xlim=thelim,ylim=thelim)
+points(y[1,1:2],y[2,1:2],col=2,pch=16)
+
+plot(z[1,],z[2,],xlim=thelim,ylim=thelim,xlab="Average height",ylab="Difference in height")
+points(z[1,1:2],z[2,1:2],col=2,pch=16)
+```
+
+![Twin height scatterplot (left) and after rotation (right).](figure/rotation2-1.png)
+
+The reason we applied this transformation in the first place was because we noticed that to compute the distances between points, we followed a direction along the diagonal in the original plot, which after the rotation falls on the horizontal, or the first dimension of `z`. So this rotation actually achieves what we originally wanted: we can preserve the distances between points with just one dimension. Let's remove the second dimension of `z` and recompute distances:
+
+
+
+```r
+d3 = dist(z[1,]) ##distance computed using just first dimension
+mypar(1,1)
+plot(as.numeric(d),as.numeric(d3)) 
+abline(0,1)
+```
+
+![Distance computed with just one dimension after rotation versus actual distance.](figure/approx_dist-1.png)
+
+The distance computed with just the one dimension provides a very good approximation to the actual distance and a very useful dimension reduction: from 2 dimensions to 1. This first dimension of the transformed data is actually the first _principal component_. This idea motivates the use of principal component analysis (PCA) and the singular value decomposition (SVD) to achieve dimension reduction more generally. 
+
+#### Important note on a difference to other explanations
+
+If you search the web for descriptions of PCA, you will notice a difference in notation to how we describe it here. This mainly stems from the fact that it is more common to have rows represent units. Hence, in the example shown here, $Y$ would be transposed to be an $N \times 2$ matrix. In statistics this is also the most common way to represent the data: individuals in the rows. However, for practical reasons, in genomics it is more common to represent units in the columns. For example, genes are rows and samples are columns. For this reason, in this book we explain PCA and all the math that goes with it in a slightly different way than it is usually done. As a result, many of the explanations you find for PCA start out with the sample covariance matrix usually denoted with
+$\mathbf{X}^\top\mathbf{X}$ and having cells representing covariance between two units. Yet for this to be the case, we need the rows of $\mathbf{X}$ to represents units. So in our notation above, you would have to compute, after scaling, $\mathbf{Y}\mathbf{Y}^\top$ instead.
+
+Basically, if you want our explanations to match others you have to transpose the matrices we show here.
+
+
+
+## Multi-Dimensional Scaling Plots
+
+We will motivate multi-dimensional scaling (MDS) plots with a gene expression example. To simplify the illustration we will only consider three tissues:
+
+
+```r
+library(rafalib)
+library(tissuesGeneExpression)
+```
+
+```
+## Error in library(tissuesGeneExpression): there is no package called 'tissuesGeneExpression'
+```
+
+```r
+data(tissuesGeneExpression)
+```
+
+```
+## Warning in data(tissuesGeneExpression): data set 'tissuesGeneExpression' not
+## found
+```
+
+```r
+colind <- tissue%in%c("kidney","colon","liver")
+```
+
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function '%in%': object 'tissue' not found
+```
+
+```r
+mat <- e[,colind]
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'e' not found
+```
+
+```r
+group <- factor(tissue[colind])
+```
+
+```
+## Error in factor(tissue[colind]): object 'tissue' not found
+```
+
+```r
+dim(mat)
+```
+
+```
+## Error in eval(expr, envir, enclos): object 'mat' not found
+```
+
+As an exploratory step, we wish to know if gene expression profiles stored in the columns of `mat` show more similarity between tissues than across tissues. Unfortunately, as mentioned above, we can't plot multi-dimensional points. In general, we prefer two-dimensional plots, but making plots for every pair of genes or every pair of samples is not practical. MDS plots become a powerful tool in this situation.
+
+#### The math behind MDS
+
+Now that we know about SVD and matrix algebra, understanding MDS is relatively straightforward. For illustrative purposes let's consider the SVD decomposition:
+
+$$\mathbf{Y} = \mathbf{UDV}^\top$$
+
+and assume that the sum of squares of the first two columns $\mathbf{U^\top Y=DV^\top}$ is much larger than the sum of squares of all other columns. This can be written as: 
+$d_1+ d_2 \gg d_3 + \dots + d_n$ with $d_i$ the i-th entry of the $\mathbf{D}$ matrix. When this happens, we then have:
+
+$$\mathbf{Y}\approx [\mathbf{U}_1 \mathbf{U}_2] 
+  \begin{pmatrix}
+    d_{1}&0\\
+    0&d_{2}\\
+  \end{pmatrix}
+  [\mathbf{V}_1 \mathbf{V}_2]^\top  
+$$
+
+This implies that column $i$ is approximately:
+
+$$
+\mathbf{Y}_i \approx
+[\mathbf{U}_1 \mathbf{U}_2] 
+  \begin{pmatrix}
+    d_{1}&0\\
+    0&d_{2}\\
+  \end{pmatrix}
+  \begin{pmatrix}
+    v_{i,1}\\
+    v_{i,2}\\
+     \end{pmatrix}
+    =
+    [\mathbf{U}_1 \mathbf{U}_2] 
+  \begin{pmatrix}
+    d_{1} v_{i,1}\\
+    d_{2} v_{i,2}
+ \end{pmatrix}
+$$
+
+If we define the following two dimensional vector...
+
+ $$\mathbf{Z}_i=\begin{pmatrix}
+    d_{1} v_{i,1}\\
+    d_{2} v_{i,2}
+ \end{pmatrix}
+ $$
+
+... then
+
+$$
+\begin{align*}
+(\mathbf{Y}_i - \mathbf{Y}_j)^\top(\mathbf{Y}_i - \mathbf{Y}_j) &\approx \left\{ [\mathbf{U}_1 \mathbf{U}_2] (\mathbf{Z}_i-\mathbf{Z}_j) \right\}^\top \left\{[\mathbf{U}_1 \mathbf{U}_2]  (\mathbf{Z}_i-\mathbf{Z}_j)\right\}\\
+&= (\mathbf{Z}_i-\mathbf{Z}_j)^\top [\mathbf{U}_1 \mathbf{U}_2]^\top [\mathbf{U}_1 \mathbf{U}_2] (\mathbf{Z}_i-\mathbf{Z}_j) \\
+&=(\mathbf{Z}_i-\mathbf{Z}_j)^\top(\mathbf{Z}_i-\mathbf{Z}_j)\\
+&=(Z_{i,1}-Z_{j,1})^2 + (Z_{i,2}-Z_{j,2})^2
+\end{align*}
+$$
+
+This derivation tells us that the distance between samples $i$ and $j$ is approximated by the distance between two dimensional points.
+
+$$ (\mathbf{Y}_i - \mathbf{Y}_j)^\top(\mathbf{Y}_i - \mathbf{Y}_j) \approx
+ (Z_{i,1}-Z_{j,1})^2 + (Z_{i,2}-Z_{j,2})^2
+$$
+
+Because $Z$ is a two dimensional vector, we can visualize the distances between each sample by plotting $\mathbf{Z}_1$ versus $\mathbf{Z}_2$ and visually inspect the distance between points. Here is this plot for our example dataset:
+
+
+```r
+s <- svd(mat-rowMeans(mat))
+```
+
+```
+## Error in as.matrix(x): object 'mat' not found
+```
+
+```r
+PC1 <- s$d[1]*s$v[,1]
+```
+
+```
+## Error in eval(expr, envir, enclos): object 's' not found
+```
+
+```r
+PC2 <- s$d[2]*s$v[,2]
+```
+
+```
+## Error in eval(expr, envir, enclos): object 's' not found
+```
+
+```r
+mypar(1,1)
+plot(PC1,PC2,pch=21,bg=as.numeric(group))
+```
+
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'PC1' not found
+```
+
+```r
+legend("bottomright",levels(group),col=seq(along=levels(group)),pch=15,cex=1.5)
+```
+
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'levels': object 'group' not found
+```
+
+Note that the points separate by tissue type as expected. Now the accuracy of the approximation above depends on the proportion of variance explained by the first two principal components. As we showed above, we can quickly see this by plotting the variance explained plot:
+
+
+```r
+plot(s$d^2/sum(s$d^2))
+```
+
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 's' not found
+```
+
+Although the first two PCs explain over 50% of the variability, there is plenty of information that this plot does not show. However, it is an incredibly useful plot for obtaining, via visualization, a general idea of the distance between points. Also, notice that we can plot other dimensions as well to search for patterns. Here are the 3rd and 4th PCs:
+
+
+```r
+PC3 <- s$d[3]*s$v[,3]
+```
+
+```
+## Error in eval(expr, envir, enclos): object 's' not found
+```
+
+```r
+PC4 <- s$d[4]*s$v[,4]
+```
+
+```
+## Error in eval(expr, envir, enclos): object 's' not found
+```
+
+```r
+mypar(1,1)
+plot(PC3,PC4,pch=21,bg=as.numeric(group))
+```
+
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'PC3' not found
+```
+
+```r
+legend("bottomright",levels(group),col=seq(along=levels(group)),pch=15,cex=1.5)
+```
+
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'levels': object 'group' not found
+```
+
+Note that the 4th PC shows a strong separation within the kidney samples. Later we will learn about batch effects, which might explain this finding. 
+
+
+
+#### `cmdscale`
+
+Although we used the `svd` functions above, there is a special function that is specifically made for MDS plots. It takes a distance object as an argument and then uses principal component analysis to provide the best approximation to this distance that can be obtained with $k$ dimensions. This function is more efficient because one does not have to perform the full SVD, which can be time consuming. By default it returns two dimensions, but we can change that through the parameter `k` which defaults to 2.
+
+
+```r
+d <- dist(t(mat))
+```
+
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 't': object 'mat' not found
+```
+
+```r
+mds <- cmdscale(d)
+mypar()
+plot(mds[,1],mds[,2],bg=as.numeric(group),pch=21,
+     xlab="First dimension",ylab="Second dimension")
+```
+
+```
+## Error in plot.xy(xy, type, ...): object 'group' not found
+```
+
+![MDS computed with cmdscale function.](figure/mds2-1.png)
+
+```r
+legend("bottomleft",levels(group),col=seq(along=levels(group)),pch=15)
+```
+
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'levels': object 'group' not found
+```
+
+These two approaches are equivalent up to an arbitrary sign change.
+
+
+```r
+mypar(1,2)
+for(i in 1:2){
+  plot(mds[,i],s$d[i]*s$v[,i],main=paste("PC",i))
+  b = ifelse( cor(mds[,i],s$v[,i]) > 0, 1, -1)
+  abline(0,b) ##b is 1 or -1 depending on the arbitrary sign "flip"
+}
+```
+
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'y' in selecting a method for function 'plot': object 's' not found
+```
+
+
+#### Why the arbitrary sign?
+The SVD is not unique because we can multiply any column of $\mathbf{V}$ by -1 as long as we multiply the sample column of $\mathbf{U}$ by -1. We can see this immediately by noting that:
+
+$$
+\mathbf{-1UD(-1)V}^\top = \mathbf{UDV}^\top
+$$
+
+
+#### Why we substract the mean
+
+In all calculations above we subtract the row means before we compute the singular value decomposition. If what we are trying to do is approximate the distance between columns, the distance between  $\mathbf{Y}_i$ and $\mathbf{Y}_j$ is the same as the distance between $\mathbf{Y}_i- \mathbf{\mu}$ and $\mathbf{Y}_j - \mathbf{\mu}$ since the $\mu$ cancels out when computing said distance:
+
+$$
+\left\{ ( \mathbf{Y}_i- \mathbf{\mu} ) - ( \mathbf{Y}_j - \mathbf{\mu} ) \right\}^\top \left\{ (\mathbf{Y}_i- \mathbf{\mu}) - (\mathbf{Y}_j - \mathbf{\mu} ) \right\} = \left\{  \mathbf{Y}_i-  \mathbf{Y}_j  \right\}^\top \left\{ \mathbf{Y}_i - \mathbf{Y}_j  \right\}
+$$
+
+Because removing the row averages reduces the total variation, it can only make the SVD approximation better.
+
+## Principal Component Analysis 
+
+We have already mentioned principal component analysis (PCA) above and noted its relation to the SVD. Here we provide further mathematical details. 
+
+#### Example: Twin heights
+
+We started the motivation for dimension reduction with a simulated example and showed a rotation that is very much related to PCA.
+
+
+![Twin heights scatter plot.](figure/simulate_twin_heights_again-1.png)
+
+Here we explain specifically what are the principal components (PCs).
+
+Let $\mathbf{Y}$ be $2 \times N$ matrix representing our data. The analogy is that we measure expression from 2 genes and each column is a sample. Suppose we are given the task of finding a  $2 \times 1$ vector $\mathbf{u}_1$ such that $\mathbf{u}_1^\top \mathbf{v}_1 = 1$
+and it maximizes $(\mathbf{u}_1^\top\mathbf{Y})^\top (\mathbf{u}_1^\top\mathbf{Y})$. This can be viewed as a projection of each sample or column of $\mathbf{Y}$ into the subspace spanned by $\mathbf{u}_1$. So we are looking for a transformation in which the coordinates show high variability.
+
+Let's try $\mathbf{u}=(1,0)^\top$. This projection simply gives us the height of twin 1 shown in orange below. The sum of squares is shown in the title.
+
+
+```r
+mypar(1,1)
+plot(t(Y), xlim=thelim, ylim=thelim,
+     main=paste("Sum of squares :",round(crossprod(Y[1,]),1)))
+abline(h=0)
+apply(Y,2,function(y) segments(y[1],0,y[1],y[2],lty=2))
+```
+
+```
+## NULL
+```
+
+```r
+points(Y[1,],rep(0,ncol(Y)),col=2,pch=16,cex=0.75)
+```
+
+<img src="figure/projection_not_PC1-1.png" title="plot of chunk projection_not_PC1" alt="plot of chunk projection_not_PC1"  />
+
+Can we find a direction with higher variability? How about:
+
+$\mathbf{u} =\begin{pmatrix}1\\-1\end{pmatrix}$ ? This does not satisfy $\mathbf{u}^\top\mathbf{u}= 1$ so let's instead try
+$\mathbf{u} =\begin{pmatrix}1/\sqrt{2}\\-1/\sqrt{2}\end{pmatrix}$ 
+
+
+```r
+u <- matrix(c(1,-1)/sqrt(2),ncol=1)
+w=t(u)%*%Y
+mypar(1,1)
+plot(t(Y),
+     main=paste("Sum of squares:",round(tcrossprod(w),1)),xlim=thelim,ylim=thelim)
+abline(h=0,lty=2)
+abline(v=0,lty=2)
+abline(0,-1,col=2)
+Z = u%*%w
+for(i in seq(along=w))
+  segments(Z[1,i],Z[2,i],Y[1,i],Y[2,i],lty=2)
+points(t(Z), col=2, pch=16, cex=0.5)
+```
+
+![Data projected onto space spanned by (1 0).](figure/projection_not_PC1_either-1.png)
+
+This relates to the difference between twins, which we know is small. The sum of squares confirms this.
+
+Finally, let's try:
+
+$\mathbf{u} =\begin{pmatrix}1/\sqrt{2}\\1/\sqrt{2}\end{pmatrix}$ 
+
+
+```r
+u <- matrix(c(1,1)/sqrt(2),ncol=1)
+w=t(u)%*%Y
+mypar()
+plot(t(Y), main=paste("Sum of squares:",round(tcrossprod(w),1)),
+     xlim=thelim, ylim=thelim)
+abline(h=0,lty=2)
+abline(v=0,lty=2)
+abline(0,1,col=2)
+points(u%*%w, col=2, pch=16, cex=1)
+Z = u%*%w
+for(i in seq(along=w))
+  segments(Z[1,i], Z[2,i], Y[1,i], Y[2,i], lty=2)
+points(t(Z),col=2,pch=16,cex=0.5)
+```
+
+![Data projected onto space spanned by first PC.](figure/PC1-1.png)
+
+This is a re-scaled average height, which has higher sum of squares. There is a mathematical procedure for determining which $\mathbf{v}$ maximizes the sum of squares and the SVD provides it for us.
+
+#### The principal components
+
+The orthogonal vector that maximizes the sum of squares:
+
+$$(\mathbf{u}_1^\top\mathbf{Y})^\top(\mathbf{u}_1^\top\mathbf{Y})$$ 
+
+$\mathbf{u}_1^\top\mathbf{Y}$ is referred to as the first PC. The _weights_ $\mathbf{u}$ used to obtain this PC are referred to as the _loadings_. Using  the language of rotations, it is also referred to as the _direction_ of the first PC, which are the new coordinates.
+
+To obtain the second PC, we repeat the exercise above, but for the residuals:
+
+$$\mathbf{r} = \mathbf{Y} - \mathbf{u}_1^\top \mathbf{Yv}_1 $$
+
+The second PC is the vector with the following properties: 
+
+$$ \mathbf{v}_2^\top \mathbf{v}_2=1$$
+
+$$ \mathbf{v}_2^\top \mathbf{v}_1=0$$ 
+
+and maximizes  $(\mathbf{rv}_2)^\top \mathbf{rv}_2$.
+
+When $Y$ is $N \times m$ we repeat to find 3rd, 4th, ..., m-th PCs.
+
+#### `prcomp`
+
+We have shown how to obtain PCs using the SVD. However, R has a function specifically designed to find the principal components. In this case, the data is centered by default. The following function: 
+
+
+```r
+pc <- prcomp( t(Y) )
+```
+
+produces the same results as the SVD up to arbitrary sign flips:
+
+
+```r
+s <- svd( Y - rowMeans(Y) )
+mypar(1,2)
+for(i in 1:nrow(Y) ){
+  plot(pc$x[,i], s$d[i]*s$v[,i])
+}
+```
+
+![Plot showing SVD and prcomp give same results.](figure/pca_svd-1.png)
+
+The loadings can be found this way:
+
+```r
+pc$rotation
+```
+
+```
+##            PC1        PC2
+## [1,] 0.7072304  0.7069831
+## [2,] 0.7069831 -0.7072304
+```
+which are equivalent (up to a sign flip) to:
+
+```r
+s$u
+```
+
+```
+##            [,1]       [,2]
+## [1,] -0.7072304 -0.7069831
+## [2,] -0.7069831  0.7072304
+```
+The equivalent of the variance explained is included in the: 
+
+```r
+pc$sdev
+```
+
+```
+## [1] 1.2542672 0.2141882
+```
+component.
+
+
+
+We take the transpose of `Y` because `prcomp` assumes the previously discussed ordering: units/samples in row and features in columns.
+
+
+
+
+
+

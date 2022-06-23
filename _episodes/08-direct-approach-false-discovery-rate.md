@@ -3,8 +3,8 @@
 # Instead, please edit 08-direct-approach-false-discovery-rate.md in _episodes_rmd/
 source: Rmd
 title: "Direct Approach to FDR and q-values"
-teaching: 0
-exercises: 0
+teaching: 20
+exercises: 40
 questions:
 - "How can you control false discovery rates when you don't have an a priori error rate?"
 objectives:
@@ -17,25 +17,43 @@ keypoints:
 
 ## Direct Approach to FDR and q-values (Advanced)
 
-Here we review the results described by John D. Storey in J. R. Statist. Soc. B (2002). One major distinction between Storey's approach and Benjamini and Hochberg's is that we are no longer going to set a $\alpha$ level a priori. Because in many high-throughput experiments we are interested in obtaining some list for validation, we can instead decide beforehand that we will consider all tests with p-values smaller than 0.01. We then want to attach an estimate of an error rate. Using this approach, we are guaranteed to have $R>0$. Note that in the FDR definition above we assigned $Q=0$ in the case that $R=V=0$. We were therefore computing: 
+Here we review the results described by John D. Storey in J. R. Statist. Soc. B 
+(2002). One major distinction between Storey's approach and Benjamini and 
+Hochberg's is that we are no longer going to set a $\alpha$ level a priori. 
+Because in many high-throughput experiments we are interested in obtaining some 
+list for validation, we can instead decide beforehand that we will consider all 
+tests with p-values smaller than 0.01. We then want to attach an estimate of an 
+error rate. Using this approach, we are guaranteed to have $R>0$. Note that in 
+the FDR definition above we assigned $Q=0$ in the case that $R=V=0$. We were 
+therefore computing: 
 
 $$
 \mbox{FDR} = E\left( \frac{V}{R} \mid R>0\right) \mbox{Pr}(R>0)
 $$
 
-In the approach proposed by Storey, we condition on having a non-empty list, which implies $R>0$, and we instead compute the _positive FDR_ 
+In the approach proposed by Storey, we condition on having a non-empty list, 
+which implies $R>0$, and we instead compute the _positive FDR_ 
 
 $$
 \mbox{pFDR} = E\left( \frac{V}{R} \mid R>0\right) 
 $$
 
-A second distinction is that while Benjamini and Hochberg's procedure controls under the worst case scenario, in which all null hypotheses are true ( $m=m_0$ ), Storey proposes that we actually try to estimate $m_0$ from the data. Because in high-throughput experiments we have so much data, this is certainly possible. The general idea is to pick a relatively high value p-value cut-off, call it $\lambda$, and assume that tests obtaining p-values > $\lambda$ are mostly from cases in which the null hypothesis holds. We can then estimate $\pi_0 = m_0/m$ as: 
+A second distinction is that while Benjamini and Hochberg's procedure controls 
+under the worst case scenario, in which all null hypotheses are true 
+( $m=m_0$ ), Storey proposes that we actually try to estimate $m_0$ from the 
+data. Because in high-throughput experiments we have so much data, this is 
+certainly possible. The general idea is to pick a relatively high value p-value 
+cut-off, call it $\lambda$, and assume that tests obtaining p-values > $\lambda$ 
+are mostly from cases in which the null hypothesis holds. We can then estimate 
+$\pi_0 = m_0/m$ as: 
 
 $$
 \hat{\pi}_0 = \frac{\#\left\{p_i > \lambda \right\} }{ (1-\lambda) m }
 $$
 
-There are more sophisticated procedures than this, but they follow the same general idea. Here is an example setting $\lambda=0.1$. Using the p-values computed above we have:
+There are more sophisticated procedures than this, but they follow the same 
+general idea. Here is an example setting $\lambda=0.1$. Using the p-values 
+computed above we have:
 
 
 ```r
@@ -103,11 +121,14 @@ print(pi0) ##this is close to the trye pi0=0.9
 ## Error in print(pi0): object 'pi0' not found
 ```
 
-With this estimate in place we can, for example, alter the Benjamini and Hochberg procedures to select the $k$ to be the largest value so that: 
+With this estimate in place we can, for example, alter the Benjamini and 
+Hochberg procedures to select the $k$ to be the largest value so that: 
 
 $$\hat{\pi}_0 p_{(i)} \leq \frac{i}{m}\alpha$$
 
-However, instead of doing this, we compute a _q-value_ for each test. If a feature resulted in a p-value of $p$, the q-value is the estimated pFDR for a list of all the features with a p-value at least as small as $p$.
+However, instead of doing this, we compute a _q-value_ for each test. If a 
+feature resulted in a p-value of $p$, the q-value is the estimated pFDR for a 
+list of all the features with a p-value at least as small as $p$.
 
 In R, this can be computed with the `qvalue` function in the `qvalue` package:
 
@@ -147,10 +168,13 @@ res$pi0
 ```
 ## Error in eval(expr, envir, enclos): object 'res' not found
 ```
-This function uses a more sophisticated approach at estimating $\pi_0$ than what is described above.
+This function uses a more sophisticated approach at estimating $\pi_0$ than what 
+is described above.
 
 #### Note on estimating $\pi_0$
-In our experience the estimation of $\pi_0$ can be unstable and adds a step of uncertainty to the data analysis pipeline. Although more conservative, the Benjamini-Hochberg procedure is computationally more stable. 
+In our experience the estimation of $\pi_0$ can be unstable and adds a step of 
+uncertainty to the data analysis pipeline. Although more conservative, the 
+Benjamini-Hochberg procedure is computationally more stable. 
 
 ## Exercises
 In the following exercises, we will define error controlling procedures for 
@@ -216,6 +240,50 @@ asking you to create a Monte Carlo simulation.
 > ## Exercise 5
 > Read the help file for qvalue and report the estimated proportion of genes for 
 > which the null hypothesis is true π0 = m0/m
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 6
+> The number of genes passing the q-value < 0.05 threshold is larger with the
+> q-value function than the p.adjust difference. Why is this the case? Make a 
+> plot of the ratio of these two estimates to help answer the question.
+> A) One of the two procedures is flawed.  
+> B) The two functions are estimating different things.  
+> C) The qvalue function estimates the proportion of genes for which the null 
+> hypothesis is true and provides a less conservative estimate.  
+> D) The qvalue function estimates the proportion of genes for which the null
+> hypothesis is true and provides a more conservative estimate.  
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 7
+> This exercise and the remaining ones are more advanced. Create a Monte Carlo
+> Simulation in which you simulate measurements from 8,793 genes for 24 samples, 
+> 12 cases and 12 controls. Then for 100 genes create a difference of 1 between 
+> cases and controls. You can use the code provided below. Run this experiment 
+> 1,000 times with a Monte Carlo simulation. For each instance, compute p-values 
+> using a t-test and keep track of the number of false positives and false 
+> negatives. Compute the false positive rate and false negative rates if we use 
+> Bonferroni, q-values from p.adjust, and q-values from qvalue function. Set the 
+> seed to 1 for all three simulations. What is the false positive rate for 
+> Bonferroni?  
+> `n <- 24`  
+> `m <- 8793`  
+> `mat <- matrix(rnorm(n*m),m,n)`  
+> `delta <- 1`  
+> `positives <- 500`  
+> `mat[1:positives,1:(n/2)] <- mat[1:positives,1:(n/2)]+delta`  
+> What are the false negative rates for Bonferroni?  
+> What are the false negative rates for p.adjust?  
+> What are the false negative rates for p.adjust?  
+> What are the false negative rates for qvalues?  
+> What are the false negative rates for qvalues?  
 > 
 > > ## Solution
 > > 
