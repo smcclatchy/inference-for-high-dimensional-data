@@ -60,6 +60,9 @@ Review the matrix below to understand sensitivity, specificity, and error rates.
 > {: .solution}
 {: .challenge}
 
+For more on this, see [<i>Classification evaluation</i>](https://www.nature.com/articles/nmeth.3945) by J. Lever, 
+M. Krzywinski and N. Altman in <i>Nature Methods</i> <b>13</b>, 603-604 (2016).
+
 ## Exercises
 With these exercises we hope to help you further grasp the concept that p-values 
 are random variables and start laying the ground work for the development of 
