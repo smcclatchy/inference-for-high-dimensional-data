@@ -293,455 +293,343 @@ k=sum(tmp$density)/sum(dd) ##a normalizing constant to assure same area in plot
 lines(sds, dd*k, type="l", col=2, lwd=2)
 ```
 
-## Dimension Reduction Motivation
-
-Visualizing data is one of the most, if not the most, important step in the analysis of high-throughput data. The right visualization method may reveal problems with the experimental data that can render the results from a standard analysis, although typically appropriate, completely useless. 
-
-We have shown methods for visualizing global properties of the columns or rows, but plots that reveal relationships between columns or between rows are more complicated due to the high dimensionality of data. For example, to compare each of the 189 samples to each other, we would have to create, for example, 17,766 MA-plots. Creating one single scatterplot of the data is impossible since points are very high dimensional. 
-
-We will describe powerful techniques for exploratory data analysis based on _dimension reduction_. The general idea is to reduce the dataset to have fewer dimensions, yet approximately preserve important properties, such as the distance between samples. If we are able to reduce down to, say, two dimensions, we can then easily make plots. The technique behind it all, the singular value decomposition (SVD), is also useful in other contexts. Before introducing the rather complicated mathematics behind the SVD, we will motivate the ideas behind it with a simple example.
-
-#### Example: Reducing two dimensions to one
-
-We consider an example with twin heights. Here we simulate 100 two dimensional points that represent the number of standard deviations each individual is from the mean height. Each point is a pair of twins:
-
-```{r simulate_twin_heights, fig.cap="Simulated twin pair heights.",echo=FALSE,message=FALSE}
-library(rafalib)
-library(MASS)
-
-set.seed(1)
-n <- 100
-y=t(mvrnorm(n,c(0,0), matrix(c(1,0.95,0.95,1),2,2)))
-
-mypar()
-plot(y[1,], y[2,], xlab="Twin 1 (standardized height)", 
-     ylab="Twin 2 (standardized height)", xlim=c(-3,3), ylim=c(-3,3))
-points(y[1,1:2], y[2,1:2], col=2, pch=16)
-```
-
-To help with the illustration, think of this as high-throughput gene expression data with the twin pairs representing the $N$ samples and the two heights representing gene expression from two genes. 
-
-We are interested in the distance between any two samples. We can compute this using `dist`. For example, here is the distance between the two orange points in the figure above:
-
-```{r}
-d=dist(t(y))
-as.matrix(d)[1,2]
-```
-
-What if making two dimensional plots was too complex and we were only able to make 1 dimensional plots. Can we, for example, reduce the data to a one dimensional matrix that preserves distances between points?
-
-If we look back at the plot, and visualize a line between any pair of points, the length of this line is the distance between the two points. These lines tend to go along the direction of the diagonal. We have seen before that we can "rotate" the plot so that the diagonal is in the x-axis by making a MA-plot instead:
-
-
-```{r rotation, fig.cap="Twin height scatterplot (left) and MA-plot (right).",fig.width=10.5,fig.height=5.25}
-z1 = (y[1,]+y[2,])/2 #the sum 
-z2 = (y[1,]-y[2,])   #the difference
-
-z = rbind( z1, z2) #matrix now same dimensions as y
-
-thelim <- c(-3,3)
-mypar(1,2)
-
-plot(y[1,],y[2,],xlab="Twin 1 (standardized height)",
-     ylab="Twin 2 (standardized height)",
-     xlim=thelim,ylim=thelim)
-points(y[1,1:2],y[2,1:2],col=2,pch=16)
-
-plot(z[1,],z[2,],xlim=thelim,ylim=thelim,xlab="Average height",ylab="Difference in height")
-points(z[1,1:2],z[2,1:2],col=2,pch=16)
-```
-
-
-Later, we will start using linear algebra to represent transformation of the data such as this. Here we can see that to get `z` we multiplied `y` by the matrix:
-
-$$
-A = \,
-\begin{pmatrix}
-1/2&1/2\\
-1&-1\\
-\end{pmatrix}
-\implies
-z = A y
-$$
-
-Remember that we can transform back by simply multiplying by $A^{-1}$ as follows:
-
-$$
-A^{-1} = \,
-\begin{pmatrix}
-1&1/2\\
-1&-1/2\\
-\end{pmatrix}
-\implies
-y = A^{-1} z
-$$
-
-#### Rotations 
-
-In the plot above, the distance between the two orange points remains roughly the same, relative to the distance between other points. This is true for all pairs of points. A simple re-scaling of the transformation we performed above will actually make the distances exactly the same. What we will do is multiply by a scalar so that the standard deviations of each point is preserved. If you think of the columns of `y` as independent random variables with standard deviation $\sigma$, then note that the standard deviations of $M$ and $A$ are:
-
-$$
-\mbox{sd}[ Z_1 ] = \mbox{sd}[ (Y_1 + Y_2) / 2 ] = \frac{1}{\sqrt{2}} \sigma \mbox{ and } \mbox{sd}[ Z_2] = \mbox{sd}[ Y_1 - Y_2  ] = {\sqrt{2}} \sigma 
-$$
-
-This implies that if we change the transformation above to:
-
-$$
-A = \frac{1}{\sqrt{2}}
-\begin{pmatrix}
-1&1\\
-1&-1\\
-\end{pmatrix}
-$$
-
-then the SD of the columns of $Y$ are the same as the variance of the columns $Z$. Also, notice that $A^{-1}A=I$. We call matrices with these properties _orthogonal_ and it guarantees the SD-preserving properties described above. The distances are now exactly preserved:
-
-```{r rotation_preserves_dist, fig.cap="Distance computed from original data and after rotation is the same."}
-A <- 1/sqrt(2)*matrix(c(1,1,1,-1),2,2)
-z <- A%*%y
-d <- dist(t(y))
-d2 <- dist(t(z))
-mypar(1,1)
-plot(as.numeric(d),as.numeric(d2)) #as.numeric turns distances into long vector
-abline(0,1,col=2)
-```
-
-We call this particular transformation a _rotation_ of `y`. 
-
-```{r rotation2, fig.cap="Twin height scatterplot (left) and after rotation (right).",fig.width=10.5,fig.height=5.25}
-mypar(1,2)
-
-thelim <- c(-3,3)
-plot(y[1,],y[2,],xlab="Twin 1 (standardized height)",
-     ylab="Twin 2 (standardized height)",
-     xlim=thelim,ylim=thelim)
-points(y[1,1:2],y[2,1:2],col=2,pch=16)
-
-plot(z[1,],z[2,],xlim=thelim,ylim=thelim,xlab="Average height",ylab="Difference in height")
-points(z[1,1:2],z[2,1:2],col=2,pch=16)
-```
-
-The reason we applied this transformation in the first place was because we noticed that to compute the distances between points, we followed a direction along the diagonal in the original plot, which after the rotation falls on the horizontal, or the first dimension of `z`. So this rotation actually achieves what we originally wanted: we can preserve the distances between points with just one dimension. Let's remove the second dimension of `z` and recompute distances:
-
-
-```{r approx_dist, fig.cap="Distance computed with just one dimension after rotation versus actual distance."}
-d3 = dist(z[1,]) ##distance computed using just first dimension
-mypar(1,1)
-plot(as.numeric(d),as.numeric(d3)) 
-abline(0,1)
-```
-
-The distance computed with just the one dimension provides a very good approximation to the actual distance and a very useful dimension reduction: from 2 dimensions to 1. This first dimension of the transformed data is actually the first _principal component_. This idea motivates the use of principal component analysis (PCA) and the singular value decomposition (SVD) to achieve dimension reduction more generally. 
-
-#### Important note on a difference to other explanations
-
-If you search the web for descriptions of PCA, you will notice a difference in notation to how we describe it here. This mainly stems from the fact that it is more common to have rows represent units. Hence, in the example shown here, $Y$ would be transposed to be an $N \times 2$ matrix. In statistics this is also the most common way to represent the data: individuals in the rows. However, for practical reasons, in genomics it is more common to represent units in the columns. For example, genes are rows and samples are columns. For this reason, in this book we explain PCA and all the math that goes with it in a slightly different way than it is usually done. As a result, many of the explanations you find for PCA start out with the sample covariance matrix usually denoted with
-$\mathbf{X}^\top\mathbf{X}$ and having cells representing covariance between two units. Yet for this to be the case, we need the rows of $\mathbf{X}$ to represents units. So in our notation above, you would have to compute, after scaling, $\mathbf{Y}\mathbf{Y}^\top$ instead.
-
-Basically, if you want our explanations to match others you have to transpose the matrices we show here.
-
-
-
-## Multi-Dimensional Scaling Plots
-
-We will motivate multi-dimensional scaling (MDS) plots with a gene expression example. To simplify the illustration we will only consider three tissues:
-
-```{r,message=FALSE}
-library(rafalib)
-library(tissuesGeneExpression)
-data(tissuesGeneExpression)
-colind <- tissue%in%c("kidney","colon","liver")
-mat <- e[,colind]
-group <- factor(tissue[colind])
-dim(mat)
-```
-
-As an exploratory step, we wish to know if gene expression profiles stored in the columns of `mat` show more similarity between tissues than across tissues. Unfortunately, as mentioned above, we can't plot multi-dimensional points. In general, we prefer two-dimensional plots, but making plots for every pair of genes or every pair of samples is not practical. MDS plots become a powerful tool in this situation.
-
-#### The math behind MDS
-
-Now that we know about SVD and matrix algebra, understanding MDS is relatively straightforward. For illustrative purposes let's consider the SVD decomposition:
-
-$$\mathbf{Y} = \mathbf{UDV}^\top$$
-
-and assume that the sum of squares of the first two columns $\mathbf{U^\top Y=DV^\top}$ is much larger than the sum of squares of all other columns. This can be written as: 
-$d_1+ d_2 \gg d_3 + \dots + d_n$ with $d_i$ the i-th entry of the $\mathbf{D}$ matrix. When this happens, we then have:
-
-$$\mathbf{Y}\approx [\mathbf{U}_1 \mathbf{U}_2] 
-  \begin{pmatrix}
-    d_{1}&0\\
-    0&d_{2}\\
-  \end{pmatrix}
-  [\mathbf{V}_1 \mathbf{V}_2]^\top  
-$$
-
-This implies that column $i$ is approximately:
-
-$$
-\mathbf{Y}_i \approx
-[\mathbf{U}_1 \mathbf{U}_2] 
-  \begin{pmatrix}
-    d_{1}&0\\
-    0&d_{2}\\
-  \end{pmatrix}
-  \begin{pmatrix}
-    v_{i,1}\\
-    v_{i,2}\\
-     \end{pmatrix}
-    =
-    [\mathbf{U}_1 \mathbf{U}_2] 
-  \begin{pmatrix}
-    d_{1} v_{i,1}\\
-    d_{2} v_{i,2}
- \end{pmatrix}
-$$
-
-If we define the following two dimensional vector...
-
- $$\mathbf{Z}_i=\begin{pmatrix}
-    d_{1} v_{i,1}\\
-    d_{2} v_{i,2}
- \end{pmatrix}
- $$
-
-... then
-
-$$
-\begin{align*}
-(\mathbf{Y}_i - \mathbf{Y}_j)^\top(\mathbf{Y}_i - \mathbf{Y}_j) &\approx \left\{ [\mathbf{U}_1 \mathbf{U}_2] (\mathbf{Z}_i-\mathbf{Z}_j) \right\}^\top \left\{[\mathbf{U}_1 \mathbf{U}_2]  (\mathbf{Z}_i-\mathbf{Z}_j)\right\}\\
-&= (\mathbf{Z}_i-\mathbf{Z}_j)^\top [\mathbf{U}_1 \mathbf{U}_2]^\top [\mathbf{U}_1 \mathbf{U}_2] (\mathbf{Z}_i-\mathbf{Z}_j) \\
-&=(\mathbf{Z}_i-\mathbf{Z}_j)^\top(\mathbf{Z}_i-\mathbf{Z}_j)\\
-&=(Z_{i,1}-Z_{j,1})^2 + (Z_{i,2}-Z_{j,2})^2
-\end{align*}
-$$
-
-This derivation tells us that the distance between samples $i$ and $j$ is approximated by the distance between two dimensional points.
-
-$$ (\mathbf{Y}_i - \mathbf{Y}_j)^\top(\mathbf{Y}_i - \mathbf{Y}_j) \approx
- (Z_{i,1}-Z_{j,1})^2 + (Z_{i,2}-Z_{j,2})^2
-$$
-
-Because $Z$ is a two dimensional vector, we can visualize the distances between each sample by plotting $\mathbf{Z}_1$ versus $\mathbf{Z}_2$ and visually inspect the distance between points. Here is this plot for our example dataset:
-
-```{r MDS, fig.cap="Multi-dimensional scaling (MDS) plot for tissue gene expression data."}
-s <- svd(mat-rowMeans(mat))
-PC1 <- s$d[1]*s$v[,1]
-PC2 <- s$d[2]*s$v[,2]
-mypar(1,1)
-plot(PC1,PC2,pch=21,bg=as.numeric(group))
-legend("bottomright",levels(group),col=seq(along=levels(group)),pch=15,cex=1.5)
-```
-
-Note that the points separate by tissue type as expected. Now the accuracy of the approximation above depends on the proportion of variance explained by the first two principal components. As we showed above, we can quickly see this by plotting the variance explained plot:
-
-```{r variance_explained, fig.cap="Variance explained for each principal component."}
-plot(s$d^2/sum(s$d^2))
-```
-
-Although the first two PCs explain over 50% of the variability, there is plenty of information that this plot does not show. However, it is an incredibly useful plot for obtaining, via visualization, a general idea of the distance between points. Also, notice that we can plot other dimensions as well to search for patterns. Here are the 3rd and 4th PCs:
-
-```{r PC_3_and_4, fig.cap="Third and fourth principal components."}
-PC3 <- s$d[3]*s$v[,3]
-PC4 <- s$d[4]*s$v[,4]
-mypar(1,1)
-plot(PC3,PC4,pch=21,bg=as.numeric(group))
-legend("bottomright",levels(group),col=seq(along=levels(group)),pch=15,cex=1.5)
-```
-
-Note that the 4th PC shows a strong separation within the kidney samples. Later we will learn about batch effects, which might explain this finding. 
-
-
-
-#### `cmdscale`
-
-Although we used the `svd` functions above, there is a special function that is specifically made for MDS plots. It takes a distance object as an argument and then uses principal component analysis to provide the best approximation to this distance that can be obtained with $k$ dimensions. This function is more efficient because one does not have to perform the full SVD, which can be time consuming. By default it returns two dimensions, but we can change that through the parameter `k` which defaults to 2.
-
-```{r mds2, fig.cap="MDS computed with cmdscale function."} 
-d <- dist(t(mat))
-mds <- cmdscale(d)
-mypar()
-plot(mds[,1],mds[,2],bg=as.numeric(group),pch=21,
-     xlab="First dimension",ylab="Second dimension")
-legend("bottomleft",levels(group),col=seq(along=levels(group)),pch=15)
-```
-
-These two approaches are equivalent up to an arbitrary sign change.
-
-```{r mds_same_as_svd, fig.cap="Comparison of MDS first two PCs to SVD first two PCs.",fig.width=10.5,fig.height=5.25}
-mypar(1,2)
-for(i in 1:2){
-  plot(mds[,i],s$d[i]*s$v[,i],main=paste("PC",i))
-  b = ifelse( cor(mds[,i],s$v[,i]) > 0, 1, -1)
-  abline(0,b) ##b is 1 or -1 depending on the arbitrary sign "flip"
-}
-```
-
-
-#### Why the arbitrary sign?
-The SVD is not unique because we can multiply any column of $\mathbf{V}$ by -1 as long as we multiply the sample column of $\mathbf{U}$ by -1. We can see this immediately by noting that:
-
-$$
-\mathbf{-1UD(-1)V}^\top = \mathbf{UDV}^\top
-$$
-
-
-#### Why we substract the mean
-
-In all calculations above we subtract the row means before we compute the singular value decomposition. If what we are trying to do is approximate the distance between columns, the distance between  $\mathbf{Y}_i$ and $\mathbf{Y}_j$ is the same as the distance between $\mathbf{Y}_i- \mathbf{\mu}$ and $\mathbf{Y}_j - \mathbf{\mu}$ since the $\mu$ cancels out when computing said distance:
-
-$$
-\left\{ ( \mathbf{Y}_i- \mathbf{\mu} ) - ( \mathbf{Y}_j - \mathbf{\mu} ) \right\}^\top \left\{ (\mathbf{Y}_i- \mathbf{\mu}) - (\mathbf{Y}_j - \mathbf{\mu} ) \right\} = \left\{  \mathbf{Y}_i-  \mathbf{Y}_j  \right\}^\top \left\{ \mathbf{Y}_i - \mathbf{Y}_j  \right\}
-$$
-
-Because removing the row averages reduces the total variation, it can only make the SVD approximation better.
-
-## Principal Component Analysis 
-
-We have already mentioned principal component analysis (PCA) above and noted its relation to the SVD. Here we provide further mathematical details. 
-
-#### Example: Twin heights
-
-We started the motivation for dimension reduction with a simulated example and showed a rotation that is very much related to PCA.
-
-
-```{r simulate_twin_heights_again,echo=FALSE,message=FALSE,fig.cap="Twin heights scatter plot."}
-library(rafalib)
-library(MASS)
-
-n <- 100
-
-set.seed(1)
-
-Y=t(mvrnorm(n,c(0,0), matrix(c(1,0.95,0.95,1),2,2)))
-
-mypar()
-
-thelim <- c(-3,3)
-plot(Y[1,], Y[2,], xlab="Twin 1 (standardized height)", 
-     ylab="Twin 2 (standardized height)", xlim=thelim, ylim=thelim)
-points(Y[1,1:2], Y[2,1:2], col=2, pch=16)
-```
-
-Here we explain specifically what are the principal components (PCs).
-
-Let $\mathbf{Y}$ be $2 \times N$ matrix representing our data. The analogy is that we measure expression from 2 genes and each column is a sample. Suppose we are given the task of finding a  $2 \times 1$ vector $\mathbf{u}_1$ such that $\mathbf{u}_1^\top \mathbf{v}_1 = 1$
-and it maximizes $(\mathbf{u}_1^\top\mathbf{Y})^\top (\mathbf{u}_1^\top\mathbf{Y})$. This can be viewed as a projection of each sample or column of $\mathbf{Y}$ into the subspace spanned by $\mathbf{u}_1$. So we are looking for a transformation in which the coordinates show high variability.
-
-Let's try $\mathbf{u}=(1,0)^\top$. This projection simply gives us the height of twin 1 shown in orange below. The sum of squares is shown in the title.
-
-```{r projection_not_PC1, fig.align="Data projected onto space spanned by (1 0).", fig.width=6.5,fig.height=6.5}
-mypar(1,1)
-plot(t(Y), xlim=thelim, ylim=thelim,
-     main=paste("Sum of squares :",round(crossprod(Y[1,]),1)))
-abline(h=0)
-apply(Y,2,function(y) segments(y[1],0,y[1],y[2],lty=2))
-points(Y[1,],rep(0,ncol(Y)),col=2,pch=16,cex=0.75)
-```
-
-Can we find a direction with higher variability? How about:
-
-$\mathbf{u} =\begin{pmatrix}1\\-1\end{pmatrix}$ ? This does not satisfy $\mathbf{u}^\top\mathbf{u}= 1$ so let's instead try
-$\mathbf{u} =\begin{pmatrix}1/\sqrt{2}\\-1/\sqrt{2}\end{pmatrix}$ 
-
-```{r projection_not_PC1_either, fig.cap="Data projected onto space spanned by (1 0).", fig.width=6.5,fig.height=6.5}
-u <- matrix(c(1,-1)/sqrt(2),ncol=1)
-w=t(u)%*%Y
-mypar(1,1)
-plot(t(Y),
-     main=paste("Sum of squares:",round(tcrossprod(w),1)),xlim=thelim,ylim=thelim)
-abline(h=0,lty=2)
-abline(v=0,lty=2)
-abline(0,-1,col=2)
-Z = u%*%w
-for(i in seq(along=w))
-  segments(Z[1,i],Z[2,i],Y[1,i],Y[2,i],lty=2)
-points(t(Z), col=2, pch=16, cex=0.5)
-```
-
-This relates to the difference between twins, which we know is small. The sum of squares confirms this.
-
-Finally, let's try:
-
-$\mathbf{u} =\begin{pmatrix}1/\sqrt{2}\\1/\sqrt{2}\end{pmatrix}$ 
-
-```{r PC1, fig.cap="Data projected onto space spanned by first PC.", fig.width=6.5,fig.height=6.5}
-u <- matrix(c(1,1)/sqrt(2),ncol=1)
-w=t(u)%*%Y
-mypar()
-plot(t(Y), main=paste("Sum of squares:",round(tcrossprod(w),1)),
-     xlim=thelim, ylim=thelim)
-abline(h=0,lty=2)
-abline(v=0,lty=2)
-abline(0,1,col=2)
-points(u%*%w, col=2, pch=16, cex=1)
-Z = u%*%w
-for(i in seq(along=w))
-  segments(Z[1,i], Z[2,i], Y[1,i], Y[2,i], lty=2)
-points(t(Z),col=2,pch=16,cex=0.5)
-```
-
-This is a re-scaled average height, which has higher sum of squares. There is a mathematical procedure for determining which $\mathbf{v}$ maximizes the sum of squares and the SVD provides it for us.
-
-#### The principal components
-
-The orthogonal vector that maximizes the sum of squares:
-
-$$(\mathbf{u}_1^\top\mathbf{Y})^\top(\mathbf{u}_1^\top\mathbf{Y})$$ 
-
-$\mathbf{u}_1^\top\mathbf{Y}$ is referred to as the first PC. The _weights_ $\mathbf{u}$ used to obtain this PC are referred to as the _loadings_. Using  the language of rotations, it is also referred to as the _direction_ of the first PC, which are the new coordinates.
-
-To obtain the second PC, we repeat the exercise above, but for the residuals:
-
-$$\mathbf{r} = \mathbf{Y} - \mathbf{u}_1^\top \mathbf{Yv}_1 $$
-
-The second PC is the vector with the following properties: 
-
-$$ \mathbf{v}_2^\top \mathbf{v}_2=1$$
-
-$$ \mathbf{v}_2^\top \mathbf{v}_1=0$$ 
-
-and maximizes  $(\mathbf{rv}_2)^\top \mathbf{rv}_2$.
-
-When $Y$ is $N \times m$ we repeat to find 3rd, 4th, ..., m-th PCs.
-
-#### `prcomp`
-
-We have shown how to obtain PCs using the SVD. However, R has a function specifically designed to find the principal components. In this case, the data is centered by default. The following function: 
-
-```{r}
-pc <- prcomp( t(Y) )
-```
-
-produces the same results as the SVD up to arbitrary sign flips:
-
-```{r pca_svd, fig.cap="Plot showing SVD and prcomp give same results.",fig.width=10.5,fig.height=5.25}
-s <- svd( Y - rowMeans(Y) )
-mypar(1,2)
-for(i in 1:nrow(Y) ){
-  plot(pc$x[,i], s$d[i]*s$v[,i])
-}
-```
-
-The loadings can be found this way:
-```{r}
-pc$rotation
-```
-which are equivalent (up to a sign flip) to:
-```{r}
-s$u
-```
-The equivalent of the variance explained is included in the: 
-```{r}
-pc$sdev
-```
-component.
-
-
-
-We take the transpose of `Y` because `prcomp` assumes the previously discussed ordering: units/samples in row and features in columns.
-
-
-
-
-
+## Exercises
+
+Suppose you have an urn with blue and red balls. If N balls are selected at 
+random with replacement (you put the ball back after you pick it), we can denote 
+the outcomes as random variables X1,…,XN that are 1 or 0. If the proportion of 
+red balls is p , then the distribution of each of these is Pr(Xi=1)=p.
+
+These are also called Bernoulli trials. These random variables are independent 
+because we replace the balls. Flipping a coin is an example of this with p=0.5.
+
+You can show that the mean and variance are p and p(1−p) respectively. The 
+binomial distribution gives us the distribution of the sum SN of these random variables. The probability that we see k red balls is given by:
+Pr(SN=k)=(Nk)pk(1−p)N−k
+
+In R, the function dbimom gives you this result. The function pbinom gives us 
+Pr(SN≤k).
+
+This equation has many uses in the life sciences. We give some examples below.
+
+> ## Exercise 1
+> The probability of conceiving a girl is 0.49. What is the probability that a 
+> family with 4 children has 2 girls and 2 boys (you can assume that the 
+> outcomes are independent)?
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 2
+> Use what you learned in Question 1 to answer these questions:
+> What is the probability that a family with 10 children has 6 girls and 4 boys 
+> (assume no twins)?
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 3
+> The genome has 3 billion bases. About 20% are C, 20% are G, 30% are T, and 30% are A. Suppose you take a random interval of 20 bases, what is the probability that the GC-content (proportion of Gs of Cs) is strictly above 0.5 in this interval?
+
+> ## Exercise 4
+> The probability of winning the lottery is 1 in 175,223,510. If 20,000,000 people buy a ticket, what is the probability that more than one person wins?
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 5
+> We can show that the binomial approximation is approximately normal when N
+is large and p is not too close to 0 or 1. This means that:
+> 
+> SN−E(SN)Var(SN)‾‾‾‾‾‾‾‾√
+> 
+> is approximately normal with mean 0 and SD 1. Using the results for sums of
+> independent random variables, we can show that E(SN)=Np and Var(Sn)=Np(1−p).
+> The genome has 3 billion bases. About 20% are C, 20% are G, 30% are T, and 30% 
+> are A. Suppose you take a random interval of 20 bases, what is the exact 
+> probability that the GC-content (proportion of Gs of Cs) is greater than 0.35 
+> and smaller or equal to 0.45 in this interval?
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 6
+> For the question above, what is the normal approximation to the probability?
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 7
+> Repeat exercise 4, but using an interval of 1000 bases. What is the difference 
+> (in absolute value) between the normal approximation and the exact 
+> distribution of the GC-content being greater than 0.35 and lesser or equal to 
+> 0.45?
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 8
+> The Cs in our genomes can be methylated or unmethylated. Suppose we have a 
+> large (millions) group of cells in which a proportion p of the Cs of interest 
+> are methylated. We break up the DNA of these cells and randomly select pieces 
+> and end up with N pieces that contain the C we care about. This means that the
+> probability of seeing k methylated Cs is binomial:
+> exact = dbinom(k,N,p)
+> We can approximate this with the normal distribution:
+> `a <- (k+0.5 - N*p)/sqrt(N*p*(1-p))`  
+> `b <- (k-0.5 - N*p)/sqrt(N*p*(1-p))`  
+> `approx = pnorm(a) - pnorm(b)`  
+> Compute the difference approx - exact for:  
+> `N <- c(5,10,50,100,500)`  
+> `p <- seq(0,1,0.25)`  
+> Compare the approximation and exact probability of the proportion of Cs being 
+> p, k=1,…,N−1 plotting the exact versus the approximation for each p and N
+> combination.
+> A) The normal approximation works well when p is close to 0.5 even for small 
+> N=10  
+> B) The normal approximation breaks down when p is close to 0 or 1 even for 
+> large N  
+> C) When N is 100 all approximations are spot on.  
+> D) When p=0.01 the approximation are terrible for N=5,10,30 and only OK for 
+> N=100
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 9
+> We saw in the previous question that when p is very small, the normal 
+> approximation breaks down. If N is very large, then we can use the Poisson
+> approximation.  
+> Earlier we computed 1 or more people winning the lottery when the probability 
+> of winning was 1 in 175,223,510 and 20,000,000 people bought a ticket. Using 
+> the binomial, we can compute the probability of exactly two people winning to 
+> be:
+> 
+> `N <- 20000000`
+> `p <- 1/175223510`
+> `dbinom(2,N,p)`
+> 
+> If we were to use the normal approximation, we would greatly underestimate 
+> this:
+> 
+> `a <- (2+0.5 - N*p)/sqrt(N*p*(1-p))`
+> `b <- (2-0.5 - N*p)/sqrt(N*p*(1-p))`
+> `pnorm(a) - pnorm(b)`
+> 
+> To use the Poisson approximation here, use the rate λ=Np
+> 
+> representing the number of people per 20,000,000 that win the lottery. Note 
+> how much better the approximation is:
+> 
+> `dpois(2,N*p)`
+> 
+> In this case. it is practically the same because N is very large and Np is not 
+> 0. These are the assumptions needed for the Poisson to work. What is the 
+> Poisson approximation for more than one person winning?
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 10
+> Now we are going to explore if palindromes are over-represented in some part 
+> of the HCMV genome. Make sure you have the latest version of the dagdata, load 
+> the palindrome data from the Human cytomegalovirus genome, and plot locations 
+> of palindromes on the genome for this virus:
+> 
+> `library(dagdata)`  
+> `data(hcmv)`  
+> `plot(locations,rep(1,length(locations)),ylab="",yaxt="n")`  
+> 
+> These palindromes are quite rare, and therefore p is very small. If we break 
+> the genome into bins of 4000 basepairs, then we have Np not so small and we 
+> might be able to use Poisson to model the number of palindromes in each bin:
+> 
+> `breaks=seq(0,4000*round(max(locations)/4000),4000)`
+> `tmp=cut(locations,breaks)`
+> `counts=as.numeric(table(tmp))`
+> 
+> So if our model is correct, counts should follow a Poisson distribution. The
+> distribution seems about right:
+> 
+> `hist(counts)`
+> 
+> So let X1,…,Xn be the random variables representing counts then 
+> Pr(Xi=k)=λk/k!exp(−λ) and to fully describe this distribution, we need to know
+> λ. For this we will use MLE. We can write the likelihood described in book in 
+> R. For example, for λ=4 we have:
+> 
+> `probs <- dpois(counts,4)`
+> `likelihood <- prod(probs)`
+> `likelihood`
+> 
+> Notice that it’s a tiny number. It is usually more convenient to compute 
+> log-likelihoods:
+> 
+> `logprobs <- dpois(counts,4,log=TRUE)`  
+> `loglikelihood <- sum(logprobs)`  
+> `loglikelihood`  
+> 
+> Now write a function that takes λ and the vector of counts as input and 
+> returns the log-likelihood. Compute this log-likelihood for lambdas =
+> `seq(0,15,len=300)` and make a plot. What value of lambdas maximizes the log-likelihood?
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 11
+> The point of collecting this dataset was to try to determine if there is a 
+> region of the genome that has a higher palindrome rate than expected. We can 
+> create a plot and see the counts per location:
+> 
+> `library(dagdata)
+> `data(hcmv)
+> `breaks=seq(0,4000*round(max(locations)/4000),4000)
+> `tmp=cut(locations,breaks)
+> `counts=as.numeric(table(tmp))
+> `binLocation=(breaks[-1]+breaks[-length(breaks)])/2
+> `plot(binLocation,counts,type="l",xlab=)
+> 
+> What is the center of the bin with the highest count?
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 12
+> What is the maximum count?
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 13
+> Once we have identified the location with the largest palindrome count, we 
+> want to know if we could see a value this big by chance. If X is a Poisson 
+> random variable with rate:
+> 
+> `lambda = mean(counts[ - which.max(counts) ])`  
+> 
+> What is the probability of seeing a count of 14 or more?
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 14
+> So we obtain a p-value smaller than 0.001 for a count of 14. Why is it 
+> problematic to report this p-value as strong evidence of a location that is
+> different?
+> 
+> A) Poisson in only an approximation.  
+> B) We selected the highest region out of 57 and need to adjust for multiple 
+> testing.  
+> C) λ is an estimate, a random variable, and we didn’t take into account its
+> variability.  
+> D) We don’t know the effect size.
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 15
+> Use the Bonferonni correction to determine the p-value cut-off that guarantees 
+> a FWER of 0.05. What is this p-value cutoff?
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 16
+> Create a qq-plot to see if our Poisson model is a good fit:
+> 
+> `ps <- (seq(along=counts) - 0.5)/length(counts)`  
+> `lambda <- mean( counts[ -which.max(counts)])`  
+> `poisq <- qpois(ps,lambda)`  
+> `plot(poisq,sort(counts))`  
+> `abline(0,1)`  
+> 
+> How would you characterize this qq-plot?
+> A) Poisson is a terrible approximation.  
+> B) Poisson is a very good approximation except for one point that we actually 
+> think is a region of interest.  
+> C) There are too many 1s in the data.  
+> D) A normal distribution provides a better approximation.  
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 17
+> Load the tissuesGeneExpression data library
+> 
+> `library(tissuesGeneExpression)`   
+> 
+> Now load this data and select the columns related to endometrium:
+> 
+> `library(genefilter)`   
+> `y = e[,which(tissue=="endometrium")]`   
+> 
+> This will give you a matrix y with 15 samples. Compute the across sample 
+> variance for the first three samples. Then make a qq-plot to see if the data 
+> follow a normal distribution. Which of the following is true?
+> A) With the exception of a handful of outliers, the data follow a normal
+> distribution.  
+> B) The variance does not follow a normal distribution, but taking the square 
+> root fixes this.  
+> C) The normal distribution is not usable here: the left tail is over estimated 
+> and the right tail is underestimated.  
+> D) The normal distribution fits the data almost perfectly.
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 18
+> Now fit an F-distribution with 14 degrees of freedom using the fitFDist 
+> function in the limma package:
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 19
+> Now create a qq-plot of the observed sample variances versus the 
+> F-distribution quantiles. Which of the following best describes the qq-plot?
+> A) The fitted F-distribution provides a perfect fit.  
+> B) If we exclude the lowest 0.1% of the data, the F-distribution provides a 
+> good fit.  
+> C) The normal distribution provided a better fit.  
+> D) If we exclude the highest 0.1% of the data, the F-distribution provides a 
+> good fit.
+> 
+> > ## Solution
+> > 
+> {: .solution}
+{: .challenge}
 
