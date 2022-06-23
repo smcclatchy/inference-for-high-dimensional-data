@@ -221,3 +221,19 @@ the p-value. When we have a multiple tests situation, we call it the Family Wise
 Error Rate (FWER) and it relates to a technique that is widely used: The 
 Bonferroni Correction.
 
+> ## Discussion
+> Refer to the confusion matrix below showing false positive and false negative
+> rates, along with specificity and sensitivity. Turn to a partner and explain 
+> the following:  
+> How is specificity related to Type I error and false positive rates?  
+> How is sensitivity related to Type II error and false negative rates?  
+> When you are finished discussing,  share with the group in the collaborative
+> document.
+>
+> > ## Solution
+> >
+> > 
+> {: .solution}
+{: .challenge}
+
+![confusion matrix showing error rates](../fig/confusion-matrix-2.png)

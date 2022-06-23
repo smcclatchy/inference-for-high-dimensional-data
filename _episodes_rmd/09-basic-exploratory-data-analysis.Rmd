@@ -4,13 +4,12 @@ title: "Basic EDA for high-throughput data"
 teaching: 0
 exercises: 0
 questions:
-- "How to ...?"
+- "What problems can different kinds of exploratory plots detect in high-throughput data?"
 objectives:
-- "Explain how to ...."
-- "Demonstrate how to ...."
+- "Create four different types of plots for high-throughput data."
+- "Explain how to use them to detect problems."
 keypoints:
-- "Edit the ..."
-- "Run ..."
+- ""
 ---
 
 ## Basic Exploratory Data Analysis 

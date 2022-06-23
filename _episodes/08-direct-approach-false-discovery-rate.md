@@ -6,12 +6,10 @@ title: "Direct Approach to FDR and q-values"
 teaching: 0
 exercises: 0
 questions:
-- "What are multiple comparisons?"
-- "Why are multiple comparisons a problem when drawing inferences from high-throughput data?"
-- "How we can we address the multiple comparisons problem?"
+- "How can you control false discovery rates when you don't have an a priori error rate?"
 objectives:
-- "Define multiple comparisons and the resulting problems."
-- "Describe two ways to deal with multiple comparisons."
+- "Apply the Storey correction to identify true negatives."
+- "Explain the difference between the Storey correction and Benjamini-Hochberg approach."
 keypoints:
 - "..."
 - "..."

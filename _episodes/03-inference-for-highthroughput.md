@@ -53,7 +53,7 @@ mean(control)
 ```
 
 ```
-## [1] 25.57167
+## [1] 24.66333
 ```
 
 ```r
@@ -62,7 +62,7 @@ mean(control)
 ```
 
 ```
-## [1] 23.94833
+## [1] 23.89167
 ```
 
 ```r
@@ -71,7 +71,7 @@ mean(control)
 ```
 
 ```
-## [1] 22.8325
+## [1] 24.20417
 ```
 
 Notice that the mean is a random variable. To explore p-values as random 
