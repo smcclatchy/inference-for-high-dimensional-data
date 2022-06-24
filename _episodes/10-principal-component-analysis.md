@@ -7,9 +7,10 @@ teaching: 0
 exercises: 0
 questions:
 - "How can researchers simplify or streamline EDA in high-throughput data sets?"
+- "What is principal component analysis (PCA) and when can it be used?"
 objectives:
-- "Explain how to ...."
-- "Demonstrate how to ...."
+- "Explain the purpose of dimension reduction."
+- "Perform a principal components analysis."
 keypoints:
 - "Edit the ..."
 - "Run ..."
@@ -40,10 +41,7 @@ We will describe powerful techniques for exploratory data analysis based on
 _dimension reduction_. The general idea is to reduce the dataset to have fewer 
 dimensions, yet approximately preserve important properties, such as the 
 distance between samples. If we are able to reduce down to, say, two dimensions, 
-we can then easily make plots. The technique behind it all, the singular value 
-decomposition (SVD), is also useful in other contexts. Before introducing the 
-rather complicated mathematics behind the SVD, we will motivate the ideas behind 
-it with a simple example.
+we can then easily make plots.
 
 #### Example: Reducing two dimensions to one
 
@@ -106,8 +104,21 @@ points(z[1,1:2],z[2,1:2],col=2,pch=16)
 
 ## Principal Component Analysis 
 
-We have already mentioned principal component analysis (PCA) above and noted its 
-relation to the SVD. Here we provide further mathematical details. 
+We have already mentioned principal component analysis (PCA) above. Here we 
+provide further mathematical details. 
+
+The animation below illustrates how principal components are calculated from
+data. You can imagine that the black line is a rod and each red dashed line is
+a spring. The energy of each spring is proportional to its squared length. The
+direction of the first principal component is the one that minimises the total
+energy of all of the springs. In the animation below, the springs pull the rod,
+finding the direction of the first principal component when they reach
+equilibrium. We then use the length of the springs from the rod as the first
+principal component.
+This is explained in more detail on [this Q&A website](https://stats.stackexchange.com/questions/2691/making-sense-of-principal-component-analysis-eigenvectors-eigenvalues).
+
+![](../fig/pendulum.gif)
+
 
 #### Example: Twin heights
 
