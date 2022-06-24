@@ -13,6 +13,7 @@ objectives:
 keypoints:
 - "..."
 - "..."
+math: yes
 ---
 
 ## False Discovery Rate 

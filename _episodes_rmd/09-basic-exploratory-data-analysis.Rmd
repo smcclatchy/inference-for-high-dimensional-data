@@ -10,6 +10,7 @@ objectives:
 - "Explain how to use them to detect problems."
 keypoints:
 - ""
+math: yes
 ---
 
 ## Basic Exploratory Data Analysis 
@@ -119,7 +120,6 @@ library(GSE5859)
 data(GSE5859) 
 ge <- exprs(e) ##ge for gene expression
 ge[,49] <- ge[,49]/log2(exp(1)) ##imitate error
-ge[,49]
 ```
 
 A quick look at a summary of the distribution using boxplots immediately 

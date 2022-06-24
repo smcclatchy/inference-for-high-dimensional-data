@@ -12,6 +12,7 @@ objectives:
 keypoints:
 - "..."
 - "..."
+math: yes
 ---
 
 ## Procedures

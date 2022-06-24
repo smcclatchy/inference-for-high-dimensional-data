@@ -12,6 +12,7 @@ objectives:
 keypoints:
 - "P-values are random variables."
 - "Very small p-values can occur by random chance when analyzing high-throughput data."
+math: yes
 ---
 
 ## Inference in Practice

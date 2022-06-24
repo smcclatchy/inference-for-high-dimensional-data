@@ -14,6 +14,7 @@ objectives:
 keypoints:
 - "..."
 - "..."
+math: yes
 ---
 
 ## Error Rates

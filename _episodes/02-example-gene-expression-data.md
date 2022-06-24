@@ -13,6 +13,7 @@ objectives:
 keypoints:
 - "High-throughput data measures thousands of features."
 - "High-throughput data is typically composed of multiple tables."
+math: yes
 ---
 
 # Explore a Gene Expression Dataset

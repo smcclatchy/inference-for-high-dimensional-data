@@ -10,6 +10,7 @@ objectives:
 keypoints:
 - "..."
 - "..."
+math: yes
 ---
 
 ## The Bonferroni Correction 

@@ -13,6 +13,7 @@ objectives:
 keypoints:
 - "Edit the ..."
 - "Run ..."
+math: yes
 ---
 
 ## Dimension Reduction Motivation

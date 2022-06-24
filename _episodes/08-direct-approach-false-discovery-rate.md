@@ -13,6 +13,7 @@ objectives:
 keypoints:
 - "..."
 - "..."
+math: yes
 ---
 
 ## Direct Approach to FDR and q-values (Advanced)

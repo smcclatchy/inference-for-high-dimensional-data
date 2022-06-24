@@ -14,6 +14,7 @@ objectives:
 keypoints:
 - "P-values are random variables."
 - "Very small p-values can occur by random chance when analyzing high-throughput data."
+math: yes
 ---
 
 ## Inference in Practice
@@ -53,7 +54,7 @@ mean(control)
 ```
 
 ```
-## [1] 23.76917
+## [1] 23.42333
 ```
 
 ```r
@@ -62,7 +63,7 @@ mean(control)
 ```
 
 ```
-## [1] 24.09583
+## [1] 22.71417
 ```
 
 ```r
@@ -71,7 +72,7 @@ mean(control)
 ```
 
 ```
-## [1] 23.95667
+## [1] 21.65833
 ```
 
 Notice that the mean is a random variable. To explore p-values as random 

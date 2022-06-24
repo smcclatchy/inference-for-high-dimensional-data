@@ -13,6 +13,7 @@ objectives:
 keypoints:
 - "Edit the ..."
 - "Run ..."
+math: yes
 ---
 
 ##  Discovering Batch Effects with EDA 
