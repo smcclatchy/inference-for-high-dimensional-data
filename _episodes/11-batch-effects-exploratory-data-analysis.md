@@ -104,15 +104,8 @@ We have shown how we can compute principal components using:
 
 
 ```r
-s <- svd(y)
-dim(s$v)
+pc <- prcomp(y)
 ```
-
-```
-## [1] 207 207
-```
-
-We can also use `prcomp` which creates an object with just the PCs and also demeans by default. They provide practically the same principal components so we continue the analysis with the object $s$.
 
 #### Variance explained
 
@@ -135,8 +128,20 @@ One simple exploratory plot we make to determine how many principal components w
 
 ```r
 y0 <- matrix( rnorm( nrow(y)*ncol(y) ) , nrow(y), ncol(y) )
-d0 <- svd(y0)$d
+d0 <- prcomp(y0)$d
 plot(d0^2/sum(d0^2),ylim=c(0,.25))
+```
+
+```
+## Warning in min(x): no non-missing arguments to min; returning Inf
+```
+
+```
+## Warning in max(x): no non-missing arguments to max; returning -Inf
+```
+
+```
+## Error in plot.window(...): need finite 'xlim' values
 ```
 
 ![Variance explained plot for simulated independent data.](figure/null_variance_explained-1.png)
@@ -145,7 +150,27 @@ Instead we see this:
 
 
 ```r
-plot(s$d^2/sum(s$d^2))
+plot(pc$d^2/sum(pc$d^2))
+```
+
+```
+## Warning in min(x): no non-missing arguments to min; returning Inf
+```
+
+```
+## Warning in max(x): no non-missing arguments to max; returning -Inf
+```
+
+```
+## Warning in min(x): no non-missing arguments to min; returning Inf
+```
+
+```
+## Warning in max(x): no non-missing arguments to max; returning -Inf
+```
+
+```
+## Error in plot.window(...): need finite 'xlim' values
 ```
 
 ![Variance explained plot for gene expression data.](figure/variance_explained-1.png)
@@ -162,12 +187,21 @@ between variables of interest and PCs is to use color to denote these variables.
 ```r
 cols = as.numeric(eth)
 mypar()
-plot(s$v[,1],s$v[,2],col=cols,pch=16,
+plot(prcomp$v[,1],prcomp$v[,2],col=cols,pch=16,
      xlab="PC1",ylab="PC2")
+```
+
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object of type 'closure' is not subsettable
+```
+
+```r
 legend("bottomleft",levels(eth),col=seq(along=levels(eth)),pch=16)
 ```
 
-![First two PCs for gene expression data with color representing ethnicity.](figure/mds_plot-1.png)
+```
+## Error in strwidth(legend, units = "user", cex = cex, font = text.font): plot.new has not been called yet
+```
 
 There is a very clear association between the first PC and ethnicity. However, we also see that for the orange points there are sub-clusters. We know from previous analyses that ethnicity and preprocessing date are correlated:
 
@@ -194,12 +228,21 @@ So explore the possibility of date being a major source of variability by lookin
 ```r
 cols = as.numeric(year)
 mypar()
-plot(s$v[,1],s$v[,2],col=cols,pch=16,
+plot(prcomp$v[,1],prcomp$v[,2],col=cols,pch=16,
      xlab="PC1",ylab="PC2")
+```
+
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object of type 'closure' is not subsettable
+```
+
+```r
 legend("bottomleft",levels(year),col=seq(along=levels(year)),pch=16)
 ```
 
-![First two PCs for gene expression data with color representing processing year.](figure/mds_plot2-1.png)
+```
+## Error in strwidth(legend, units = "user", cex = cex, font = text.font): plot.new has not been called yet
+```
 
 We see that year is also very correlated with the first PC. So which variable is driving this? Given the high level of confounding, it is not easy to parse out. Nonetheless, in the assessment questions and below, we provide some further exploratory approaches.
 
@@ -225,27 +268,38 @@ Because there are so many months (21), it becomes complicated to use color. Inst
 variable <- as.numeric(month)
 mypar(2,2)
 for(i in 1:4){
-  boxplot(split(s$v[,i],variable),las=2,range=0)
-  stripchart(split(s$v[,i],variable),add=TRUE,vertical=TRUE,pch=1,cex=.5,col=1)
+  boxplot(split(prcomp$v[,i],variable),las=2,range=0)
+  stripchart(split(prcomp$v[,i],variable),add=TRUE,vertical=TRUE,pch=1,cex=.5,col=1)
   }
 ```
 
-![Boxplot of first four PCs stratified by month.](figure/pc_boxplots-1.png)
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'boxplot': error in evaluating the argument 'x' in selecting a method for function 'split': object of type 'closure' is not subsettable
+```
 
 Here we see that month has a very strong correlation with the first PC, even when stratifying by ethnic group as well as some of the others. Remember that samples processed between 2002-2004 are 
 all from the same ethnic group. In cases such as these, in which we have many samples, we can use an analysis of variance to see which PCs correlate with month:
 
 
 ```r
-corr <- sapply(1:ncol(s$v),function(i){
-  fit <- lm(s$v[,i]~as.factor(month))
+corr <- sapply(1:ncol(prcomp$v),function(i){
+  fit <- lm(prcomp$v[,i]~as.factor(month))
   return( summary(fit)$adj.r.squared  )
   })
+```
+
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'X' in selecting a method for function 'sapply': error in evaluating the argument 'x' in selecting a method for function 'ncol': object of type 'closure' is not subsettable
+```
+
+```r
 mypar()
 plot(seq(along=corr), corr, xlab="PC")
 ```
 
-![Adjusted R-squared after fitting a model with each month as a factor to each PC.](figure/month_PC_corr-1.png)
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'corr' not found
+```
 
 We see a very strong correlation with the first PC and relatively strong correlations for the first 20 or so PCs.
 We can also compute F-statistics comparing within month to across month variability:
@@ -253,17 +307,33 @@ We can also compute F-statistics comparing within month to across month variabil
 
 ```r
 Fstats<- sapply(1:ncol(s$v),function(i){
-   fit <- lm(s$v[,i]~as.factor(month))
+   fit <- lm(prcomp$v[,i]~as.factor(month))
    Fstat <- summary(aov(fit))[[1]][1,4]
    return(Fstat)
   })
+```
+
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'X' in selecting a method for function 'sapply': error in evaluating the argument 'x' in selecting a method for function 'ncol': object 's' not found
+```
+
+```r
 mypar()
 plot(seq(along=Fstats),sqrt(Fstats))
+```
+
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'Fstats' not found
+```
+
+```r
 p <- length(unique(month))
 abline(h=sqrt(qf(0.995,p-1,ncol(s$v)-1)))
 ```
 
-![Square root of F-statistics from an analysis of variance to explain PCs with month.](figure/fstat_month_PC-1.png)
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'ncol': object 's' not found
+```
 
 We have seen how PCA combined with EDA can be a powerful technique to detect and understand batches. 
 In a later section, we will see how we can use the PCs as estimates in factor analysis to improve model estimates.
