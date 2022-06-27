@@ -43,36 +43,36 @@ and watch how the average changes.
 
 
 ```r
-population <- read.csv(file = "../data/femaleControlsPopulation.csv")
+population <- unlist(read.csv(file = "../data/femaleControlsPopulation.csv"))
 ```
 
 
 
 ```r
-control <- sample(population$Bodyweight, 12)
+control <- sample(population, 12)
 mean(control)
 ```
 
 ```
-## [1] 22.49333
+## [1] 23.37083
 ```
 
 ```r
-control <- sample(population$Bodyweight, 12)
+control <- sample(population, 12)
 mean(control)
 ```
 
 ```
-## [1] 24.485
+## [1] 23.45
 ```
 
 ```r
-control <- sample(population$Bodyweight, 12)
+control <- sample(population, 12)
 mean(control)
 ```
 
 ```
-## [1] 22.825
+## [1] 24.38
 ```
 
 Notice that the mean is a random variable. To explore p-values as random 
@@ -282,19 +282,12 @@ pvals <- replicate(1000, { # recreate p-values as from above
   t.test(treatment,control)$p.val
   }
   )
-```
-
-```
-## Error in sample.int(length(x), size, replace, prob): cannot take a sample larger than the population when 'replace = FALSE'
-```
-
-```r
 head(pvals)
 ```
 
 ```
-##  1007_s_at    1053_at     117_at     121_at  1255_g_at    1294_at 
-## 0.04553344 0.03370683 0.13604026 0.59413846 0.96849102 0.08489586
+## [1] 0.3191557945 0.2683723148 0.0003358878 0.0312671917 0.1410320545
+## [6] 0.9478677657
 ```
 
 
@@ -307,8 +300,8 @@ hist(pvals)
 >
 > > ## Solution
 > > `sum(pvals < 0.05)/length(pvals)`  
-> > 1383 of the p-values are less than 0.05 of a total  
-> > 8793 p-values
+> > 50 of the p-values are less than 0.05 of a total  
+> > 1000 p-values
 > {: .solution}
 {: .challenge}
 
@@ -316,8 +309,8 @@ hist(pvals)
 >
 > > ## Solution
 > > `sum(pvals < 0.01)/length(pvals)`  
-> > 417 of the p-values are less than 0.01 of a total  
-> > 8793 p-values
+> > 11 of the p-values are less than 0.01 of a total  
+> > 1000 p-values
 > {: .solution}
 {: .challenge}
 
@@ -341,13 +334,13 @@ hist(pvals)
 >  ## 	Welch Two Sample t-test
 >  ## 
 >  ## data:  cases and controls
->  ## t = -0.27858, df = 16.469, p-value = 0.784
+>  ## t = -1.1638, df = 15.913, p-value = 0.2617
 >  ## alternative hypothesis: true difference in means is not equal to 0
 >  ## 95 percent confidence interval:
->  ##  -2.004434  1.537865
+>  ##  -2.6864853  0.7827979
 >  ## sample estimates:
 >  ## mean of x mean of y 
->  ##  30.26441  30.49769
+>  ##  29.43712  30.38896
 >  ```
 >
 >  Now run a Monte Carlo simulation imitating the results for the experiment for 

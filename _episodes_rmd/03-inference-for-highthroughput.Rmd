@@ -40,16 +40,16 @@ To illustrate a random variable, sample 12 mice from the population three times
 and watch how the average changes.
 
 ```{r load_data}
-population <- read.csv(file = "../data/femaleControlsPopulation.csv")
+population <- unlist(read.csv(file = "../data/femaleControlsPopulation.csv"))
 ```
 
 
 ```{r sample_means}
-control <- sample(population$Bodyweight, 12)
+control <- sample(population, 12)
 mean(control)
-control <- sample(population$Bodyweight, 12)
+control <- sample(population, 12)
 mean(control)
-control <- sample(population$Bodyweight, 12)
+control <- sample(population, 12)
 mean(control)
 ```
 
