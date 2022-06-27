@@ -28,7 +28,7 @@ hypotheses with p-value <0.01". For illustrative purposes we will assume all the
 tests are independent (in the case of testing diets this is a safe assumption; 
 in the case of genes it is not so safe since some groups of genes act together). 
 Let $p_1,\dots,p_{10000}$ be the the p-values we get from each test. These are 
-independent random variables so: 
+independent random variables so:  
 
 $$
 \begin{align*}
@@ -73,11 +73,11 @@ correction is more general in that it controls FWER even if the tests are not
 independent. 
 As with Sidak's procedure we start by noting that: 
 
-$$FWER = \mbox{Pr}(V>0) \leq \mbox{Pr}(V>0 \mid \mbox{all nulls are true})$$
+$FWER = \mbox{Pr}(V>0) \leq \mbox{Pr}(V>0 \mid \mbox{all nulls are true})$
 
 or using the notation from the table above:
 
-$$\mbox{Pr}(V>0) \leq \mbox{Pr}(V>0 \mid m_1=0)$$
+$\mbox{Pr}(V>0) \leq \mbox{Pr}(V>0 \mid m_1=0)$
 
 The Bonferroni procedure sets $k=\alpha/m$ since we can show that:
 
@@ -92,9 +92,13 @@ $$
 Controlling the FWER at 0.05 is a very conservative approach. Using the p-values computed in the previous section...
 
 ```{r}
-population <- read.csv(file = "../data/femaleControlsPopulation.csv")
+population <- unlist(read.csv(file = "../data/femaleControlsPopulation.csv"))
 m <- 10000
 N <- 12
+p0 <- 0.90 ##10% of diets work, 90% don't
+m0 <- m * p0
+m1 <- m - m0
+nullHypothesis <- c( rep(TRUE,m0), rep(FALSE,m1)) 
 delta <- 3
 set.seed(1)
 pvals <- sapply(1:m, function(i){
@@ -193,7 +197,7 @@ the null hypothesis for genes that”.
 {: .challenge}
 
 > ## Exercise 4
-> Using the same seed, repeat exercise 5, but for Sidek’s cutoff.
+> Using the same seed, repeat exercise 5, but for Sidak’s cutoff.
 > 
 > > ## Solution
 > > 

@@ -4,9 +4,12 @@ title: "Procedures for Multiple Comparisons"
 teaching: 10
 exercises: 20
 questions:
-- "What are multiple comparisons?"
+- "Why are p-values not a useful quantity when dealing with high-dimensional data?"
+- "What are error rates and how are they calculated?"
 objectives:
 - "Define multiple comparisons and the resulting problems."
+- "Explain terms associated with error rates."
+- "Explain the relationship between error rates and multiple comparisons."
 keypoints:
 - "..."
 - "..."
