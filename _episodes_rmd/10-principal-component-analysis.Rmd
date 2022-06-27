@@ -8,6 +8,7 @@ questions:
 - "What is principal component analysis (PCA) and when can it be used?"
 objectives:
 - "Explain the purpose of dimension reduction."
+- "Define a principal component."
 - "Perform a principal components analysis."
 keypoints:
 - "Edit the ..."
@@ -61,6 +62,7 @@ plot(y[1,], y[2,], xlab="Twin 1 (standardized height)",
 points(y[1,1:2], y[2,1:2], col=2, pch=16)
 ```
 
+![](../fig/simulate_twin_heights.png)
 To help with the illustration, think of this as high-throughput gene expression 
 data with the twin pairs representing the $N$ samples and the two heights 
 representing gene expression from two genes. 
@@ -102,6 +104,7 @@ points(y[1,1:2],y[2,1:2],col=2,pch=16)
 plot(z[1,],z[2,],xlim=thelim,ylim=thelim,xlab="Average height",ylab="Difference in height")
 points(z[1,1:2],z[2,1:2],col=2,pch=16)
 ```
+![](../fig/simulate_twin_heights_again.png)
 
 
 ## Principal Component Analysis 

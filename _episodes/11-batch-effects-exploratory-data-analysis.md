@@ -16,9 +16,32 @@ keypoints:
 math: yes
 ---
 
+# Batch Effects
+
+One often overlooked complication with high-throughput studies is batch effects, 
+which occur because measurements are affected by laboratory conditions, reagent 
+lots, and personnel differences. For example, batch effects may occur if two 
+different lots of reagents or instruments were used, if one subset of an 
+experiment was run on Monday and another subset on Tuesday, or if two 
+technicians were responsible for different subsets of the experiments. This 
+becomes a major problem when batch effects are confounded with an outcome of 
+interest and lead to incorrect conclusions. In this chapter, we describe batch 
+effects in detail: how to detect, interpret, model, and adjust for batch effects.
+
+Batch effects are the biggest challenge faced by genomics research, especially 
+in the context of precision medicine. The presence of batch effects in one form 
+or another has been reported among most, if not all, high-throughput 
+technologies 
+[Leek et al. (2010) Nature Reviews Genetics 11, 733-739](https://www.nature.com/articles/nrg2825).
+
 ##  Discovering Batch Effects with EDA 
 
-Now that we understand PCA, we are going to demonstrate how we use it in practice with an emphasis on exploratory data analysis. To illustrate, we will go through an actual dataset that has not been sanitized for teaching purposes. We start with the raw data as it was provided in the public repository. The only step we did for you is to preprocess these data and create an R package with a preformed Bioconductor object.
+Now that we understand PCA, we are going to demonstrate how we use it in 
+practice with an emphasis on exploratory data analysis. To illustrate, we will 
+go through an actual dataset that has not been sanitized for teaching purposes. 
+We start with the raw data as it was provided in the public repository. The only 
+step we did for you is to preprocess these data and create an R package with a 
+preformed Bioconductor object.
 
 ## Gene Expression Data
 
@@ -83,7 +106,9 @@ map2chr <- mapIds(Homo.sapiens, keys=map2gene,
 chryexp <- colMeans(y[which(unlist(map2chr)=="chrY"),])
 ```
 
-If we create a histogram of the median gene expression values on chromosome Y, we clearly see two modes which must be females and males:
+If we create a histogram of the median gene expression values on chromosome Y, 
+we clearly see two modes which must be females and males:
+
 
 ```r
 mypar()
@@ -91,6 +116,7 @@ hist(chryexp)
 ```
 
 ![Histogram of median expression y-axis. We can see females and males.](figure/predict_sex-1.png)
+[Histogram of median expression y-axis. We can see females and males.](..fig/predict_sex.png)
 
 So we can predict sex this way:
 
@@ -109,7 +135,8 @@ pc <- prcomp(y)
 
 #### Variance explained
 
-A first step in determining how much sample correlation induced _structure_ there is in the data. 
+A first step in determining how much sample correlation induced _structure_ 
+there is in the data. 
 
 
 ```r
@@ -121,9 +148,17 @@ image(1:n,1:n,cor(y),xlab="samples",ylab="samples",col=cols,zlim=c(-1,1))
 
 ![Image of correlations. Cell (i,j)  represents correlation between samples i and j. Red is high, white is 0 and red is negative.](figure/correlations-1.png)
 
-Here we are using the term _structure_ to refer to the deviation from what one would see if the samples were in fact independent from each other. The plot above clearly shows groups of samples that are more correlated between themselves than to others.
+[Image of correlations. Cell (i,j)  represents correlation between samples i and j. Red is high, white is 0 and red is negative.](../fig/correlations.png)
 
-One simple exploratory plot we make to determine how many principal components we need to describe this _structure_ is the variance-explained plot. This is what the variance explained for the PCs would look like if data were independent :
+Here we are using the term _structure_ to refer to the deviation from what one 
+would see if the samples were in fact independent from each other. The plot 
+above clearly shows groups of samples that are more correlated between 
+themselves than to others.
+
+One simple exploratory plot we make to determine how many principal components 
+we need to describe this _structure_ is the variance-explained plot. This is 
+what the variance explained for the PCs would look like if data were 
+independent:
 
 
 ```r

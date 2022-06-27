@@ -10,6 +10,7 @@ questions:
 - "What is principal component analysis (PCA) and when can it be used?"
 objectives:
 - "Explain the purpose of dimension reduction."
+- "Define a principal component."
 - "Perform a principal components analysis."
 keypoints:
 - "Edit the ..."
@@ -51,6 +52,7 @@ the mean height. Each point is a pair of twins:
 
 ![Simulated twin pair heights.](figure/simulate_twin_heights-1.png)
 
+![](../fig/simulate_twin_heights.png)
 To help with the illustration, think of this as high-throughput gene expression 
 data with the twin pairs representing the $N$ samples and the two heights 
 representing gene expression from two genes. 
@@ -100,6 +102,7 @@ points(z[1,1:2],z[2,1:2],col=2,pch=16)
 ```
 
 ![Twin height scatterplot (left) and MA-plot (right).](figure/rotation-1.png)
+![](../fig/simulate_twin_heights_again.png)
 
 
 ## Principal Component Analysis 
