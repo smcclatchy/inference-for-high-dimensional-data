@@ -5,6 +5,7 @@ teaching: 20
 exercises: 10
 questions:
 - "Why are type I and II error rates a problem in inferential statistics?"
+- "What is Family Wise Error Rate, and why is it a concern in high throughput data?"
 objectives:
 - "Calculate error rates in simulated data."
 - "Calculate the number of false positives that occur in a given data set."

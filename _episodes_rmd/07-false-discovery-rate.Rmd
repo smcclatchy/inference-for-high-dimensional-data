@@ -4,6 +4,7 @@ title: "False Discovery Rate"
 teaching: 30
 exercises: 10
 questions:
+- "What are False Discovery Rates, and when are they a concern in data analysis?"
 - "How can you control false discovery rates?"
 objectives:
 - "Calculate the false discovery rate."
