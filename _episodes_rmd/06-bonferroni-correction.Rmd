@@ -8,8 +8,8 @@ questions:
 objectives:
 - "Apply the Bonferroni procedure to identify the true positives."
 keypoints:
-- "..."
-- "..."
+- "The Bonferroni technique controls FWER by dividing a predetermined alpha rate (e.g. alpha = .05) by the number of inferential tests performed."
+- "The Bonferroni correction is very strict and conservative."
 math: yes
 ---
 

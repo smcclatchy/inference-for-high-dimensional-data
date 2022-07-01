@@ -11,8 +11,8 @@ objectives:
 - "Calculate the number of false positives that occur in a given data set."
 - "Define family wise error rates."
 keypoints:
-- "..."
-- "..."
+- "Type 1 and Type II error are complementary concerns in data analysis. The reason we don’t have extremely strict cutoffs for alpha is because we don’t want to miss finding true positive results."
+- "It is possible to calculate the probability of finding at least one false positive result when conducting multiple inferential tests. This is the Family Wise Error Rate."
 math: yes
 ---
 

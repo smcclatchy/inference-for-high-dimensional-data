@@ -11,8 +11,9 @@ objectives:
 - "Explain terms associated with error rates."
 - "Explain the relationship between error rates and multiple comparisons."
 keypoints:
-- "..."
-- "..."
+- "We want our inferential analyses to maximize the percentage of true positives (sensitivity) and true negatives (specificity)"
+- "p values are random variables, conducting multiple comparisons on high throughput data can produce a large number of false positives (Type 1 errors) simply by chance."
+- "There are procedures for improving sensitivity and specificity by controlling error rates below a predefined value."
 math: yes
 ---
 
