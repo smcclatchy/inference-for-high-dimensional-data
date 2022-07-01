@@ -192,117 +192,872 @@ points(z[1,1:2],z[2,1:2],col=2,pch=16)
 ![Twin height scatterplot (left) and MA-plot (right).](figure/rotation-1.png)
 ![](../fig/simulate_twin_heights_again.png)
 
+ How do we perform a PCA?
 
-#### Example: Twin heights
+## A prostate cancer dataset
 
-We started the motivation for dimension reduction with a simulated example and 
-showed a rotation that is very much related to PCA.
+The `Prostate` dataset is freely available online and represents data from 97
+men who have prostate cancer. The data come from a study which examined the
+correlation between the level of prostate specific antigen and a number of
+clinical measures in men who were about to receive a radical prostatectomy.
+The data have 97 rows and 9 columns.
 
+Columns include:
+- `lcavol` (log-transformed cancer volume),
+- `lweight` (log-transformed prostate weight),
+- `lbph` (log-transformed amount of benign prostate enlargement),
+- `svi` (seminal vesicle invasion),
+- `lcp` (log-transformed capsular penetration; amount of spread of cancer in
+   outer walls of prostate),
+- `gleason` (Gleason score; grade of cancer cells),
+- `pgg45` (percentage Gleason scores 4 or 5),
+- `lpsa` (log-tranformed prostate specific antigen; level of PSA in blood).
+- `age` (patient age in years).
 
-![Twin heights scatter plot.](figure/simulate_twin_heights_again-1.png)
+Here we will calculate principal component scores for each of the rows in this
+dataset, using five principal components (one for each variable included in the
+PCA). We will include five clinical variables in our PCA, each of the continuous
+variables in the prostate dataset, so that we can create fewer variables
+representing clinical markers of cancer progression. Standard PCAs are carried
+out using continuous variables only.
 
-
-
-```r
-mypar(1,1)
-plot(t(Y), xlim=thelim, ylim=thelim,
-     main=paste("Sum of squares :",round(crossprod(Y[1,]),1)))
-abline(h=0)
-apply(Y,2,function(y) segments(y[1],0,y[1],y[2],lty=2))
-```
-
-```
-## NULL
-```
-
-```r
-points(Y[1,],rep(0,ncol(Y)),col=2,pch=16,cex=0.75)
-```
-
-<img src="figure/projection_not_PC1-1.png" title="plot of chunk projection_not_PC1" alt="plot of chunk projection_not_PC1"  />
-
-Can we find a direction with higher variability? 
-
-
-```r
-u <- matrix(c(1,-1)/sqrt(2),ncol=1)
-w=t(u)%*%Y
-mypar(1,1)
-plot(t(Y),
-     main=paste("Sum of squares:",round(tcrossprod(w),1)),xlim=thelim,ylim=thelim)
-abline(h=0,lty=2)
-abline(v=0,lty=2)
-abline(0,-1,col=2)
-Z = u%*%w
-for(i in seq(along=w))
-  segments(Z[1,i],Z[2,i],Y[1,i],Y[2,i],lty=2)
-points(t(Z), col=2, pch=16, cex=0.5)
-```
-
-![Data projected onto space spanned by (1 0).](figure/projection_not_PC1_either-1.png)
-
-This relates to the difference between twins, which we know is small. The sum of 
-squares confirms this.
+First, we will examine the `Prostate` dataset which can be downloaded as part
+of the **`lasso2`** package:
 
 
 ```r
-u <- matrix(c(1,1)/sqrt(2),ncol=1)
-w=t(u)%*%Y
-mypar()
-plot(t(Y), main=paste("Sum of squares:",round(tcrossprod(w),1)),
-     xlim=thelim, ylim=thelim)
-abline(h=0,lty=2)
-abline(v=0,lty=2)
-abline(0,1,col=2)
-points(u%*%w, col=2, pch=16, cex=1)
-Z = u%*%w
-for(i in seq(along=w))
-  segments(Z[1,i], Z[2,i], Y[1,i], Y[2,i], lty=2)
-points(t(Z),col=2,pch=16,cex=0.5)
+library("lasso2")
 ```
 
-![Data projected onto space spanned by first PC.](figure/PC1-1.png)
+```
+## R Package to solve regression problems while imposing
+## 	 an L1 constraint on the parameters. Based on S-plus Release 2.1
+## Copyright (C) 1998, 1999
+## Justin Lokhorst   <jlokhors@stats.adelaide.edu.au>
+## Berwin A. Turlach <bturlach@stats.adelaide.edu.au>
+## Bill Venables     <wvenable@stats.adelaide.edu.au>
+## 
+## Copyright (C) 2002
+## Martin Maechler <maechler@stat.math.ethz.ch>
+```
 
-This is a re-scaled average height, which has higher sum of squares. There is a 
-mathematical procedure for determining which $\mathbf{v}$ maximizes the sum of 
-squares and the SVD provides it for us.
-
-#### `prcomp`
-
-R has a function specifically designed to find the principal components. In this 
-case, the data is centered by default. The following function: 
+```r
+data("Prostate")
+```
 
 
 ```r
-pc <- prcomp( t(Y) )
+head(Prostate)
 ```
 
-The loadings can be found this way:
+```
+##       lcavol  lweight age      lbph svi       lcp gleason pgg45       lpsa
+## 1 -0.5798185 2.769459  50 -1.386294   0 -1.386294       6     0 -0.4307829
+## 2 -0.9942523 3.319626  58 -1.386294   0 -1.386294       6     0 -0.1625189
+## 3 -0.5108256 2.691243  74 -1.386294   0 -1.386294       7    20 -0.1625189
+## 4 -1.2039728 3.282789  58 -1.386294   0 -1.386294       6     0 -0.1625189
+## 5  0.7514161 3.432373  62 -1.386294   0 -1.386294       6     0  0.3715636
+## 6 -1.0498221 3.228826  50 -1.386294   0 -1.386294       6     0  0.7654678
+```
+
+Note that each row of the dataset represents a single patient.
+
+We will create a subset of the data including only the clinical variables we
+want to use in the PCA.
+
 
 ```r
-pc$rotation
+pros2 <- Prostate[, c("lcavol", "lweight", "lbph", "lcp", "lpsa")]
+head(pros2)
 ```
 
 ```
-##            PC1        PC2
-## [1,] 0.7072304  0.7069831
-## [2,] 0.7069831 -0.7072304
+##       lcavol  lweight      lbph       lcp       lpsa
+## 1 -0.5798185 2.769459 -1.386294 -1.386294 -0.4307829
+## 2 -0.9942523 3.319626 -1.386294 -1.386294 -0.1625189
+## 3 -0.5108256 2.691243 -1.386294 -1.386294 -0.1625189
+## 4 -1.2039728 3.282789 -1.386294 -1.386294 -0.1625189
+## 5  0.7514161 3.432373 -1.386294 -1.386294  0.3715636
+## 6 -1.0498221 3.228826 -1.386294 -1.386294  0.7654678
 ```
 
-The equivalent of the variance explained is included in the: 
+## Do we need to standardise the data?
+
+Now we compare the variances between variables in the dataset.
+
 
 ```r
-pc$sdev
+apply(pros2, 2, var)
 ```
 
 ```
-## [1] 1.2542672 0.2141882
+##   lcavol  lweight     lbph      lcp     lpsa 
+## 1.389157 0.246642 2.104840 1.955102 1.332476
 ```
-component.
 
-We take the transpose of `Y` because `prcomp` assumes the previously discussed 
-ordering: units/samples in row and features in columns.
+```r
+par(mfrow = c(1, 2))
+hist(pros2$lweight, breaks = "FD")
+hist(pros2$lbph, breaks = "FD")
+```
+
+![Alt](figure/var-hist-1.png)
+
+Note that variance is greatest for `lbph` and lowest for `lweight`. It is clear
+from this output that we need to scale each of these variables before including
+them in a PCA analysis to ensure that differences in variances between variables
+do not drive the calculation of principal components. In this example we
+standardise all five variables to have a mean of 0 and a standard
+deviation of 1. 
+
+
+> ## Challenge 2
+> 
+> 
+> Why might it be necessary to standardise variables before performing a PCA?  
+> Can you think of datasets where it might not be necessary to standardise
+> variables?
+> Discuss.
+> 
+> 1. To make the results of the PCA interesting.
+> 2. If you want to ensure that variables with different ranges of values
+>    contribute equally to analysis.
+> 3. To allow the feature matrix to be calculated faster, especially in cases
+>    where there are a lot of input variables.
+> 4. To allow both continuous and categorical variables to be included in the PCA.
+> 5. All of the above.
+> 
+> > ## Solution
+> > 
+> > 2.
+> > Scaling the data isn't guaranteed to make the results more interesting.
+> > It also won't affect how quickly the output will be calculated, whether
+> > continuous and categorical variables are present or not.
+> > 
+> > It is done to ensure that all features have equal weighting in the resulting
+> > PCs.
+> > 
+> > You may not want to standardise datasets which contain continuous variables
+> > all measured on the same scale (e.g. gene expression data or RNA sequencing
+> > data). In this case, variables with very little sample-to-sample variability
+> > may represent only random noise, and standardising the data would give
+> > these extra weight in the PCA.
+> > 
+> {: .solution}
+{: .challenge}
+
+Next we will carry out a PCA using the `prcomp()` function in base R. The input
+data (`pros2`) is in the form of a matrix. Note that the `scale = TRUE` argument
+is used to standardise the variables to have a mean 0 and standard deviation of
+1.
+
+
+```r
+pca.pros <- prcomp(pros2, scale = TRUE, center = TRUE)
+pca.pros
+```
+
+```
+## Standard deviations (1, .., p=5):
+## [1] 1.5648756 1.1684678 0.7452990 0.6362941 0.4748755
+## 
+## Rotation (n x k) = (5 x 5):
+##               PC1         PC2         PC3         PC4         PC5
+## lcavol  0.5616465 -0.23664270  0.01486043 -0.22708502  0.75945046
+## lweight 0.2985223  0.60174151 -0.66320198  0.32126853  0.07577123
+## lbph    0.1681278  0.69638466  0.69313753 -0.04517286  0.06558369
+## lcp     0.4962203 -0.31092357  0.26309227  0.72394666 -0.25253840
+## lpsa    0.5665123 -0.01680231 -0.10141557 -0.56487128 -0.59111493
+```
+
+# How many principal components do we need?
+
+We have calculated one principal component for each variable in the original
+dataset. How do we choose how many of these are necessary to represent the true
+variation in the data, without having extra components that are unnecessary?
+
+Let's look at the relative importance of each component using `summary`.
+
+
+```r
+summary(pca.pros)
+```
+
+```
+## Importance of components:
+##                           PC1    PC2    PC3     PC4    PC5
+## Standard deviation     1.5649 1.1685 0.7453 0.63629 0.4749
+## Proportion of Variance 0.4898 0.2731 0.1111 0.08097 0.0451
+## Cumulative Proportion  0.4898 0.7628 0.8739 0.95490 1.0000
+```
 
 
 
+This returns the proportion of variance in the data explained by each of the
+(p = 5) principal components. In this example, PC1 explains approximately
+49% of variance in the data, PC2 27% of variance,
+PC3 a further 11%, PC4 approximately 8% and PC5
+around 5%.
 
+We can use a screeplot to see how much variation in the data is explained by
+each principal component. Let's calculate the screeplot for our PCA.
+
+
+```r
+# calculate variance explained
+varExp <- (pca.pros$sdev^2) / sum(pca.pros$sdev^2) * 100
+# calculate percentage variance explained using output from the PCA
+varDF <- data.frame(Dimensions = 1:length(varExp), varExp = varExp)
+# create new dataframe with five rows, one for each principal component
+```
+
+
+```r
+plot(varDF)
+```
+
+![Alt](figure/vardf-plot-1.png)
+
+The screeplot shows that the first principal component explains most of the
+variance in the data (>50%) and each subsequent principal component explains
+less and less of the total variance. The first two principal components
+explain >70% of variance in the data. But what do these two principal
+components mean?
+
+
+## What are loadings and principal component scores?
+
+The output from a PCA returns a matrix of principal component loadings in which
+the columns show the principal component loading vectors. Note that the square
+of values in each column sums to 1 as each loading is scaled so as to prevent a
+blow up in variance. Larger values in the columns suggest a greater contribution
+of that variable to the principal component. 
+
+We can examine the output of our PCA by writing the following in `R`:
+
+
+```r
+pca.pros
+```
+
+```
+## Standard deviations (1, .., p=5):
+## [1] 1.5648756 1.1684678 0.7452990 0.6362941 0.4748755
+## 
+## Rotation (n x k) = (5 x 5):
+##               PC1         PC2         PC3         PC4         PC5
+## lcavol  0.5616465 -0.23664270  0.01486043 -0.22708502  0.75945046
+## lweight 0.2985223  0.60174151 -0.66320198  0.32126853  0.07577123
+## lbph    0.1681278  0.69638466  0.69313753 -0.04517286  0.06558369
+## lcp     0.4962203 -0.31092357  0.26309227  0.72394666 -0.25253840
+## lpsa    0.5665123 -0.01680231 -0.10141557 -0.56487128 -0.59111493
+```
+
+For each row in the original dataset PCA returns a principal component score
+for each of the principal components (PC1 to PC5 in the `Prostate` data example).
+We can see how the principal component score ($Z_{i1}$ for rows $i$ to $n$) is
+calculated for the first principal component using the following equation from
+Figure 1:
+
+$$
+  Z_{i1} = a_1 \times (fallow_i - \overline{fallow}) + a_2 \times (bio index_i - \overline{bio index})
+$$
+
+$a_1$ and $a_2$ represent principal component loadings in this equation.
+A loading can be thought of as the 'weight' each variable has on the calculation
+of the principal component. Note that in our example using the `Prostate`
+dataset `lcavol` and `lpsa` are the variables that contribute most to the first
+principal component.
+
+We can better understand what the principal components represent in terms of
+the original variables by plotting the first two principal components against
+each other and labelling points by patient number. Clusters of points which
+have similar principal component scores can be observed using a biplot and the
+strength and direction of influence different variables have on the calculation
+of the principal component scores can be observed by plotting arrows
+representing the loadings onto the graph.
+A biplot of the first two principal components can be created as follows:
+
+
+```r
+biplot(pca.pros, xlim = c(-0.3, 0.3))
+```
+
+![Alt](figure/stats-biplot-1.png)
+
+This biplot shows the position of each patient on a 2-dimensional plot where
+loadings can be observed via the red arrows associated with each of
+the variables. The variables `lpsa`, `lcavol` and `lcp` are associated with
+positive values on PC1 while positive values on PC2 are associated with the
+variables `lbph` and `lweight`. The length of the arrows indicates how much
+each variable contributes to the calculation of each principal component.
+
+The left and bottom axes show normalised principal component scores. The axes
+on the top and right of the plot are used to interpret the loadings, where
+loadings are scaled by the standard deviation of the principal components
+(`pca.pros$sdev`) times the square root the number of observations.
+
+
+# Using PCA to analyse gene expression data 
+
+In this section you will carry out your own PCA using the Bioconductor package **`PCAtools`** 
+applied to gene expression data to explore the topics covered above. 
+**`PCAtools`** provides functions that can be used to explore data via PCA and
+produce useful figures and analysis tools.
+
+##  A gene expression dataset of cancer patients
+
+The dataset we will be analysing in this lesson includes two subsets of data: 
+* a matrix of gene expression data showing microarray results for different
+  probes used to examine gene expression profiles in 91 different breast
+  cancer patient samples.
+* metadata associated with the gene expression results detailing information
+  from patients from whom samples were taken.
+
+Let's load the **`PCAtools`** package and the data.
+
+
+```r
+library("PCAtools")
+```
+
+```
+## Loading required package: ggplot2
+```
+
+```
+## Loading required package: ggrepel
+```
+
+```
+## 
+## Attaching package: 'PCAtools'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     biplot, screeplot
+```
+
+We will first load the microarray breast cancer gene expression data and
+associated metadata, downloaded from the
+[Gene Expression Omnibus](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE2990).
+
+
+```r
+library("SummarizedExperiment")
+```
+
+```
+## Loading required package: MatrixGenerics
+```
+
+```
+## Loading required package: matrixStats
+```
+
+```
+## 
+## Attaching package: 'MatrixGenerics'
+```
+
+```
+## The following objects are masked from 'package:matrixStats':
+## 
+##     colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,
+##     colCounts, colCummaxs, colCummins, colCumprods, colCumsums,
+##     colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,
+##     colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,
+##     colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,
+##     colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,
+##     colWeightedMeans, colWeightedMedians, colWeightedSds,
+##     colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,
+##     rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,
+##     rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,
+##     rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,
+##     rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,
+##     rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,
+##     rowWeightedMads, rowWeightedMeans, rowWeightedMedians,
+##     rowWeightedSds, rowWeightedVars
+```
+
+```
+## Loading required package: GenomicRanges
+```
+
+```
+## Loading required package: stats4
+```
+
+```
+## Loading required package: BiocGenerics
+```
+
+```
+## 
+## Attaching package: 'BiocGenerics'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     IQR, mad, sd, var, xtabs
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     anyDuplicated, append, as.data.frame, basename, cbind, colnames,
+##     dirname, do.call, duplicated, eval, evalq, Filter, Find, get, grep,
+##     grepl, intersect, is.unsorted, lapply, Map, mapply, match, mget,
+##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
+##     rbind, Reduce, rownames, sapply, setdiff, sort, table, tapply,
+##     union, unique, unsplit, which.max, which.min
+```
+
+```
+## Loading required package: S4Vectors
+```
+
+```
+## 
+## Attaching package: 'S4Vectors'
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     expand.grid, I, unname
+```
+
+```
+## Loading required package: IRanges
+```
+
+```
+## Loading required package: GenomeInfoDb
+```
+
+```
+## Loading required package: Biobase
+```
+
+```
+## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view with
+##     'browseVignettes()'. To cite Bioconductor, see
+##     'citation("Biobase")', and for packages 'citation("pkgname")'.
+```
+
+```
+## 
+## Attaching package: 'Biobase'
+```
+
+```
+## The following object is masked from 'package:MatrixGenerics':
+## 
+##     rowMedians
+```
+
+```
+## The following objects are masked from 'package:matrixStats':
+## 
+##     anyMissing, rowMedians
+```
+
+```r
+cancer <- readRDS(here::here("data/cancer_expression.rds"))
+```
+
+```
+## Warning in gzfile(file, "rb"): cannot open compressed file '/Users/smc/Projects/
+## Lessons/inference-for-high-dimensional-data/data/cancer_expression.rds',
+## probable reason 'No such file or directory'
+```
+
+```
+## Error in gzfile(file, "rb"): cannot open the connection
+```
+
+```r
+mat <- assay(cancer)
+```
+
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'assay': object 'cancer' not found
+```
+
+```r
+metadata <- colData(cancer)
+```
+
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'colData': object 'cancer' not found
+```
+
+
+```r
+View(mat)
+#nrow=22215 probes
+#ncol=91 samples
+```
+
+
+```r
+View(metadata)
+#nrow=91
+#ncol=8
+```
+
+
+```r
+all(colnames(mat) == rownames(metadata))
+```
+
+```
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'colnames': object 'mat' not found
+```
+
+```r
+#Check that column names and row names match
+#If they do should return TRUE
+```
+
+
+The 'mat' variable contains a matrix of gene expression profiles for each sample.
+Rows represent gene expression measurements and columns represent samples. The
+'metadata' variable contains the metadata associated with the gene expression
+data including the name of the study from which data originate, the age of the
+patient from which the sample was taken, whether or not an oestrogen receptor
+was involved in their cancer and the grade and size of the cancer for each
+sample (represented by rows).
+
+Microarray data are difficult to analyse for several reasons. Firstly, 
+they are typically high-dimensional and therefore are subject to the same
+difficulties associated with analysing high dimensional data outlined above
+(i.e. *p*>*n*, large numbers of rows, multiple possible response variables,
+curse of dimensionality). Secondly, formulating a research question using
+microarray data can be difficult, especially if not much is known a priori
+about which genes code for particular phenotypes of interest. Finally,
+exploratory analysis, which can be used to help formulate research questions
+and display relationships, is difficult using microarray data due to the number
+of potentially interesting response variables (i.e. expression data from probes
+targeting different genes).
+
+If researchers hypothesise that groups of genes (e.g. biological pathways) may
+be associated with different phenotypic characteristics of cancers (e.g.
+histologic grade, tumour size), using statistical methods that reduce the
+number of columns in the microarray matrix to a smaller number of dimensions
+representing groups of genes would help visualise the data and address
+research questions regarding the effect different groups of genes have on
+disease progression.
+
+Using the **`PCAtools`** we will apply a PCA to the cancer
+gene expression data, plot the amount of variation in the data explained by
+each principal component and plot the most important principal components
+against each other as well as understanding what each principal component
+represents.
+
+
+> ## Challenge 3
+> 
+> Apply a PCA to the cancer gene expression data using the `pca()` function from
+> **`PCAtools`**. You can use the help files in PCAtools to find out about the `pca()`
+> function (type `help("pca")` or `?pca` in R).
+> 
+> Remove the lower 20% of principal components
+> from your PCA using the `removeVar` argument in the `pca()` function.
+>
+> 
+> As in the example using prostate data above, examine the first 5 rows and
+> columns of rotated data and loadings from your PCA.
+> 
+> > ## Solution
+> > 
+> > 
+> > ```r
+> > pc <- pca(mat, metadata = metadata)
+> > ```
+> > 
+> > ```
+> > ## Error in is.data.frame(mat): object 'mat' not found
+> > ```
+> > 
+> > ```r
+> > #Many PCs explain a very small amount of the total variance in the data
+> > #Remove the lower 20% of PCs with lower variance
+> > pc <- pca(mat, metadata = metadata, removeVar = 0.2)
+> > ```
+> > 
+> > ```
+> > ## Error in is.data.frame(mat): object 'mat' not found
+> > ```
+> > 
+> > ```r
+> > #Explore other arguments provided in pca
+> > pc$rotated[1:5, 1:5]
+> > ```
+> > 
+> > ```
+> > ## Error in pc$rotated: object of type 'closure' is not subsettable
+> > ```
+> > 
+> > ```r
+> > pc$loadings[1:5, 1:5]
+> > ```
+> > 
+> > ```
+> > ## Error in pc$loadings: object of type 'closure' is not subsettable
+> > ```
+> > 
+> > ```r
+> > which.max(pc$loadings[, 1])
+> > ```
+> > 
+> > ```
+> > ## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'which.max': object of type 'closure' is not subsettable
+> > ```
+> > 
+> > ```r
+> > pc$loadings[49, ]
+> > ```
+> > 
+> > ```
+> > ## Error in pc$loadings: object of type 'closure' is not subsettable
+> > ```
+> > 
+> > ```r
+> > which.max(pc$loadings[, 2])
+> > ```
+> > 
+> > ```
+> > ## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'which.max': object of type 'closure' is not subsettable
+> > ```
+> > 
+> > ```r
+> > pc$loadings[27, ]
+> > ```
+> > 
+> > ```
+> > ## Error in pc$loadings: object of type 'closure' is not subsettable
+> > ```
+> > The function `pca()` is used to perform PCA, and uses as inputs a matrix
+> > (`mat`) containing continuous numerical data
+> > in which rows are data variables and columns are samples, and `metadata`
+> > associated with the matrix in which rows represent samples and columns
+> > represent data variables. It has options to centre or scale the input data
+> > before a PCA is performed, although in this case gene expression data do
+> > not need to be transformed prior to PCA being carried out as variables are
+> > measured on a similar scale (values are comparable between rows). The output
+> > of the `pca()` function includes a lot of information such as loading values
+> > for each variable (`loadings`), principal component scores (`rotated`)
+> > and the amount of variance in the data
+> > explained by each principal component.
+> > 
+> > Rotated data shows principal
+> > component scores for each sample and each principal component. Loadings
+> > the contribution each variable makes to each principal component. 
+> {: .solution}
+{: .challenge}
+
+> ## Scaling variables for PCA
+>
+> When running `pca()` above, we kept the default setting, `scale=FALSE`. That means genes with higher variation in
+> their expression levels should have higher loadings, which is what we are interested in.
+> Whether or not to scale variables for PCA will depend on your data and research question.  
+>
+> Note that this is different from normalising gene expression data. Gene expression
+> data have to be normalised before donwstream analyses can be
+> carried out. This is to reduce to effect technical and other potentially confounding
+> factors. We assume that the expression data we use had been noralised previously.
+>
+>{: .callout}
+
+## Choosing how many components are important to explain the variance in the data
+
+As in the example using the `Prostate` dataset we can use a screeplot to
+compare the proportion of variance in the data explained by each principal
+component. This allows us to understand how much information in the microarray
+dataset is lost by projecting the observations onto the first few principal
+components and whether these principal components represent a reasonable
+amount of the variation. The proportion of variance explained should sum to one.
+
+There are no clear guidelines on how many principal components should be
+included in PCA: your choice depends on the total variability of the data and
+the size of the dataset. We often look at the 'elbow’ on the screeplot as an
+indicator that the addition of principal components does not drastically
+contribute to explain the remaining variance or choose an arbitory cut off for
+proportion of variance explained.
+
+> ## Challenge 4
+> 
+> Using the `screeplot()` function in **`PCAtools`**, create a screeplot to show 
+> proportion of variance explained by each principal component. Explain the
+> output of the screeplot in terms of proportion of variance in data explained
+> by each principal component.
+> 
+> > ## Solution
+> > 
+> > 
+> > ```r
+> > screeplot(pc, axisLabSize = 5, titleLabSize = 8)
+> > ```
+> > 
+> > ```
+> > ## Error: object of type 'closure' is not subsettable
+> > ```
+> > Note that first principal component (PC1) explains more variation than
+> > other principal components (which is always the case in PCA). The screeplot
+> > shows that the first principal component only explains ~33% of the total
+> > variation in the micrarray data and many principal components explain very 
+> > little variation. The red line shows the cumulative percentage of explained
+> > variation with increasing principal components. Note that in this case 18
+> > principal components are needed to explain over 75% of variation in the
+> > data. This is not an unusual result for complex biological datasets
+> > including genetic information as clear relationships between groups are
+> > sometimes difficult to observe in the data. The screeplot shows that using
+> > a PCA we have reduced 91 predictors to 18 in order to explain a significant
+> > amount of variation in the data. See additional arguments in screeplot
+> > function for improving the appearance of the plot.
+> {: .solution}
+{: .challenge}
+
+## Investigating the principal components 
+
+Once the most important principal components have been identified using
+`screeplot()`, these can be explored in more detail by plotting principal components
+against each other and highlighting points based on variables in the metadata.
+This will allow any potential clustering of points according to demographic or
+phenotypic variables to be seen.
+
+We can use biplots to look for patterns in the output from the PCA. Note that there
+are two functions called `biplot()`, one in the package **`PCAtools`** and one in
+**`stats`**. Both functions produce biplots but their scales are different!
+
+
+> ## Challenge 5
+> 
+> Create a biplot of the first two principal components from your PCA
+> (using `biplot()` function in **`PCAtools`** - see `help("PCAtools::biplot")` for arguments) 
+> and examine whether the data appear to form clusters. Explain your results.
+> 
+> > ## Solution
+> > 
+> > 
+> > ```r
+> > biplot(pc, lab = NULL, colby = 'Grade', legendPosition = 'top')
+> > ```
+> > 
+> > ```
+> > ## Error: object of type 'closure' is not subsettable
+> > ```
+> > The biplot shows the position of patient samples relative to PC1 and PC2
+> > in a 2-dimensional plot. Note that two groups are apparent along the PC1
+> > axis according to expressions of different genes while no separation can be
+> > seem along the PC2 axis. Labels of patient samples are automatically added
+> > in the biplot. Labels for each sample are added by default, but can be
+> > removed if there is too much overlap in names. Note that **`PCAtools`** does
+> > not scale biplot in the same way as biplot using the stats package.
+> {: .solution}
+{: .challenge}
+
+Let's consider this biplot in more detail, and also display the loadings:
+
+
+```r
+biplot(pc, lab = rownames(pc$metadata), pointSize = 1, labSize = 1)
+```
+
+```
+## Error: object of type 'closure' is not subsettable
+```
+
+Sizes of labels, points and axes can be changed using arguments in `biplot`
+(see `help("biplot")`). We can see from the biplot that there appear to be two
+separate groups of points that separate on the PC1 axis, but that no other
+grouping is apparent on other PC axes.
+
+
+```r
+plotloadings(pc, labSize = 3)
+```
+
+```
+## Error: object of type 'closure' is not subsettable
+```
+
+Plotting the loadings shows the magnitude and direction of loadings for probes
+detecting genes on each principal component.
+
+> ## Challenge 6
+> 
+> Use `colby` and `lab` arguments in `biplot()` to explore whether these two
+> groups may cluster by patient age or by whether or not the sample expresses
+> the oestrogen receptor gene (ER+ or ER-).
+> 
+> > ## Solution
+> > 
+> > 
+> > ```r
+> >   biplot(pc,
+> >     lab = paste0(pc$metadata$Age,'years'),
+> >     colby = 'ER',
+> >     hline = 0, vline = 0,
+> >     legendPosition = 'right')
+> > ```
+> > 
+> > ```
+> > ## Error: object of type 'closure' is not subsettable
+> > ```
+> > It appears that one cluster has more ER+ samples than the other group.
+> {: .solution}
+{: .challenge}
+
+So far we have only looked at a biplot of PC1 versus PC2 which only gives part
+of the picture. The `pairplots()` function in **`PCAtools`** can be used to create
+multiple biplots including different principal components.
+
+
+```r
+pairsplot(pc)
+```
+
+```
+## Error: object of type 'closure' is not subsettable
+```
+
+The plots show two apparent clusters involving the first principal component
+only. No other clusters are found involving other principal components.
+
+# Using PCA output in further analysis
+
+The output of PCA can be used to interpret data or can be used in further
+analyses. For example, the PCA outputs new variables (principal components)
+which represent several variables in the original dataset. These new variables
+are useful for further exploring data, for example, comparing principal
+component scores between groups or including the new variables in linear
+regressions. Because the principal components are uncorrelated (and independent)
+they can be included together in a single linear regression. 
+
+
+> ## Principal component regression 
+> 
+> PCA is often used to reduce large numbers of correlated variables into fewer
+> uncorrelated variables that can then be included in linear regression or
+> other models. This technique is called principal component regression (PCR)
+> and it allows researchers to examine the effect of several correlated
+> explanatory variables on a single response variable in cases where a high
+> degree of correlation initially prevents them from being included in the same
+> model. This is called principal componenet regression (PCR) and is just one
+> example of how principal components can be used in further analysis of data.
+> When carrying out PCR, the variable of interest (response/dependent variable)
+> is regressed against the principal components calculated using PCA, rather
+> than against each individual explanatory variable from the original dataset.
+> As there as many principal components created from PCA as there are variables
+> in the dataset, we must select which principal components to include in PCR.
+> This can be done by examining the amount of variation in the data explained
+> by each principal component (see above).
+{: .callout}
