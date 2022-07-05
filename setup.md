@@ -28,7 +28,7 @@ Copy-paste this list of packages into the Install dialog box:
     ~~~
     install.packages(c("devtools", "BiocManager", "here", "rafalib", "lasso2", "matrixStats"))
     ~~~
-   {: .r}
+    {: .r}
 
  4. Once you have installed the packages, load the libraries by checking the box 
 next to each package name on the Packages tab, or alternatively running this 
@@ -86,28 +86,30 @@ folder.
 
 2. Create  a `data` folder to hold the data, a `scripts` folder to house your scripts, and a `results` folder to hold results. 
 
-Alternatively, you can use the R console to run the following commands for steps 
+ Alternatively, you can use the R console to run the following commands for steps 
 1 and 2.
-~~~
-setwd("~/Desktop")
-dir.create("./inference")
-setwd("~/Desktop/inference")
-dir.create("./data")
-dir.create("./scripts")
-dir.create("./results")
-~~~
-{: .r}
 
-Please download the following file and place it in your `data` folder. You 
+    ~~~
+    setwd("~/Desktop")
+    dir.create("./inference")
+    setwd("~/Desktop/inference")
+    dir.create("./data")
+    dir.create("./scripts")
+    dir.create("./results")
+    ~~~
+    {: .r}
+
+3. Please download the following file and place it in your `data` folder. You 
 can download the file from the URL below and move the file the same way that 
 you would for downloading and moving any other kind of data.
 
 Alternatively, you can copy and paste the following into the R console to 
 download the data.
-~~~
-download.file(url = "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv", destfile = "data/femaleControlsPopulation.csv")
-~~~
-{: .r}
+
+    ~~~
+    download.file(url = "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv", destfile = "data/femaleControlsPopulation.csv")
+    ~~~
+    {: .r}
 
 
 {% include links.md %}
