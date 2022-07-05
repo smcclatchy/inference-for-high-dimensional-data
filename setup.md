@@ -30,7 +30,7 @@ Copy-paste this list of packages into the Install dialog box:
     ~~~
   {: .r}
 
- 4. Once you have installed the packages, load the libraries by checking the box 
+  4. Once you have installed the packages, load the libraries by checking the box 
 next to each package name on the Packages tab, or alternatively running this 
 code in the Console for each package.
 
@@ -105,10 +105,10 @@ you would for downloading and moving any other kind of data.
 Alternatively, you can copy and paste the following into the R console to 
 download the data.
 
-    ~~~
-    download.file(url = "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv", destfile = "data/femaleControlsPopulation.csv")
-    ~~~
-    {: .r}
+~~~
+download.file(url = "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv", destfile = "data/femaleControlsPopulation.csv")
+~~~
+{: .r}
 
 
 {% include links.md %}
