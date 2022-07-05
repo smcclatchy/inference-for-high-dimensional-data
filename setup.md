@@ -21,14 +21,14 @@ support from the IT help desk.
 from the Console or from the Install button on the RStudio Packages tab. 
 Copy-paste this list of packages into the Install dialog box: 
 
-devtools, BiocManager, here, rafalib, lasso2, matrixStats
+  devtools, BiocManager, here, rafalib, lasso2, matrixStats
 
-Alternatively, run the following in the Console.
+  Alternatively, run the following in the Console.
 
     ~~~
     install.packages(c("devtools", "BiocManager", "here", "rafalib", "lasso2", "matrixStats"))
     ~~~
-  {: .r}
+   {: .r}
 
  4. Once you have installed the packages, load the libraries by checking the box 
 next to each package name on the Packages tab, or alternatively running this 
