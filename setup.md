@@ -30,7 +30,7 @@ Copy-paste this list of packages into the Install dialog box:
     ~~~
   {: .r}
 
-  4. Once you have installed the packages, load the libraries by checking the box 
+ 4. Once you have installed the packages, load the libraries by checking the box 
 next to each package name on the Packages tab, or alternatively running this 
 code in the Console for each package.
 
