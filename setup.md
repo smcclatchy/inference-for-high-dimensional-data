@@ -24,6 +24,7 @@ Copy-paste this list of packages into the Install dialog box:
 devtools, BiocManager, here, rafalib, lasso2, matrixStats
 
 Alternatively, run the following in the Console.
+
     ~~~
     install.packages(c("devtools", "BiocManager", "here", "rafalib", "lasso2", "matrixStats"))
     ~~~
