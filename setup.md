@@ -21,9 +21,9 @@ support from the IT help desk.
 from the Console or from the Install button on the RStudio Packages tab. 
 Copy-paste this list of packages into the Install dialog box: 
 
-  devtools, BiocManager, here, rafalib, lasso2, matrixStats
+    devtools, BiocManager, here, rafalib, lasso2, matrixStats
 
-  Alternatively, run the following in the Console.
+    Alternatively, run the following in the Console.
 
     ~~~
     install.packages(c("devtools", "BiocManager", "here", "rafalib", "lasso2", "matrixStats"))
@@ -86,8 +86,7 @@ folder.
 
 2. Create  a `data` folder to hold the data, a `scripts` folder to house your scripts, and a `results` folder to hold results. 
 
-  Alternatively, you can use the R console to run the following commands for steps 
-1 and 2.
+    Alternatively, you can use the R console to run the following commands for steps 1 and 2.
 
     ~~~
     setwd("~/Desktop")
@@ -97,7 +96,7 @@ folder.
     dir.create("./scripts")
     dir.create("./results")
     ~~~
-  {: .r}
+    {: .r}
 
 3. Please download the following file and place it in your `data` folder. You 
 can download the file from the URL below and move the file the same way that 
@@ -109,7 +108,7 @@ download the data.
     ~~~
     download.file(url = "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv", destfile = "data/femaleControlsPopulation.csv")
     ~~~
-  {: .r}
+    {: .r}
 
 
 {% include links.md %}
