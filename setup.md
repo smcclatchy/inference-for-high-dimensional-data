@@ -27,7 +27,7 @@ Alternatively, run the following in the Console.
     ~~~
     install.packages(c("devtools", "BiocManager", "here", "rafalib", "lasso2", "matrixStats"))
     ~~~
-    {: .r}
+{: .r}
 
 4. Once you have installed the packages, load the libraries by checking the box 
 next to each package name on the Packages tab, or alternatively running this 
@@ -36,7 +36,7 @@ code in the Console for each package.
     ~~~
     library(devtools)
     ~~~
-    {: .r}
+{: .r}
 
 Repeat the command above with the other packages you just installed.
 
@@ -49,7 +49,7 @@ not be  available from the RStudio Packages tab.
     install_github(c("genomicsclass/GSE5859Subset", "genomicsclass/GSE5859",
   "genomicsclass/maPooling", "genomicsclass/tissuesGeneExpression"))
     ~~~
-    {: .r}
+{: .r}
 
 6. Once you have installed the packages, load the libraries by running this 
 code in the Console.
@@ -57,7 +57,7 @@ code in the Console.
     ~~~
     library(GSE5859Subset)
     ~~~
-    {: .r}
+{: .r}
 
 Repeat for each of the packages installed from Github.
 
@@ -67,7 +67,7 @@ Console:
     ~~~
     BiocManager::install(c("genefilter", "SpikeInSubset", "SummarizedExperiment", "parathyroidSE", "Biobase", "limma", "qvalue", "PCAtools"))
     ~~~
-    {: .r}
+{: .r}
 
 8. Once you have installed the Bioconductor packages, load the libraries by 
 running this code in the Console.
@@ -75,17 +75,19 @@ running this code in the Console.
     ~~~
     library(genefilter)
     ~~~
-    {: .r}
+{: .r}
 
 Repeat for each of the packages installed from Bioconductor.
 
 ## Data files and project organization
 
-1. Make a new folder in your Desktop called `inference`. Move into this new folder.
+1. Make a new folder in your Desktop called `inference`. Move into this new 
+folder.
 
 2. Create  a `data` folder to hold the data, a `scripts` folder to house your scripts, and a `results` folder to hold results. 
 
-Alternatively, you can use the R console to run the following commands for steps 1 and 2.
+Alternatively, you can use the R console to run the following commands for steps 
+1 and 2.
 ~~~
 setwd("~/Desktop")
 dir.create("./inference")
