@@ -24,19 +24,19 @@ Copy-paste this list of packages into the Install dialog box:
 devtools, BiocManager, here, rafalib, lasso2, matrixStats
 
 Alternatively, run the following in the Console.
-~~~
-install.packages(c("devtools", "BiocManager", "here", "rafalib", "lasso2", "matrixStats"))
-~~~
-{: .r}
+    ~~~
+    install.packages(c("devtools", "BiocManager", "here", "rafalib", "lasso2", "matrixStats"))
+    ~~~
+    {: .r}
 
 4. Once you have installed the packages, load the libraries by checking the box 
 next to each package name on the Packages tab, or alternatively running this 
 code in the Console for each package.
 
-~~~
-library(devtools)
-~~~
-{: .r}
+    ~~~
+    library(devtools)
+    ~~~
+    {: .r}
 
 Repeat the command above with the other packages you just installed.
 
@@ -45,37 +45,37 @@ is loaded you will be able to install packages from Github using
 `install_github()`. You must install  these packages from the Console. They will 
 not be  available from the RStudio Packages tab.
 
-~~~
-install_github(c("genomicsclass/GSE5859Subset", "genomicsclass/GSE5859",
+    ~~~
+    install_github(c("genomicsclass/GSE5859Subset", "genomicsclass/GSE5859",
   "genomicsclass/maPooling", "genomicsclass/tissuesGeneExpression"))
-~~~
-{: .r}
+    ~~~
+    {: .r}
 
 6. Once you have installed the packages, load the libraries by running this 
 code in the Console.
 
-~~~
-library(GSE5859Subset)
-~~~
-{: .r}
+    ~~~
+    library(GSE5859Subset)
+    ~~~
+    {: .r}
 
 Repeat for each of the packages installed from Github.
 
 7. Finally, we will use Bioconductor packages. Install these packages in the 
 Console:
 
-~~~
-BiocManager::install(c("genefilter", "SpikeInSubset", "SummarizedExperiment", "parathyroidSE", "Biobase", "limma", "qvalue", "PCAtools"))
-~~~
-{: .r}
+    ~~~
+    BiocManager::install(c("genefilter", "SpikeInSubset", "SummarizedExperiment", "parathyroidSE", "Biobase", "limma", "qvalue", "PCAtools"))
+    ~~~
+    {: .r}
 
 8. Once you have installed the Bioconductor packages, load the libraries by 
 running this code in the Console.
 
-~~~
-library(genefilter)
-~~~
-{: .r}
+    ~~~
+    library(genefilter)
+    ~~~
+    {: .r}
 
 Repeat for each of the packages installed from Bioconductor.
 
@@ -96,16 +96,14 @@ dir.create("./results")
 ~~~
 {: .r}
 
-Please download the following files and place them in your `data` folder. You can download the files from the URLs below and move the files the same way that you would for downloading and moving any other kind of data.
+Please download the following file and place it in your `data` folder. You 
+can download the file from the URL below and move the file the same way that 
+you would for downloading and moving any other kind of data.
 
-
-Alternatively, you can copy and paste the following into the R console to download the data.
+Alternatively, you can copy and paste the following into the R console to 
+download the data.
 ~~~
-download.file(url = "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleMiceWeights.csv", destfile = "data/femaleMiceWeights.csv")
-
 download.file(url = "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv", destfile = "data/femaleControlsPopulation.csv")
- 
-download.file(url = "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/mice_pheno.csv", destfile = "data/mice_pheno.csv")
 ~~~
 {: .r}
 
