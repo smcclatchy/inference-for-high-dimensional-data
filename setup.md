@@ -25,12 +25,12 @@ devtools, BiocManager, here, rafalib, lasso2, matrixStats
 
 Alternatively, run the following in the Console.
 
-    ~~~
+~~~
     install.packages(c("devtools", "BiocManager", "here", "rafalib", "lasso2", "matrixStats"))
-    ~~~
-    {: .language-r}
+~~~
+{: .r}
 
-4. Once you have installed the packages, load the libraries by checking the box 
+ 4. Once you have installed the packages, load the libraries by checking the box 
 next to each package name on the Packages tab, or alternatively running this 
 code in the Console for each package.
 
@@ -39,7 +39,7 @@ code in the Console for each package.
     ~~~
     {: .r}
 
-Repeat the command above with the other packages you just installed.
+    Repeat the command above with the other packages you just installed.
 
 5. We will also use packages available only on Github. Once the devtools library 
 is loaded you will be able to install packages from Github using 
@@ -60,7 +60,7 @@ code in the Console.
     ~~~
     {: .r}
 
-Repeat for each of the packages installed from Github.
+    Repeat for each of the packages installed from Github.
 
 7. Finally, we will use Bioconductor packages. Install these packages in the 
 Console:
