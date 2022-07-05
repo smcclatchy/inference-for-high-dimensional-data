@@ -25,10 +25,10 @@ devtools, BiocManager, here, rafalib, lasso2, matrixStats
 
 Alternatively, run the following in the Console.
 
-~~~
+    ~~~
     install.packages(c("devtools", "BiocManager", "here", "rafalib", "lasso2", "matrixStats"))
-~~~
-{: .r}
+    ~~~
+  {: .r}
 
  4. Once you have installed the packages, load the libraries by checking the box 
 next to each package name on the Packages tab, or alternatively running this 
@@ -47,8 +47,7 @@ is loaded you will be able to install packages from Github using
 not be  available from the RStudio Packages tab.
 
     ~~~
-    install_github(c("genomicsclass/GSE5859Subset", "genomicsclass/GSE5859",
-  "genomicsclass/maPooling", "genomicsclass/tissuesGeneExpression"))
+    install_github(c("genomicsclass/GSE5859Subset", "genomicsclass/GSE5859", "genomicsclass/maPooling", "genomicsclass/tissuesGeneExpression"))
     ~~~
     {: .r}
 
