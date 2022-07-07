@@ -34,8 +34,12 @@ likely get 0:
 
 
 ```r
-population <- read.csv(file = "../data/femaleControlsPopulation.csv")
+population <- unlist(read.csv(file = "../data/femaleControlsPopulation.csv"))
 m <- 10000
+p0 <- 0.90
+m0 <- m*p0
+m1 <- m-m0
+nullHypothesis <- c( rep(TRUE,m0), rep(FALSE,m1)) 
 delta <- 3
 set.seed(1)
 pvals <- sapply(1:m, function(i){
@@ -44,18 +48,11 @@ pvals <- sapply(1:m, function(i){
   if(!nullHypothesis[i]) treatment <- treatment + delta
   t.test(treatment, control)$p.value
   })
-```
-
-```
-## Error in sample.int(length(x), size, replace, prob): cannot take a sample larger than the population when 'replace = FALSE'
-```
-
-```r
 sum(pvals < 0.05/10000)
 ```
 
 ```
-## Error in eval(expr, envir, enclos): object 'pvals' not found
+## [1] 0
 ```
 
 By requiring a FWER $\leq$ 0.05, we are practically assuring 0 power 
@@ -128,10 +125,6 @@ Qs <- replicate(B, {
 })
 ```
 
-```
-## Error in which(!nullHypothesis): object 'nullHypothesis' not found
-```
-
 #### Controlling FDR
 
 The code above is a Monte Carlo simulation that generates 10,000 experiments 
@@ -146,26 +139,17 @@ mypar(1, 1)
 hist(Qs) ##Q is a random variable, this is its distribution
 ```
 
-```
-## Error in hist(Qs): object 'Qs' not found
-```
+![Q (false positives divided by number of features called significant) is a random variable. Here we generated a distribution with a Monte Carlo simulation.](figure/Q_distribution-1.png)
 
 The FDR is the average value of $Q$
 
 ```r
 FDR=mean(Qs)
-```
-
-```
-## Error in mean(Qs): object 'Qs' not found
-```
-
-```r
 print(FDR)
 ```
 
 ```
-## Error in print(FDR): object 'FDR' not found
+## [1] 0.4465395
 ```
 
 The FDR is relatively high here. This is because for 90% of the tests, the null 
@@ -187,44 +171,15 @@ set.seed(1)
 controls <- matrix(sample(population, N*m, replace=TRUE), nrow=m)
 treatments <-  matrix(sample(population, N*m, replace=TRUE), nrow=m)
 treatments[which(!nullHypothesis),] <- treatments[which(!nullHypothesis),] + delta
-```
-
-```
-## Error in which(!nullHypothesis): object 'nullHypothesis' not found
-```
-
-```r
 dat <- cbind(controls, treatments)
 pvals <- rowttests(dat, g)$p.value 
-```
 
-```
-## Error in rowcoltt(x, fac, tstatOnly, 1L, na.rm): Invalid argument 'x': must be a real matrix.
-```
-
-```r
 h <- hist(pvals, breaks=seq(0,1,0.05))
-```
-
-```
-## Error in hist(pvals, breaks = seq(0, 1, 0.05)): object 'pvals' not found
-```
-
-```r
 polygon(c(0,0.05,0.05,0), c(0,0,h$counts[1],h$counts[1]), col="grey")
-```
-
-```
-## Error in xy.coords(x, y, setLab = FALSE): object 'h' not found
-```
-
-```r
 abline(h=m0/20)
 ```
 
-```
-## Error in int_abline(a = a, b = b, h = h, v = v, untf = untf, ...): object 'm0' not found
-```
+![Histogram of p-values. Monte Carlo simulation was used to generate data with m_1 genes having differences between groups.](figure/pval_hist-1.png)
 
 The first bar (grey) on the left represents cases with p-values smaller than 
 0.05. From the horizontal line we can infer that about 1/2 are false positives. 
@@ -234,27 +189,11 @@ can see a lower FDR, as expected, but would call fewer features significant.
 
 ```r
 h <- hist(pvals,breaks=seq(0,1,0.01))
-```
-
-```
-## Error in hist(pvals, breaks = seq(0, 1, 0.01)): object 'pvals' not found
-```
-
-```r
 polygon(c(0,0.01,0.01,0),c(0,0,h$counts[1],h$counts[1]),col="grey")
-```
-
-```
-## Error in xy.coords(x, y, setLab = FALSE): object 'h' not found
-```
-
-```r
 abline(h=m0/100)
 ```
 
-```
-## Error in int_abline(a = a, b = b, h = h, v = v, untf = untf, ...): object 'm0' not found
-```
+![Histogram of p-values with breaks at every 0.01. Monte Carlo simulation was used to generate data with m_1 genes having differences between groups.](figure/pval_hist2-1.png)
 
 As we consider a lower and lower p-value cut-off, the number of features 
 detected decreases (loss of sensitivity), but our FDR also decreases (gain of 
@@ -283,68 +222,25 @@ computed above:
 ```r
 alpha <- 0.05
 i = seq(along=pvals)
-```
 
-```
-## Error in seq(along = pvals): object 'pvals' not found
-```
-
-```r
 mypar(1,2)
 plot(i,sort(pvals))
-```
-
-```
-## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'i' not found
-```
-
-```r
 abline(0,i/m*alpha)
-```
-
-```
-## Error in int_abline(a = a, b = b, h = h, v = v, untf = untf, ...): object 'i' not found
-```
-
-```r
 ##close-up
 plot(i[1:15],sort(pvals)[1:15],main="Close-up")
-```
-
-```
-## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'i' not found
-```
-
-```r
 abline(0,i/m*alpha)
 ```
 
-```
-## Error in int_abline(a = a, b = b, h = h, v = v, untf = untf, ...): object 'i' not found
-```
+![Plotting p-values plotted against their rank illustrates the Benjamini-Hochberg procedure. The plot on the right is a close-up of the plot on the left.](figure/pvalue_vs_rank_plot-1.png)
 
 ```r
 k <- max( which( sort(pvals) < i/m*alpha) )
-```
-
-```
-## Error in sort(pvals): object 'pvals' not found
-```
-
-```r
 cutoff <- sort(pvals)[k]
-```
-
-```
-## Error in sort(pvals): object 'pvals' not found
-```
-
-```r
 cat("k =",k,"p-value cutoff=",cutoff)
 ```
 
 ```
-## Error in cat("k =", k, "p-value cutoff=", cutoff): object 'k' not found
+## k = 24 p-value cutoff= 0.0001197627
 ```
 
 We can show mathematically that this procedure has FDR lower than 5%. Please see Benjamini-Hochberg (1995) for details. An important outcome is that we now have 
@@ -359,28 +255,12 @@ we simply type the following:
 
 ```r
 fdr <- p.adjust(pvals, method="fdr")
-```
-
-```
-## Error in p.adjust(pvals, method = "fdr"): object 'pvals' not found
-```
-
-```r
 mypar(1,1)
 plot(pvals,fdr,log="xy")
-```
-
-```
-## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'pvals' not found
-```
-
-```r
 abline(h=alpha,v=cutoff) ##cutoff was computed above
 ```
 
-```
-## Error in int_abline(a = a, b = b, h = h, v = v, untf = untf, ...): object 'cutoff' not found
-```
+![FDR estimates plotted against p-value.](figure/fdr-versus-pval-1.png)
 
 We can run a Monte-Carlo simulation to confirm that the FDR is in fact lower 
 than .05. We compute all p-values first, and then use these to decide which get 
@@ -402,43 +282,20 @@ res <- replicate(B,{
   Q=ifelse(R>0,sum(nullHypothesis & calls)/R,0)
   return(c(R,Q))
 })
-```
-
-```
-## Error in which(!nullHypothesis): object 'nullHypothesis' not found
-```
-
-```r
 Qs <- res[2,]
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'res' not found
-```
-
-```r
 mypar(1,1)
 hist(Qs) ##Q is a random variable, this is its distribution
 ```
 
-```
-## Error in hist(Qs): object 'Qs' not found
-```
+![Histogram of Q (false positives divided by number of features called significant) when the alternative hypothesis is true for some features.](figure/Q_distribution2-1.png)
 
 ```r
 FDR=mean(Qs)
-```
-
-```
-## Error in mean(Qs): object 'Qs' not found
-```
-
-```r
 print(FDR)
 ```
 
 ```
-## Error in print(FDR): object 'FDR' not found
+## [1] 0.03641142
 ```
 
 The FDR is lower than 0.05. This is to be expected because we need to be 
@@ -450,18 +307,11 @@ We should also note that in ...
 
 ```r
 Rs <- res[1,]
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'res' not found
-```
-
-```r
 mean(Rs==0) * 100
 ```
 
 ```
-## Error in mean(Rs == 0): object 'Rs' not found
+## [1] 1.3
 ```
 ... percent of the simulations, we did not call any genes significant.
 

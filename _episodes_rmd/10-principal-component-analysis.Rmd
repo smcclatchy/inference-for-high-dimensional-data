@@ -91,8 +91,6 @@ which each variable contributes to the calculation of the principal component.
 > 4. All of the above.
 > 
 > > ## Solution
-> > 
-> >
 > > In the first case, a regression model would be more suitable; perhaps a
 > > survival model.
 > > In the second, again a regression model, likely linear or logistic, would

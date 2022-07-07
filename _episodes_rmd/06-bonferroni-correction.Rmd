@@ -173,31 +173,41 @@ the null hypothesis for genes that”.
 > Make a plot of α/m and 1 − (1 − α)1/m for various values of m > 1.
 > 
 > > ## Solution
-> > 
+> > `plot(alphas/m, (1-(1-alphas)^(1/m)), xlab = 'bonf', ylab = 'sidak',` 
+> > `main = 'p-val cutoff')`  
+> > `abline(0,1)`
 > {: .solution}
 {: .challenge}
 
 > ## Exercise 2
-> Which procedure is more conservative Bonferroni’s or Sidak’s?
+> Which procedure is more conservative Bonferroni’s or Sidak’s?  
 > A) They are the same.  
 > B) Bonferroni's.  
 > C) Depends on m.  
 > D) Sidak’s.  
 > 
 > > ## Solution
-> > 
+> > Bonferroni’s procedure is more conservative (choice B). Conservative refers 
+> > to strictness. The p-value cutoff for significance is lower in Bonferroni’s 
+> > procedure, and therefore more conservative.
 > {: .solution}
 {: .challenge}
 
 > ## Exercise 3
-> To simulate the p-value results of, say 8,792 t-tests for which the null is 
+> To simulate the p-value results of, say 8,793 t-tests for which the null is 
 > true, we don’t actually have to generate the original data. We can generate 
 > p-values for a uniform distribution like this: `pvals <- runif(8793,0,1)`. 
 > Using what we have learned, set the cutoff using the Bonferroni correction and 
 > report back the FWER. Set the seed at 1 and run 10,000 simulation.
 > 
 > > ## Solution
-> > 
+> > `set.seed(1)`  
+> > `bonf_res <- replicate(10000, {`  
+> > `pvals <- runif(8793,0,1)`  
+> > `bonfcall <- sum((pvals * m) < 0.05)`  
+> > `return(bonfcall)`  
+> > `})`  
+> > `sum(bonf_res>0)/length(bonf_res)`
 > {: .solution}
 {: .challenge}
 
@@ -205,6 +215,12 @@ the null hypothesis for genes that”.
 > Using the same seed, repeat exercise 5, but for Sidak’s cutoff.
 > 
 > > ## Solution
-> > 
+> > `set.seed(1)`  
+> > `sidak_res <- replicate(10000, {`  
+> >   `pvals <- runif(8793,0,1)`  
+> >   `sidakcall <- sum((1-(1-pvals)^m) < 0.05)`  
+> >   `return(sidakcall)`  
+> >   `sum(sidak_res>0)/length(sidak_res)`  
+> >   `})`
 > {: .solution}
 {: .challenge}

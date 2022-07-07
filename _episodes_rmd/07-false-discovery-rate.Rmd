@@ -31,8 +31,12 @@ ended up with a list with just 2. Change the sample size to 6 and you very
 likely get 0:
 
 ```{r}
-population <- read.csv(file = "../data/femaleControlsPopulation.csv")
+population <- unlist(read.csv(file = "../data/femaleControlsPopulation.csv"))
 m <- 10000
+p0 <- 0.90
+m0 <- m*p0
+m1 <- m-m0
+nullHypothesis <- c( rep(TRUE,m0), rep(FALSE,m1)) 
 delta <- 3
 set.seed(1)
 pvals <- sapply(1:m, function(i){
