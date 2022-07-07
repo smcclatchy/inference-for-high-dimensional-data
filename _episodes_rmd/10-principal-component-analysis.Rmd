@@ -228,7 +228,7 @@ out using continuous variables only.
 First, we will examine the `Prostate` dataset which can be downloaded as part
 of the **`lasso2`** package:
 
-```{r lasso2}
+```{r lasso2, message=FALSE}
 library("lasso2")
 data("Prostate")
 ```
@@ -251,12 +251,14 @@ head(pros2)
 
 Now we compare the variances between variables in the dataset.
 
-```{r var-hist, fig.cap="Caption", fig.cap="Alt"}
+```{r var-hist, fig.cap="Histograms comparing variances between log-transformed prostate weight and benign enlargement."}
 apply(pros2, 2, var)
 par(mfrow = c(1, 2))
 hist(pros2$lweight, breaks = "FD")
 hist(pros2$lbph, breaks = "FD")
 ```
+
+![Compare variances between log-transformed prostate weight and benign enlargement](../fig/var-hist.png)
 
 Note that variance is greatest for `lbph` and lowest for `lweight`. It is clear
 from this output that we need to scale each of these variables before including
@@ -346,9 +348,11 @@ varDF <- data.frame(Dimensions = 1:length(varExp), varExp = varExp)
 # create new dataframe with five rows, one for each principal component
 ```
 
-```{r vardf-plot, fig.cap="Caption", fig.cap="Alt"}
+```{r vardf-plot, fig.cap="Screeplot showing proportion of variance explained by each principal component."}
 plot(varDF)
 ```
+
+![Screeplot showing proportion of variance explained by each principal component.](..fig/vardf-plot.png)
 
 The screeplot shows that the first principal component explains most of the
 variance in the data (>50%) and each subsequent principal component explains
@@ -396,9 +400,11 @@ of the principal component scores can be observed by plotting arrows
 representing the loadings onto the graph.
 A biplot of the first two principal components can be created as follows:
 
-```{r stats-biplot, fig.cap="Caption", fig.cap="Alt"}
+```{r stats-biplot, fig.cap="Biplot of first two principal components."}
 biplot(pca.pros, xlim = c(-0.3, 0.3))
 ```
+
+![Biplot of first two principal components.](../fig/stats-biplot.png)
 
 This biplot shows the position of each patient on a 2-dimensional plot where
 loadings can be observed via the red arrows associated with each of
@@ -431,7 +437,7 @@ The dataset we will be analysing in this lesson includes two subsets of data:
 
 Let's load the **`PCAtools`** package and the data.
 
-```{r pcatools}
+```{r pcatools, message=FALSE}
 library("PCAtools")
 ```
 
@@ -439,9 +445,9 @@ We will first load the microarray breast cancer gene expression data and
 associated metadata, downloaded from the
 [Gene Expression Omnibus](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE2990).
 
-```{r se}
+```{r se, message=FALSE}
 library("SummarizedExperiment")
-cancer <- readRDS(here::here("data/cancer_expression.rds"))
+cancer <- readRDS(here::here("../data/cancer_expression.rds"))
 mat <- assay(cancer)
 metadata <- colData(cancer)
 ```
@@ -642,18 +648,21 @@ are two functions called `biplot()`, one in the package **`PCAtools`** and one i
 
 Let's consider this biplot in more detail, and also display the loadings:
 
-```{r pca-biplot, fig.cap="Caption", fig.cap="Alt"}
+```{r pca-biplot, fig.cap="Biplot of principal components one and two showing two groups for PC1 according to gene expression."}
 biplot(pc, lab = rownames(pc$metadata), pointSize = 1, labSize = 1)
 ```
+![Biplot of principal components one and two showing two groups for PC1 according to gene expression.](../fig/pca-biplot.png)
 
 Sizes of labels, points and axes can be changed using arguments in `biplot`
 (see `help("biplot")`). We can see from the biplot that there appear to be two
 separate groups of points that separate on the PC1 axis, but that no other
 grouping is apparent on other PC axes.
 
-```{r pca-loadings, fig.cap="Caption", fig.cap="Alt"}
+```{r pca-loadings, fig.cap="Plot of principal component loadings show magnitude and direction of gene probes."}
 plotloadings(pc, labSize = 3)
 ```
+
+![Plot of principal component loadings show magnitude and direction of gene probes.](../fig/pca-loadings.png)
 
 Plotting the loadings shows the magnitude and direction of loadings for probes
 detecting genes on each principal component.
@@ -681,9 +690,11 @@ So far we have only looked at a biplot of PC1 versus PC2 which only gives part
 of the picture. The `pairplots()` function in **`PCAtools`** can be used to create
 multiple biplots including different principal components.
 
-```{r pairsplot, fig.cap="Caption", fig.cap="Alt"}
+```{r pairsplot, fig.cap="Pairsplot of principal components show clusters on PC1 only."}
 pairsplot(pc)
 ```
+
+![Pairsplot of principal components show clusters on PC1 only.](../fig/pairsplot.png)
 
 The plots show two apparent clusters involving the first principal component
 only. No other clusters are found involving other principal components.

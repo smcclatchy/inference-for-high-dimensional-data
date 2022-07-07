@@ -225,21 +225,6 @@ of the **`lasso2`** package:
 
 ```r
 library("lasso2")
-```
-
-```
-## R Package to solve regression problems while imposing
-## 	 an L1 constraint on the parameters. Based on S-plus Release 2.1
-## Copyright (C) 1998, 1999
-## Justin Lokhorst   <jlokhors@stats.adelaide.edu.au>
-## Berwin A. Turlach <bturlach@stats.adelaide.edu.au>
-## Bill Venables     <wvenable@stats.adelaide.edu.au>
-## 
-## Copyright (C) 2002
-## Martin Maechler <maechler@stat.math.ethz.ch>
-```
-
-```r
 data("Prostate")
 ```
 
@@ -299,7 +284,9 @@ hist(pros2$lweight, breaks = "FD")
 hist(pros2$lbph, breaks = "FD")
 ```
 
-![Alt](figure/var-hist-1.png)
+![Histograms comparing variances between log-transformed prostate weight and benign enlargement.](figure/var-hist-1.png)
+
+![Compare variances between log-transformed prostate weight and benign enlargement](../fig/var-hist.png)
 
 Note that variance is greatest for `lbph` and lowest for `lweight`. It is clear
 from this output that we need to scale each of these variables before including
@@ -414,7 +401,9 @@ varDF <- data.frame(Dimensions = 1:length(varExp), varExp = varExp)
 plot(varDF)
 ```
 
-![Alt](figure/vardf-plot-1.png)
+![Screeplot showing proportion of variance explained by each principal component.](figure/vardf-plot-1.png)
+
+![Screeplot showing proportion of variance explained by each principal component.](..fig/vardf-plot.png)
 
 The screeplot shows that the first principal component explains most of the
 variance in the data (>50%) and each subsequent principal component explains
@@ -481,7 +470,9 @@ A biplot of the first two principal components can be created as follows:
 biplot(pca.pros, xlim = c(-0.3, 0.3))
 ```
 
-![Alt](figure/stats-biplot-1.png)
+![Biplot of first two principal components.](figure/stats-biplot-1.png)
+
+![Biplot of first two principal components.](../fig/stats-biplot.png)
 
 This biplot shows the position of each patient on a 2-dimensional plot where
 loadings can be observed via the red arrows associated with each of
@@ -519,25 +510,6 @@ Let's load the **`PCAtools`** package and the data.
 library("PCAtools")
 ```
 
-```
-## Loading required package: ggplot2
-```
-
-```
-## Loading required package: ggrepel
-```
-
-```
-## 
-## Attaching package: 'PCAtools'
-```
-
-```
-## The following objects are masked from 'package:stats':
-## 
-##     biplot, screeplot
-```
-
 We will first load the microarray breast cancer gene expression data and
 associated metadata, downloaded from the
 [Gene Expression Omnibus](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE2990).
@@ -545,134 +517,12 @@ associated metadata, downloaded from the
 
 ```r
 library("SummarizedExperiment")
-```
-
-```
-## Loading required package: MatrixGenerics
-```
-
-```
-## Loading required package: matrixStats
-```
-
-```
-## 
-## Attaching package: 'MatrixGenerics'
-```
-
-```
-## The following objects are masked from 'package:matrixStats':
-## 
-##     colAlls, colAnyNAs, colAnys, colAvgsPerRowSet, colCollapse,
-##     colCounts, colCummaxs, colCummins, colCumprods, colCumsums,
-##     colDiffs, colIQRDiffs, colIQRs, colLogSumExps, colMadDiffs,
-##     colMads, colMaxs, colMeans2, colMedians, colMins, colOrderStats,
-##     colProds, colQuantiles, colRanges, colRanks, colSdDiffs, colSds,
-##     colSums2, colTabulates, colVarDiffs, colVars, colWeightedMads,
-##     colWeightedMeans, colWeightedMedians, colWeightedSds,
-##     colWeightedVars, rowAlls, rowAnyNAs, rowAnys, rowAvgsPerColSet,
-##     rowCollapse, rowCounts, rowCummaxs, rowCummins, rowCumprods,
-##     rowCumsums, rowDiffs, rowIQRDiffs, rowIQRs, rowLogSumExps,
-##     rowMadDiffs, rowMads, rowMaxs, rowMeans2, rowMedians, rowMins,
-##     rowOrderStats, rowProds, rowQuantiles, rowRanges, rowRanks,
-##     rowSdDiffs, rowSds, rowSums2, rowTabulates, rowVarDiffs, rowVars,
-##     rowWeightedMads, rowWeightedMeans, rowWeightedMedians,
-##     rowWeightedSds, rowWeightedVars
-```
-
-```
-## Loading required package: GenomicRanges
-```
-
-```
-## Loading required package: stats4
-```
-
-```
-## Loading required package: BiocGenerics
-```
-
-```
-## 
-## Attaching package: 'BiocGenerics'
-```
-
-```
-## The following objects are masked from 'package:stats':
-## 
-##     IQR, mad, sd, var, xtabs
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     anyDuplicated, append, as.data.frame, basename, cbind, colnames,
-##     dirname, do.call, duplicated, eval, evalq, Filter, Find, get, grep,
-##     grepl, intersect, is.unsorted, lapply, Map, mapply, match, mget,
-##     order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
-##     rbind, Reduce, rownames, sapply, setdiff, sort, table, tapply,
-##     union, unique, unsplit, which.max, which.min
-```
-
-```
-## Loading required package: S4Vectors
-```
-
-```
-## 
-## Attaching package: 'S4Vectors'
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     expand.grid, I, unname
-```
-
-```
-## Loading required package: IRanges
-```
-
-```
-## Loading required package: GenomeInfoDb
-```
-
-```
-## Loading required package: Biobase
-```
-
-```
-## Welcome to Bioconductor
-## 
-##     Vignettes contain introductory material; view with
-##     'browseVignettes()'. To cite Bioconductor, see
-##     'citation("Biobase")', and for packages 'citation("pkgname")'.
-```
-
-```
-## 
-## Attaching package: 'Biobase'
-```
-
-```
-## The following object is masked from 'package:MatrixGenerics':
-## 
-##     rowMedians
-```
-
-```
-## The following objects are masked from 'package:matrixStats':
-## 
-##     anyMissing, rowMedians
-```
-
-```r
-cancer <- readRDS(here::here("data/cancer_expression.rds"))
+cancer <- readRDS(here::here("../data/cancer_expression.rds"))
 ```
 
 ```
 ## Warning in gzfile(file, "rb"): cannot open compressed file '/Users/smc/Projects/
-## Lessons/inference-for-high-dimensional-data/data/cancer_expression.rds',
+## Lessons/inference-for-high-dimensional-data/../data/cancer_expression.rds',
 ## probable reason 'No such file or directory'
 ```
 
@@ -972,6 +822,7 @@ biplot(pc, lab = rownames(pc$metadata), pointSize = 1, labSize = 1)
 ```
 ## Error: object of type 'closure' is not subsettable
 ```
+![Biplot of principal components one and two showing two groups for PC1 according to gene expression.](../fig/pca-biplot.png)
 
 Sizes of labels, points and axes can be changed using arguments in `biplot`
 (see `help("biplot")`). We can see from the biplot that there appear to be two
@@ -986,6 +837,8 @@ plotloadings(pc, labSize = 3)
 ```
 ## Error: object of type 'closure' is not subsettable
 ```
+
+![Plot of principal component loadings show magnitude and direction of gene probes.](../fig/pca-loadings.png)
 
 Plotting the loadings shows the magnitude and direction of loadings for probes
 detecting genes on each principal component.
@@ -1026,6 +879,8 @@ pairsplot(pc)
 ```
 ## Error: object of type 'closure' is not subsettable
 ```
+
+![Pairsplot of principal components show clusters on PC1 only.](../fig/pairsplot.png)
 
 The plots show two apparent clusters involving the first principal component
 only. No other clusters are found involving other principal components.
