@@ -230,30 +230,49 @@ plots.
 We will be using a handful of Bioconductor packages. These are installed using 
 the function biocLite which you can source from the web:
 source("http://www.bioconductor.org/biocLite.R") or you can run the bioc_install 
-in the rafalib package.
+in the rafalib package.  
 `library(rafalib)`  
 `bioc_install()`  
 
 Download and install the Bioconductor package SpikeInSubset and then load the 
-library and the mas133 data:
+library and the mas133 data:  
 `library(rafalib)` 
 `install_bioc("SpikeInSubset")`  
-`library(SpikeInSubset)`  
-`data(mas133)`
+
+
+```r
+library(SpikeInSubset)  
+```
+
+```
+## Loading required package: affy
+```
+
+```r
+data(mas133)
+```
 
 Now make the following plot of the first two samples and compute the 
-correlation:
-`e <- exprs(mas133)`  
-`plot(e[,1],e[,2],main=paste0("corr=",signif(cor(e[,1],e[,2]),3)),cex=0.5)`  
-`k <- 3000`  
-`b <- 1000` #a buffer   
-`polygon(c(-b,k,k,-b),c(-b,-b,k,k),col="red",density=0,border="red")`  
+correlation:  
+
+```r
+e <- exprs(mas133)  
+plot(e[,1],e[,2],main=paste0("corr=",signif(cor(e[,1],e[,2]),3)),cex=0.5)  
+k <- 3000  
+b <- 1000 #a buffer   
+polygon(c(-b,k,k,-b),c(-b,-b,k,k),col="red",density=0,border="red")
+```
+
+![plot of chunk corr_two_samples](figure/corr_two_samples-1.png)
+
+![Correlation plot of first two mas133 samples](../fig/corr_two_samples.png)
 
 > ## Exercise 1
 > What proportion of the points are inside the box? 
 > 
 > > ## Solution
-> > 
+> > `length(which(e[,1] <= 3000 & e[,2]<= 3000)) / dim(e)[1]`  
+> > `sum(e[,1] <= 3000 & e[,2] <= 3000) / dim(e)[1]`
 > {: .solution}
 {: .challenge}
 
@@ -263,7 +282,7 @@ correlation:
 > `k <- log2(3000)`  
 > `b <- log2(0.5)`   
 > `polygon(c(b,k,k,b),c(b,b,k,k),col="red",density=0,border="red")`  
-> What is an advantage of taking the log? 
+> What is an advantage of taking the log?  
 > A) The tails do not dominate the plot: 95% of data is not in a tiny section of 
 > plot.  
 > B) There are less points.  
@@ -271,7 +290,8 @@ correlation:
 > D) We always take logs.  
 > 
 > > ## Solution
-> > 
+> > The answer choice is A: The tails do not dominate the plot, 95% of data are 
+> > not in a tiny section of the plot.
 > {: .solution}
 {: .challenge}
 
@@ -288,7 +308,9 @@ correlation:
 > What is the standard deviation of the log ratios for this comparison?
 > 
 > > ## Solution
-> > 
+> > `e <- log2(exprs(mas133))`  
+> > `plot((e[,1]+e[,2])/2,e[,2]-e[,1],cex=0.5)`  
+> > `sd(e[,2]-e[,1])`  
 > {: .solution}
 {: .challenge}
 
@@ -296,6 +318,6 @@ correlation:
 > How many fold changes above 2 do we see?  
 > 
 > > ## Solution
-> > 
+> > `sum(abs(e[,2]-e[,1])>1)`
 > {: .solution}
 {: .challenge}
