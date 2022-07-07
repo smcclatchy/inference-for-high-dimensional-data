@@ -58,8 +58,23 @@ computed above we have:
 
 
 ```r
-# re-create p-values from earlier if needed
+library(genefilter) ##rowttests is here
+set.seed(1)
 alpha <- 0.05
+N <- 12
+
+##Define groups to be used with rowttests
+g <- factor( c(rep(0, N), rep(1, N)) )
+
+# re-create p-values from earlier if needed
+population <- unlist(read.csv(file = "../data/femaleControlsPopulation.csv"))
+m <- 10000
+p0 <- 0.90
+m0 <- m*p0
+m1 <- m-m0
+nullHypothesis <- c( rep(TRUE,m0), rep(FALSE,m1)) 
+delta <- 3
+
 B <- 1000 ##number of simulations. We should increase for more precision 
 res <- replicate(B, {
   controls <- matrix(sample(population, N*m, replace=TRUE),nrow=m)
@@ -74,18 +89,7 @@ res <- replicate(B, {
   return(c(R,Q))
   }
   )
-```
-
-```
-## Error in sample(population, N * m, replace = TRUE): object 'population' not found
-```
-
-```r
 Qs <- res[2,]
-```
-
-```
-## Error in eval(expr, envir, enclos): object 'res' not found
 ```
 
 
@@ -148,7 +152,7 @@ qvals <- res$qvalues
 ```
 
 ```
-## Error in eval(expr, envir, enclos): object 'res' not found
+## Error in res$qvalues: $ operator is invalid for atomic vectors
 ```
 
 ```r
@@ -156,7 +160,7 @@ plot(pvals, qvals)
 ```
 
 ```
-## Error in plot(pvals, qvals): object 'pvals' not found
+## Error in h(simpleError(msg, call)): error in evaluating the argument 'x' in selecting a method for function 'plot': object 'pvals' not found
 ```
 
 we also obtain the estimate of $\hat{\pi}_0$:
@@ -167,7 +171,7 @@ res$pi0
 ```
 
 ```
-## Error in eval(expr, envir, enclos): object 'res' not found
+## Error in res$pi0: $ operator is invalid for atomic vectors
 ```
 This function uses a more sophisticated approach at estimating $\pi_0$ than what 
 is described above.
@@ -192,13 +196,15 @@ asking you to create a Monte Carlo simulation.
 > Compute a p-value for each gene using the function `rowttests` from the 
 > genefilter package. 
 > 
-> `library(genefilter)`
+> `library(genefilter)`  
 > `?rowttests`
 > 
 > How many genes have p-values smaller than 0.05?
 > 
 > > ## Solution
-> > 
+> > `g <- sampleInfo$group`  
+> > `pvals <- rowttests(geneExpression, factor(g))$p.value`  
+> > `sum(pvals < 0.05)`  
 > {: .solution}
 {: .challenge}
 
@@ -207,7 +213,8 @@ asking you to create a Monte Carlo simulation.
 > called significant under this procedure?
 > 
 > > ## Solution
-> > 
+> > `m <- 8793`  
+> > `sum(pvals < (0.05/m))`  
 > {: .solution}
 {: .challenge}
 
@@ -224,7 +231,8 @@ asking you to create a Monte Carlo simulation.
 > 0.05 for our gene expression dataset.
 > 
 > > ## Solution
-> > 
+> > `pvals_adjust <- p.adjust(pvals, method = 'fdr')`  
+> > `sum(pvals_adjust < 0.05)`  
 > {: .solution}
 {: .challenge}
 
@@ -234,7 +242,8 @@ asking you to create a Monte Carlo simulation.
 > below 0.05?
 > 
 > > ## Solution
-> > 
+> > `res <- qvalue(pvals)`  
+> > `sum(res$qvalues < 0.05)`  
 > {: .solution}
 {: .challenge}
 
@@ -243,14 +252,14 @@ asking you to create a Monte Carlo simulation.
 > which the null hypothesis is true π0 = m0/m
 > 
 > > ## Solution
-> > 
+> > `res$pi0`  
 > {: .solution}
 {: .challenge}
 
 > ## Exercise 6
 > The number of genes passing the q-value < 0.05 threshold is larger with the
 > q-value function than the p.adjust difference. Why is this the case? Make a 
-> plot of the ratio of these two estimates to help answer the question.
+> plot of the ratio of these two estimates to help answer the question.  
 > A) One of the two procedures is flawed.  
 > B) The two functions are estimating different things.  
 > C) The qvalue function estimates the proportion of genes for which the null 
@@ -259,7 +268,10 @@ asking you to create a Monte Carlo simulation.
 > hypothesis is true and provides a more conservative estimate.  
 > 
 > > ## Solution
-> > 
+> > `plot(pvals_adjust, res$qvalues, xlab = 'fdr', ylab = 'qval')`  
+> > `abline(0,1)`  
+> > The qvalue function estimates the proportion of genes for which the null 
+> > hypothesis is true and provides a less conservative estimate (choice C).
 > {: .solution}
 {: .challenge}
 
@@ -273,20 +285,116 @@ asking you to create a Monte Carlo simulation.
 > negatives. Compute the false positive rate and false negative rates if we use 
 > Bonferroni, q-values from p.adjust, and q-values from qvalue function. Set the 
 > seed to 1 for all three simulations. What is the false positive rate for 
-> Bonferroni?  
+> Bonferroni? What are the false negative rates for Bonferroni?  
 > `n <- 24`  
 > `m <- 8793`  
 > `mat <- matrix(rnorm(n*m),m,n)`  
 > `delta <- 1`  
 > `positives <- 500`  
 > `mat[1:positives,1:(n/2)] <- mat[1:positives,1:(n/2)]+delta`  
-> What are the false negative rates for Bonferroni?  
-> What are the false negative rates for p.adjust?  
-> What are the false negative rates for p.adjust?  
-> What are the false negative rates for qvalues?  
-> What are the false negative rates for qvalues?  
 > 
 > > ## Solution
+> > `g <- c(rep(0,12),rep(1,12))`  
+> > `m <- 8793`  
+> > `B <- 1000`  
+> > `m1 <- 500`  
+> > `N <- 12`  
+> > `m0 <- m-m1`  
+> > `nullHypothesis <- c(rep(TRUE,m0),rep(FALSE,m1))`  
+> > `delta <- 1`  
 > > 
+> > `set.seed(1)`  
+> > `res <- replicate(B, {`  
+> > `  controls <- matrix(rnorm(N*m),nrow = m, ncol = N)`  
+> > `  treatment <- matrix(rnorm(N*m),nrow = m, ncol = N)`  
+> > `  treatment[!nullHypothesis,] <- `  
+> > `    treatment[!nullHypothesis,] + delta`  
+> > `  dat <- cbind(controls, treatment)`  
+> > `  pvals <- rowttests(dat, factor(g))$p.value`  
+> > `  calls <- pvals < (0.05/m)`  
+> > `  R <- sum(calls)`  
+> > `  V <- sum(nullHypothesis & calls)`  
+> > `  fp <- sum(nullHypothesis & calls)/m0` # false positive  
+> > `  fn <- sum(!nullHypothesis & !calls)/m1` # false negative  
+> > `  return(c(fp,fn))`  
+> > `})`  
+> > `res<-t(res)`  
+> > `head(res)`  
+> > `mean(res[,1])` # false positive rate  
+> > `mean(res[,2])` # false negative rate
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 8
+> What are the false positive rates for p.adjust?  
+> What are the false negative rates for p.adjust? 
+> 
+> > ## Solution
+> > `g <- c(rep(0,12),rep(1,12))`  
+> > `m <- 8793`  
+> > `B <- 1000`  
+> > `m1 <- 500`  
+> > `N <- 12`  
+> > `m0 <- m-m1`  
+> > `nullHypothesis <- c(rep(TRUE,m0),rep(FALSE,m1))`  
+> > `delta <- 1`  
+> > 
+> > `set.seed(1)`  
+> > `res <- replicate(B, {`  
+> > `  controls <- matrix(rnorm(N*m),nrow = m, ncol = N)`  
+> > `  treatment <- matrix(rnorm(N*m),nrow = m, ncol = N)`  
+> > `  treatment[!nullHypothesis,] <- `  
+> > `    treatment[!nullHypothesis,] + delta`  
+> > `  dat <- cbind(controls, treatment)`  
+> > `  pvals <- rowttests(dat, factor(g))$p.value`  
+> > `  pvals_adjust <- p.adjust(pvals, method = 'fdr')`  
+> > `  calls <- pvals_adjust < 0.05`  
+> > `  R <- sum(calls)`  
+> > `  V <- sum(nullHypothesis & calls)`  
+> > `  fp <- sum(nullHypothesis & calls)/m0` # false positive  
+> > `  fn <- sum(!nullHypothesis & !calls)/m1` # false negative  
+> > `  return(c(fp,fn))`  
+> > `})`  
+> > `res<-t(res)`  
+> > `head(res)`  
+> > `mean(res[,1])` # false positive rate  
+> > `mean(res[,2])` # false negative rate  
+> {: .solution}
+{: .challenge}
+
+> ## Exercise 9
+> What are the false positive rates for qvalues?  
+> What are the false negative rates for qvalues? 
+> 
+> > ## Solution
+> > `g <- c(rep(0,12),rep(1,12))`  
+> > `m <- 8793`  
+> > `B <- 1000`  
+> > `m1 <- 500`  
+> > `N <- 12`  
+> > `m0 <- m-m1`  
+> > `nullHypothesis <- c(rep(TRUE,m0),rep(FALSE,m1))`  
+> > `delta <- 1`  
+> > 
+> > `set.seed(1)`  
+> > `res <- replicate(B, {`  
+> > `  controls <- matrix(rnorm(N*m),nrow = m, ncol = N)`  
+> > `  treatment <- matrix(rnorm(N*m),nrow = m, ncol = N)`  
+> > `  treatment[!nullHypothesis,] <- `  
+> > `    treatment[!nullHypothesis,] + delta`  
+> > `  dat <- cbind(controls, treatment)`  
+> > `  pvals <- rowttests(dat, factor(g))$p.value`  
+> > `  qvals <- qvalue(pvals)$qvalue`  
+> > `  calls <- qvals < 0.05`  
+> > `  R <- sum(calls)`  
+> > `  V <- sum(nullHypothesis & calls)`  
+> > `  fp <- sum(nullHypothesis & calls)/m0` # false positive  
+> > `  fn <- sum(!nullHypothesis & !calls)/m1` # false negative  
+> > `  return(c(fp,fn))`  
+> > `})`  
+> > `res<-t(res)`  
+> > `head(res)`  
+> > `mean(res[,1])` # false positive rate  
+> > `mean(res[,2])` # false negative rate  
 > {: .solution}
 {: .challenge}
