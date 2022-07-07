@@ -18,6 +18,8 @@ title: "Inference for High-dimensional Data"
 # Possible values: "pre-alpha", "alpha", "beta", "stable"
 life_cycle: "pre-alpha"
 
+# Support equation rendering via KaTeX
+math: true
 #------------------------------------------------------------
 # Generic settings (should not need to change).
 #------------------------------------------------------------
@@ -29,6 +31,7 @@ kind: "lesson"
 # See https://help.github.com/articles/repository-metadata-on-github-pages/.
 # Please don't change it: <USERNAME>/<PROJECT> is correct.
 repository: <USERNAME>/<PROJECT>
+
 
 # Email address, no mailto:
 email: "team@carpentries.org"

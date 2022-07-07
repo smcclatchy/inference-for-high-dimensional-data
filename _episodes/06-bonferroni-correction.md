@@ -30,15 +30,17 @@ hypotheses with p-value <0.01". For illustrative purposes we will assume all the
 tests are independent (in the case of testing diets this is a safe assumption; 
 in the case of genes it is not so safe since some groups of genes act together). 
 Let $p_1,\dots,p_{10000}$ be the the p-values we get from each test. These are 
-independent random variables so:  
+independent random variables so: 
+
 
 $$
-\begin{align*}
+\begin{aligned}
 \mbox{Pr}(\mbox{at least one rejection}) &= 1 -\mbox{Pr}(\mbox{no rejections}) \\
 &= 1 - \prod_{i=1}^{1000} \mbox{Pr}(p_i>0.01) \\
 &= 1-0.99^{1000} \approx 1
-\end{align*}
+\end{aligned}
 $$
+
 
 Or if you want to use simulations:
 
@@ -61,13 +63,13 @@ Using the derivation above we can change the procedure by selecting a more
 stringent cutoff, previously 0.01, to lower our probability of at least one 
 mistake to be 5%. Namely, by noting that: 
 
-$$\mbox{Pr}(\mbox{at least one rejection}) =  1-(1-k)^{10000}$$
+$\mbox{Pr}(\mbox{at least one rejection}) =  1-(1-k)^{10000}$
 
 and solving for $k$, we get $1-(1-k)^{10000}=0.01 \implies k = 1-0.99^{1/10000} \approx 1e-6$
 
 This now gives a specific example of a _procedure_. This one is actually called 
 Sidak's procedure. Specifically, we define a set of instructions, such as 
-"reject all the null hypothesis for which p-values < 1e-6". Then, knowing the 
+"reject all the null hypothesis for which p-values < 1e-6. Then, knowing the 
 p-values are random variables, we use statistical theory to compute how many 
 mistakes, on average, we are expected to make if we follow this procedure. More 
 precisely, we compute bounds on these rates; that is, we show that they are 
@@ -80,7 +82,9 @@ correction is more general in that it controls FWER even if the tests are not
 independent. 
 As with Sidak's procedure we start by noting that: 
 
+
 $FWER = \mbox{Pr}(V>0) \leq \mbox{Pr}(V>0 \mid \mbox{all nulls are true})$
+
 
 or using the notation from the table above:
 
@@ -95,6 +99,7 @@ $$
  &= m \frac{\alpha}{m}=\alpha
 \end{align*}
 $$
+
 
 Controlling the FWER at 0.05 is a very conservative approach. Using the p-values computed in the previous section...
 
