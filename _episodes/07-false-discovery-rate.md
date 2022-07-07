@@ -141,6 +141,8 @@ hist(Qs) ##Q is a random variable, this is its distribution
 
 ![Q (false positives divided by number of features called significant) is a random variable. Here we generated a distribution with a Monte Carlo simulation.](figure/Q_distribution-1.png)
 
+![Q (false positives divided by number of features called significant) is a random variable. Here we generated a distribution with a Monte Carlo simulation.](../fig/Q_distribution.png)
+
 The FDR is the average value of $Q$
 
 ```r
@@ -181,6 +183,8 @@ abline(h=m0/20)
 
 ![Histogram of p-values. Monte Carlo simulation was used to generate data with m_1 genes having differences between groups.](figure/pval_hist-1.png)
 
+![Histogram of p-values. Monte Carlo simulation was used to generate data with m_1 genes having differences between groups.](../fig/pval_hist.png)
+
 The first bar (grey) on the left represents cases with p-values smaller than 
 0.05. From the horizontal line we can infer that about 1/2 are false positives. 
 This is in agreement with an FDR of 0.50.  If we look at the bar for 0.01, we 
@@ -194,6 +198,8 @@ abline(h=m0/100)
 ```
 
 ![Histogram of p-values with breaks at every 0.01. Monte Carlo simulation was used to generate data with m_1 genes having differences between groups.](figure/pval_hist2-1.png)
+
+![Histogram of p-values with breaks at every 0.01. Monte Carlo simulation was used to generate data with m_1 genes having differences between groups.](../fig/pval_hist2-1.png)
 
 As we consider a lower and lower p-value cut-off, the number of features 
 detected decreases (loss of sensitivity), but our FDR also decreases (gain of 
@@ -243,6 +249,8 @@ cat("k =",k,"p-value cutoff=",cutoff)
 ## k = 24 p-value cutoff= 0.0001197627
 ```
 
+![Plotting p-values plotted against their rank illustrates the Benjamini-Hochberg procedure. The plot on the right is a close-up of the plot on the left.](../fig/pvalue_vs_rank_plot-1.png)
+
 We can show mathematically that this procedure has FDR lower than 5%. Please see Benjamini-Hochberg (1995) for details. An important outcome is that we now have 
 selected 11 tests instead of just 2. If we are willing to set an FDR of 50% 
 (this means we expect at least 1/2 our genes to be hits), then this list grows 
@@ -261,6 +269,8 @@ abline(h=alpha,v=cutoff) ##cutoff was computed above
 ```
 
 ![FDR estimates plotted against p-value.](figure/fdr-versus-pval-1.png)
+
+![FDR estimates plotted against p-value.](../fig/fdr-versus-pval-1.png)
 
 We can run a Monte-Carlo simulation to confirm that the FDR is in fact lower 
 than .05. We compute all p-values first, and then use these to decide which get 
@@ -297,6 +307,9 @@ print(FDR)
 ```
 ## [1] 0.03641142
 ```
+
+
+![Histogram of Q (false positives divided by number of features called significant) when the alternative hypothesis is true for some features.](../fig/Q_distribution2-1.png)
 
 The FDR is lower than 0.05. This is to be expected because we need to be 
 conservative to ensure the FDR $\leq$ 0.05 for any value of $m_0$, such as for 
