@@ -10,8 +10,9 @@ objectives:
 - "Calculate the false discovery rate."
 - "Explain the limitations of restricting family wise error rates in a study."
 keypoints:
-- "..."
-- "..."
+- "Restricting FWER too much can cause researchers to reject the null hypothesis when it’s actually true. This is especially likely in the small samples used in discovery phase experiments. "
+- "The Benjamini-Hochberg correction controls FDR by guaranteeing it to be below a desired alpha level."
+- "FDR is a more liberal correction than Bonferroni. While it generates more false positives, it also provides more statistical power. "
 math: yes
 ---
 

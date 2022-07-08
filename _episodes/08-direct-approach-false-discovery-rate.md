@@ -11,8 +11,8 @@ objectives:
 - "Apply the Storey correction to identify true negatives."
 - "Explain the difference between the Storey correction and Benjamini-Hochberg approach."
 keypoints:
-- "..."
-- "..."
+- "The Storey correction makes different assumptions that Benjamini-Hochberg. It does not set a priori alpha levels, but instead estimates the number of true null hypotheses from a given data set."
+- "The Storey correction is less computationally stable than Benjamini-Hochberg."
 math: yes
 ---
 

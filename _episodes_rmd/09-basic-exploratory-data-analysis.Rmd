@@ -9,7 +9,7 @@ objectives:
 - "Create four different types of plots for high-throughput data."
 - "Explain how to use them to detect problems."
 keypoints:
-- ""
+- "While it is tempting to jump straight in to inferential analyses, it’s very important to run EDA first. Visualizing high-throughput data with EDA enables researchers to detect biological and technical issues with data. Plots can show at a glance where errors lie, making inferential analyses more accurate, efficient, and replicable."
 math: yes
 ---
 
