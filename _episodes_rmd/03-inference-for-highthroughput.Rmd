@@ -267,11 +267,12 @@ hist(pvals)
 > with mean 30 grams and a standard deviation of 2 grams. Run a Monte Carlo 
 > simulation for one of these studies:
 >
->  ```{r}
+>  ~~~
 >  cases = rnorm(10, 30, 2)
 >  controls = rnorm(10, 30, 2) 
 >  t.test(cases, controls)     
->  ```
+>  ~~~
+>  {: .language-r}
 >
 >  Now run a Monte Carlo simulation imitating the results for the experiment for 
 >  all 20 diets. If you set the seed at 100, set.seed(100), how many of p-values 

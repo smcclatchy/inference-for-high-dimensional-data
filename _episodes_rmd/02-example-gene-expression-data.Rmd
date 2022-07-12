@@ -133,11 +133,12 @@ Answer the following questions to familiarize yourself with the data set:
 >
 > > ## Solution
 > >
-> > ```{r}
+> > ~~~
 > > unique(sampleInfo$date) # check date format
 > > sampleInfo[sampleInfo$date == "2005-06-27",]  
 > > sum(sampleInfo$date == "2005-06-27") # sum of TRUEs     
-> > ```
+> > ~~~
+> > {: .language-r}
 > >
 > {: .solution}
 {: .challenge}
@@ -147,11 +148,12 @@ Answer the following questions to familiarize yourself with the data set:
 >
 > > ## Solution
 > >
-> > ```{r}
+> > ~~~
 > > unique(geneAnnotation$CHR) # check chromosome spelling  
 > > sum(geneAnnotation$CHR == "chrY", na.rm = TRUE) # remove missing values 
 > > # (NAs) to sum TRUEs
-> > ```
+> > ~~~
+> > {: .language-r}
 > >
 > {: .solution}
 {: .challenge}
@@ -161,13 +163,13 @@ subject that we measured on 2005-06-10?
 >
 > > ## Solution
 > >
-> > ```{r}
+> > ~~~
 > > sampleInfo[sampleInfo$date == "2005-06-10",] # June 10 sample 
 > > sampleFileName <- sampleInfo[sampleInfo$date == "2005-06-10", "filename"] # save file name   
 > > sampleProbeID <- geneAnnotation[which(geneAnnotation$SYMBOL == "ARPC1A"), "PROBEID"] # save probe ID   
 > > geneExpression[sampleProbeID, sampleFileName]
-> > ```
-> >
+> > ~~~
+> > {: .language-r}
 > {: .solution}
 {: .challenge}
 
