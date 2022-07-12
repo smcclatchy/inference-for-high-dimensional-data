@@ -33,7 +33,7 @@ install `devtools`.
 
 Once `devtools` is installed, you can then install the data packages like this:
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, message=FALSE}
 library(devtools)
 install_github("genomicsclass/GSE5859Subset")
 ```
@@ -147,10 +147,10 @@ Answer the following questions to familiarize yourself with the data set:
 >
 > > ## Solution
 > >
-> > ```{r, echo=FALSE}
+> > ```{r}
 > > unique(geneAnnotation$CHR) # check chromosome spelling  
 > > sum(geneAnnotation$CHR == "chrY", na.rm = TRUE) # remove missing values 
-> > (NAs) to sum TRUEs
+> > # (NAs) to sum TRUEs
 > > ```
 > >
 > {: .solution}
@@ -161,7 +161,7 @@ subject that we measured on 2005-06-10?
 >
 > > ## Solution
 > >
-> > ```{r, echo=FALSE}
+> > ```{r}
 > > sampleInfo[sampleInfo$date == "2005-06-10",] # June 10 sample 
 > > sampleFileName <- sampleInfo[sampleInfo$date == "2005-06-10", "filename"] # save file name   
 > > sampleProbeID <- geneAnnotation[which(geneAnnotation$SYMBOL == "ARPC1A"), "PROBEID"] # save probe ID   

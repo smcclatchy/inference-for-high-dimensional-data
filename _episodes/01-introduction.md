@@ -7,9 +7,9 @@ questions:
 - "Why is it important to know about statistical inference when analyzing
 high-dimensional data?"
 objectives:
-- "First learning objective. (FIXME)"
+- "Biological technology has expanded the quantity and complexity of data, and requires special analytical considerations."
 keypoints:
-- "First key point. Brief Answer to questions. (FIXME)"
+- "Inferential analyses of high throughput data must account for their extremely large sample sizes."
 ---
 
 ## Introduction

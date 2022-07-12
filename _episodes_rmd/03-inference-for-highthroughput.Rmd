@@ -124,9 +124,11 @@ sample sizes aren't large enough), we can
 
 We check our assumption that the population is normal with a qq-plot:
 
-```{r qqplots_for_one_gene, eval=FALSE}
+```{r expression_of_one_gene}
 e <- geneExpression[25, ]
+```
 
+```{r qqplots_for_one_gene, eval=FALSE}
 library(rafalib)
 mypar(1,2)
 
@@ -136,7 +138,9 @@ qqline(e[g==1])
 qqnorm(e[g==0])
 qqline(e[g==0])
 ```
+
 ![Normal qq-plots for one gene. Left plot shows first group and right plot shows second group.](../fig/qqplots_for_one_gene-1.png) 
+
 The qq-plots show that the data is well approximated by the normal 
 approximation. The t-test does not find this gene to be statistically 
 significant:
@@ -275,18 +279,14 @@ hist(pvals)
 >
 > > ## Solution
 > > `set.seed(100)`  
-> > `n <- 20`
-> > `null <- vector("numeric", n)`
-> > `for (i in 1:n) {`
-> > `cases = rnorm(10, 30, 2)`
-> > `controls = rnorm(10, 30, 2) `
-> > `null[i] <- t.test(cases, controls)$p.val` 
-> > `}`
-> > 
-> > 
-> > 
-> > 
-> > 
+> > `n <- 20`  
+> > `null <- vector("numeric", n)`  
+> > `for (i in 1:n) {`  
+> > `cases = rnorm(10, 30, 2)`  
+> > `controls = rnorm(10, 30, 2)`  
+> > `null[i] <- t.test(cases, controls)$p.val`   
+> > `}`  
+> > `sum(null < 0.05)`
 > > 
 > {: .solution}
 {: .challenge}
@@ -304,6 +304,13 @@ hist(pvals)
 > true.
 >
 > > ## Solution
+> > `set.seed(100)`   
+> > `res <- replicate(1000, {`   
+> > `  randomData <- matrix(rnorm(20*20,30,2),20,20)`   
+> > `  pvals <- rowttests(randomData, factor(g))$p.value`   
+> > `  return(sum(pvals<0.05))` # total number of false positives per replication  
+> > `})`   
+> > `mean(res)`   
 > >
 > {: .solution}
 {: .challenge}
@@ -315,6 +322,7 @@ hist(pvals)
 > positives?
 > 
 > > ## Solution
+> > `mean(res > 0)`   
 > >
 > {: .solution}
 {: .challenge}

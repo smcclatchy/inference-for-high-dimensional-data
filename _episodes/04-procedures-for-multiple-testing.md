@@ -88,6 +88,23 @@ This is a consequence of the more general formula P (A and B) = P (A)P (B|A).
 > D) P is not a random value.
 > 
 > > ## Solution
+> > The answer is B (identity line). When the null hypothesis is true, p value 
+> > has a uniform distribution. If you plot a cumulative distribution function, 
+> > where the y-axis is f(x), then you will observe an identity line. Here is a
+> > demonstration using ecdf function to plot a cumulative distribution 
+> > function.
+> > `population <- read.csv('femaleControlsPopulation.csv') %>% unlist()`  
+> > `set.seed(1)`  
+> > `N <- 12`  
+> > `B <- 10000`  
+> > `pvals <- replicate(B,{`  
+> > `  control = sample(population,N)`  
+> > `  treatment = sample(population,N)`  
+> > `  t.test(treatment,control)$p.val`   
+> > `})`  
+> > `mypar(1,2)`  
+> > `hist(pvals)`  
+> > `plot(ecdf(pvals))` # identity line
 > > 
 > {: .solution}
 {: .challenge}
@@ -102,6 +119,7 @@ This is a consequence of the more general formula P (A and B) = P (A)P (B|A).
 > rejecting at least one of the null hypothesis?
 > 
 > > ## Solution
+> > `1 - 0.95^8793`
 > > 
 > {: .solution}
 {: .challenge}
@@ -113,6 +131,8 @@ This is a consequence of the more general formula P (A and B) = P (A)P (B|A).
 > our probability of at least one mistake to be 5%.
 > 
 > > ## Solution
+> > `m <- 8793`  
+> > `1 - 0.95^(1/m)`
 > > 
 > {: .solution}
 {: .challenge}
