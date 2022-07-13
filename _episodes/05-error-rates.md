@@ -171,15 +171,15 @@ compute the entries of the table:
 
 
 ```r
-null_hypothesis <- factor(nullHypothesis, levels=c("TRUE", "FALSE"))
+null_hypothesis <- factor(nullHypothesis, levels=c("FALSE", "TRUE"))
 table(null_hypothesis, calls)
 ```
 
 ```
 ##                calls
 ## null_hypothesis Called Significant Not Called Significant
-##           TRUE                 361                   8639
 ##           FALSE                553                    447
+##           TRUE                 361                   8639
 ```
 
 The first column of the table above shows us $V$ and $S$. Note that $V$ and $S$ 

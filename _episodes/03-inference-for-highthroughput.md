@@ -54,7 +54,7 @@ mean(control)
 ```
 
 ```
-## [1] 24.005
+## [1] 23.82083
 ```
 
 ```r
@@ -63,7 +63,7 @@ mean(control)
 ```
 
 ```
-## [1] 20.99333
+## [1] 24.02583
 ```
 
 ```r
@@ -72,7 +72,7 @@ mean(control)
 ```
 
 ```
-## [1] 24.91167
+## [1] 25.13083
 ```
 
 Notice that the mean is a random variable. To explore p-values as random 
@@ -156,7 +156,10 @@ We check our assumption that the population is normal with a qq-plot:
 
 ```r
 e <- geneExpression[25, ]
+```
 
+
+```r
 library(rafalib)
 mypar(1,2)
 
@@ -166,7 +169,9 @@ qqline(e[g==1])
 qqnorm(e[g==0])
 qqline(e[g==0])
 ```
+
 ![Normal qq-plots for one gene. Left plot shows first group and right plot shows second group.](../fig/qqplots_for_one_gene-1.png) 
+
 The qq-plots show that the data is well approximated by the normal 
 approximation. The t-test does not find this gene to be statistically 
 significant:
@@ -177,7 +182,7 @@ t.test(e[g==1], e[g==0])$p.value
 ```
 
 ```
-## Error in t.test(e[g == 1], e[g == 0]): object 'e' not found
+## [1] 0.779303
 ```
 
 To answer the question for each gene, we simply repeat the above for each gene. 
@@ -322,26 +327,12 @@ hist(pvals)
 > with mean 30 grams and a standard deviation of 2 grams. Run a Monte Carlo 
 > simulation for one of these studies:
 >
->  
->  ```r
+>  ~~~
 >  cases = rnorm(10, 30, 2)
 >  controls = rnorm(10, 30, 2) 
 >  t.test(cases, controls)     
->  ```
->  
->  ```
->  ## 
->  ## 	Welch Two Sample t-test
->  ## 
->  ## data:  cases and controls
->  ## t = -1.1638, df = 15.913, p-value = 0.2617
->  ## alternative hypothesis: true difference in means is not equal to 0
->  ## 95 percent confidence interval:
->  ##  -2.6864853  0.7827979
->  ## sample estimates:
->  ## mean of x mean of y 
->  ##  29.43712  30.38896
->  ```
+>  ~~~
+>  {: .language-r}
 >
 >  Now run a Monte Carlo simulation imitating the results for the experiment for 
 >  all 20 diets. If you set the seed at 100, set.seed(100), how many of p-values 
@@ -349,18 +340,14 @@ hist(pvals)
 >
 > > ## Solution
 > > `set.seed(100)`  
-> > `n <- 20`
-> > `null <- vector("numeric", n)`
-> > `for (i in 1:n) {`
-> > `cases = rnorm(10, 30, 2)`
-> > `controls = rnorm(10, 30, 2) `
-> > `null[i] <- t.test(cases, controls)$p.val` 
-> > `}`
-> > 
-> > 
-> > 
-> > 
-> > 
+> > `n <- 20`  
+> > `null <- vector("numeric", n)`  
+> > `for (i in 1:n) {`  
+> > `cases = rnorm(10, 30, 2)`  
+> > `controls = rnorm(10, 30, 2)`  
+> > `null[i] <- t.test(cases, controls)$p.val`   
+> > `}`  
+> > `sum(null < 0.05)`
 > > 
 > {: .solution}
 {: .challenge}
@@ -378,6 +365,13 @@ hist(pvals)
 > true.
 >
 > > ## Solution
+> > `set.seed(100)`   
+> > `res <- replicate(1000, {`   
+> > `  randomData <- matrix(rnorm(20*20,30,2),20,20)`   
+> > `  pvals <- rowttests(randomData, factor(g))$p.value`   
+> > `  return(sum(pvals<0.05))` # total number of false positives per replication  
+> > `})`   
+> > `mean(res)`   
 > >
 > {: .solution}
 {: .challenge}
@@ -389,6 +383,7 @@ hist(pvals)
 > positives?
 > 
 > > ## Solution
+> > `mean(res > 0)`   
 > >
 > {: .solution}
 {: .challenge}

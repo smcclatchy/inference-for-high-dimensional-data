@@ -38,19 +38,7 @@ Once `devtools` is installed, you can then install the data packages like this:
 
 ```r
 library(devtools)
-```
-
-```
-## Loading required package: usethis
-```
-
-```r
 install_github("genomicsclass/GSE5859Subset")
-```
-
-```
-## Skipping install of 'GSE5859Subset' from a github remote, the SHA1 (8ada5f4f) has not changed since last install.
-##   Use `force = TRUE` to force installation
 ```
 
 #### The three tables
@@ -207,35 +195,12 @@ Answer the following questions to familiarize yourself with the data set:
 >
 > > ## Solution
 > >
-> > 
-> > ```r
+> > ~~~
 > > unique(sampleInfo$date) # check date format
-> > ```
-> > 
-> > ```
-> > ## [1] "2005-06-23" "2005-06-27" "2005-10-28" "2005-10-07" "2005-06-10"
-> > ```
-> > 
-> > ```r
 > > sampleInfo[sampleInfo$date == "2005-06-27",]  
-> > ```
-> > 
-> > ```
-> > ##     ethnicity       date         filename group
-> > ## 122       ASN 2005-06-27 GSM136530.CEL.gz     1
-> > ## 113       ASN 2005-06-27 GSM136517.CEL.gz     1
-> > ## 118       ASN 2005-06-27 GSM136523.CEL.gz     0
-> > ## 117       ASN 2005-06-27 GSM136522.CEL.gz     0
-> > ## 119       ASN 2005-06-27 GSM136524.CEL.gz     0
-> > ```
-> > 
-> > ```r
 > > sum(sampleInfo$date == "2005-06-27") # sum of TRUEs     
-> > ```
-> > 
-> > ```
-> > ## [1] 5
-> > ```
+> > ~~~
+> > {: .language-r}
 > >
 > {: .solution}
 {: .challenge}
@@ -245,13 +210,12 @@ Answer the following questions to familiarize yourself with the data set:
 >
 > > ## Solution
 > >
-> > 
-> > ```
-> > ## Error: <text>:3:7: unexpected symbol
-> > ## 2: sum(geneAnnotation$CHR == "chrY", na.rm = TRUE) # remove missing values 
-> > ## 3: (NAs) to
-> > ##          ^
-> > ```
+> > ~~~
+> > unique(geneAnnotation$CHR) # check chromosome spelling  
+> > sum(geneAnnotation$CHR == "chrY", na.rm = TRUE) # remove missing values 
+> > # (NAs) to sum TRUEs
+> > ~~~
+> > {: .language-r}
 > >
 > {: .solution}
 {: .challenge}
@@ -261,16 +225,13 @@ subject that we measured on 2005-06-10?
 >
 > > ## Solution
 > >
-> > 
-> > ```
-> > ##     ethnicity       date         filename group
-> > ## 207       CEU 2005-06-10 GSM136727.CEL.gz     0
-> > ```
-> > 
-> > ```
-> > ## [1] 8.233599
-> > ```
-> >
+> > ~~~
+> > sampleInfo[sampleInfo$date == "2005-06-10",] # June 10 sample 
+> > sampleFileName <- sampleInfo[sampleInfo$date == "2005-06-10", "filename"] # save file name   
+> > sampleProbeID <- geneAnnotation[which(geneAnnotation$SYMBOL == "ARPC1A"), "PROBEID"] # save probe ID   
+> > geneExpression[sampleProbeID, sampleFileName]
+> > ~~~
+> > {: .language-r}
 > {: .solution}
 {: .challenge}
 

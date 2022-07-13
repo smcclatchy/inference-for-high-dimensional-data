@@ -165,7 +165,7 @@ Because in this simulation we know the truth (saved in `nullHypothesis`), we can
 compute the entries of the table:
 
 ```{r}
-null_hypothesis <- factor(nullHypothesis, levels=c("TRUE", "FALSE"))
+null_hypothesis <- factor(nullHypothesis, levels=c("FALSE", "TRUE"))
 table(null_hypothesis, calls)
 ```
 
