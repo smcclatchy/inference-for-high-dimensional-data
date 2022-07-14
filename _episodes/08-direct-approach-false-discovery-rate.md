@@ -63,7 +63,7 @@ set.seed(1)
 alpha <- 0.05
 N <- 12
 
-##Define groups to be used with rowt tests
+##Define groups to be used with rowttests
 g <- factor( c(rep(0, N), rep(1, N)) )
 
 # re-create p-values from earlier if needed
@@ -369,6 +369,7 @@ asking you to create a Monte Carlo simulation.
 > What are the false negative rates for qvalues? 
 > 
 > > ## Solution
+> > ~~~
 > > `g <- c(rep(0,12),rep(1,12))`  
 > > `m <- 8793`  
 > > `B <- 1000`  
@@ -398,5 +399,7 @@ asking you to create a Monte Carlo simulation.
 > > `head(res)`  
 > > `mean(res[,1])` # false positive rate  
 > > `mean(res[,2])` # false negative rate  
+> >  ~~~
+> > {: .language-r}
 > {: .solution}
 {: .challenge}
