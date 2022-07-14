@@ -35,6 +35,7 @@ likely get 0:
 
 
 ```r
+set.seed(1)
 population <- unlist(read.csv(file = "../data/femaleControlsPopulation.csv"))
 m <- 10000
 p0 <- 0.90
@@ -42,7 +43,6 @@ m0 <- m*p0
 m1 <- m-m0
 nullHypothesis <- c( rep(TRUE,m0), rep(FALSE,m1)) 
 delta <- 3
-set.seed(1)
 pvals <- sapply(1:m, function(i){
   control <- sample(population, 6)
   treatment <- sample(population, 6)
@@ -178,7 +178,7 @@ dat <- cbind(controls, treatments)
 pvals <- rowttests(dat, g)$p.value 
 
 h <- hist(pvals, breaks=seq(0,1,0.05))
-polygon(c(0,0.05,0.05,0), c(0,0,h$counts[1],h$counts[1]), col="grey")
+polygon(c(0,0.05,0.05,0), c(0,0,h$counts[1],h$counts[1]), col="lightsteelblue1")
 abline(h=m0/20)
 ```
 
@@ -194,7 +194,7 @@ can see a lower FDR, as expected, but would call fewer features significant.
 
 ```r
 h <- hist(pvals,breaks=seq(0,1,0.01))
-polygon(c(0,0.01,0.01,0),c(0,0,h$counts[1],h$counts[1]),col="grey")
+polygon(c(0,0.01,0.01,0),c(0,0,h$counts[1],h$counts[1]),col="lightsteelblue1")
 abline(h=m0/100)
 ```
 

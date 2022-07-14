@@ -332,35 +332,38 @@ asking you to create a Monte Carlo simulation.
 > What are the false negative rates for p.adjust? 
 > 
 > > ## Solution
-> > `g <- c(rep(0,12),rep(1,12))`  
-> > `m <- 8793`  
-> > `B <- 1000`  
-> > `m1 <- 500`  
-> > `N <- 12`  
-> > `m0 <- m-m1`  
-> > `nullHypothesis <- c(rep(TRUE,m0),rep(FALSE,m1))`  
-> > `delta <- 1`  
+> > ~~~
+> > g <- c(rep(0,12),rep(1,12))  
+> > m <- 8793  
+> > B <- 1000  
+> > m1 <- 500  
+> > N <- 12  
+> > m0 <- m-m1  
+> > nullHypothesis <- c(rep(TRUE,m0),rep(FALSE,m1))  
+> > delta <- 1  
 > > 
-> > `set.seed(1)`  
-> > `res <- replicate(B, {`  
-> > `  controls <- matrix(rnorm(N*m),nrow = m, ncol = N)`  
-> > `  treatment <- matrix(rnorm(N*m),nrow = m, ncol = N)`  
-> > `  treatment[!nullHypothesis,] <- `  
-> > `    treatment[!nullHypothesis,] + delta`  
-> > `  dat <- cbind(controls, treatment)`  
-> > `  pvals <- rowttests(dat, factor(g))$p.value`  
-> > `  pvals_adjust <- p.adjust(pvals, method = 'fdr')`  
-> > `  calls <- pvals_adjust < 0.05`  
-> > `  R <- sum(calls)`  
-> > `  V <- sum(nullHypothesis & calls)`  
-> > `  fp <- sum(nullHypothesis & calls)/m0` # false positive  
-> > `  fn <- sum(!nullHypothesis & !calls)/m1` # false negative  
-> > `  return(c(fp,fn))`  
-> > `})`  
-> > `res<-t(res)`  
-> > `head(res)`  
-> > `mean(res[,1])` # false positive rate  
-> > `mean(res[,2])` # false negative rate  
+> > set.seed(1)  
+> > res <- replicate(B, {  
+> >   controls <- matrix(rnorm(N*m),nrow = m, ncol = N)  
+> >   treatment <- matrix(rnorm(N*m),nrow = m, ncol = N)  
+> >   treatment[!nullHypothesis,] <-   
+> >     treatment[!nullHypothesis,] + delta  
+> >   dat <- cbind(controls, treatment)  
+> >   pvals <- rowttests(dat, factor(g))$p.value  
+> >   pvals_adjust <- p.adjust(pvals, method = 'fdr')  
+> >   calls <- pvals_adjust < 0.05  
+> >   R <- sum(calls)  
+> >   V <- sum(nullHypothesis & calls)  
+> >   fp <- sum(nullHypothesis & calls)/m0 # false positive  
+> >   fn <- sum(!nullHypothesis & !calls)/m1 # false negative  
+> >   return(c(fp,fn))  
+> > })  
+> > res <- t(res)  
+> > head(res)  
+> > mean(res[,1]) # false positive rate  
+> > mean(res[,2]) # false negative rate
+> >  ~~~
+> > {: .language-r}
 > {: .solution}
 {: .challenge}
 
@@ -370,35 +373,35 @@ asking you to create a Monte Carlo simulation.
 > 
 > > ## Solution
 > > ~~~
-> > `g <- c(rep(0,12),rep(1,12))`  
-> > `m <- 8793`  
-> > `B <- 1000`  
-> > `m1 <- 500`  
-> > `N <- 12`  
-> > `m0 <- m-m1`  
-> > `nullHypothesis <- c(rep(TRUE,m0),rep(FALSE,m1))`  
-> > `delta <- 1`  
+> > g <- c(rep(0,12),rep(1,12))  
+> > m <- 8793  
+> > B <- 1000  
+> > m1 <- 500  
+> > N <- 12  
+> > m0 <- m-m1  
+> > nullHypothesis <- c(rep(TRUE,m0),rep(FALSE,m1))  
+> > delta <- 1  
 > > 
-> > `set.seed(1)`  
-> > `res <- replicate(B, {`  
-> > `  controls <- matrix(rnorm(N*m),nrow = m, ncol = N)`  
-> > `  treatment <- matrix(rnorm(N*m),nrow = m, ncol = N)`  
-> > `  treatment[!nullHypothesis,] <- `  
-> > `    treatment[!nullHypothesis,] + delta`  
-> > `  dat <- cbind(controls, treatment)`  
-> > `  pvals <- rowttests(dat, factor(g))$p.value`  
-> > `  qvals <- qvalue(pvals)$qvalue`  
-> > `  calls <- qvals < 0.05`  
-> > `  R <- sum(calls)`  
-> > `  V <- sum(nullHypothesis & calls)`  
-> > `  fp <- sum(nullHypothesis & calls)/m0` # false positive  
-> > `  fn <- sum(!nullHypothesis & !calls)/m1` # false negative  
-> > `  return(c(fp,fn))`  
-> > `})`  
-> > `res<-t(res)`  
-> > `head(res)`  
-> > `mean(res[,1])` # false positive rate  
-> > `mean(res[,2])` # false negative rate  
+> > set.seed(1)  
+> > res <- replicate(B, {  
+> >   controls <- matrix(rnorm(N*m),nrow = m, ncol = N)  
+> >   treatment <- matrix(rnorm(N*m),nrow = m, ncol = N)  
+> >   treatment[!nullHypothesis,] <-   
+> >     treatment[!nullHypothesis,] + delta  
+> >   dat <- cbind(controls, treatment)  
+> >   pvals <- rowttests(dat, factor(g))$p.value  
+> >   qvals <- qvalue(pvals)$qvalue  
+> >   calls <- qvals < 0.05  
+> >   R <- sum(calls)  
+> >   V <- sum(nullHypothesis & calls)  
+> >   fp <- sum(nullHypothesis & calls)/m0 # false positive  
+> >   fn <- sum(!nullHypothesis & !calls)/m1 # false negative  
+> >   return(c(fp,fn))  
+> > })  
+> > res <- t(res)  
+> > head(res)  
+> > mean(res[,1]) # false positive rate  
+> > mean(res[,2]) # false negative rate  
 > >  ~~~
 > > {: .language-r}
 > {: .solution}
