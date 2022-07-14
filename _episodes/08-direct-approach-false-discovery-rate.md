@@ -126,6 +126,8 @@ print(pi0) ##this is close to the trye pi0=0.9
 ## Error in print(pi0): object 'pi0' not found
 ```
 
+![p-value histogram with pi0 estimate.](../fig/pi0_estimate.png)
+
 With this estimate in place we can, for example, alter the Benjamini and 
 Hochberg procedures to select the $k$ to be the largest value so that: 
 

@@ -99,7 +99,7 @@ prop.table(tab)
 ```
 ## winners
 ##     0     1     2     3     4 
-## 0.604 0.312 0.071 0.012 0.001
+## 0.587 0.322 0.075 0.014 0.002
 ```
 
 ![Number of people that win the lottery obtained from Monte Carlo simulation.](../fig/lottery_winners_outcomes.png)

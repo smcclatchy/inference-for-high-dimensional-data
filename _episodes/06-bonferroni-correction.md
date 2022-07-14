@@ -105,6 +105,7 @@ Controlling the FWER at 0.05 is a very conservative approach. Using the p-values
 
 
 ```r
+set.seed(1)
 population <- unlist(read.csv(file = "../data/femaleControlsPopulation.csv"))
 m <- 10000
 N <- 12
@@ -113,7 +114,6 @@ m0 <- m * p0
 m1 <- m - m0
 nullHypothesis <- c( rep(TRUE,m0), rep(FALSE,m1)) 
 delta <- 3
-set.seed(1)
 pvals <- sapply(1:m, function(i){
   control <- sample(population, N)
   treatment <- sample(population, N)
