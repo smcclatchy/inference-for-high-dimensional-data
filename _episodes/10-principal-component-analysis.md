@@ -404,7 +404,7 @@ plot(varDF)
 
 ![Screeplot showing proportion of variance explained by each principal component.](figure/vardf-plot-1.png)
 
-![Screeplot showing proportion of variance explained by each principal component.](..fig/vardf-plot.png)
+![Screeplot showing proportion of variance explained by each principal component.](../fig/vardf-plot.png)
 
 The screeplot shows that the first principal component explains most of the
 variance in the data (>50%) and each subsequent principal component explains
@@ -448,7 +448,7 @@ calculated for the first principal component using the following equation from
 Figure 1:
 
 $$
-  Z_{i1} = a_1 \times (fallow_i - \overline{fallow}) + a_2 \times (bio index_i - \overline{bio index})
+  Z_{i1} = a_1 \times (lcavol_i - \overline{lcavol}) + a_2 \times (lpsa_i - \overline{lpsa})
 $$
 
 $a_1$ and $a_2$ represent principal component loadings in this equation.
