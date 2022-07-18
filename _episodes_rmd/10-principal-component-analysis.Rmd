@@ -1,8 +1,8 @@
 ---
 source: Rmd
 title: "Principal Components Analysis"
-teaching: 0
-exercises: 0
+teaching: 30
+exercises: 30
 questions:
 - "How can researchers simplify or streamline EDA in high-throughput data sets?"
 - "What is principal component analysis (PCA) and when can it be used?"

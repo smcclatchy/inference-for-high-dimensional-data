@@ -3,7 +3,7 @@
 # Instead, please edit 09-basic-exploratory-data-analysis.md in _episodes_rmd/
 source: Rmd
 title: "Basic EDA for high-throughput data"
-teaching: 30
+teaching: 45
 exercises: 30
 questions:
 - "What problems can different kinds of exploratory plots detect in high-throughput data?"

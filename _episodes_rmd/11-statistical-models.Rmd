@@ -1,8 +1,8 @@
 ---
 source: Rmd
 title: "Statistical Models"
-teaching: 0
-exercises: 0
+teaching: 30
+exercises: 30
 questions:
 - "What are some of the most widely used parametric distributions used in the life sciences besides the normal?"
 objectives:

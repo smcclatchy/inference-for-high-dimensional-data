@@ -3,8 +3,8 @@
 # Instead, please edit 11-statistical-models.md in _episodes_rmd/
 source: Rmd
 title: "Statistical Models"
-teaching: 0
-exercises: 0
+teaching: 30
+exercises: 30
 questions:
 - "What are some of the most widely used parametric distributions used in the life sciences besides the normal?"
 objectives:
@@ -98,8 +98,8 @@ prop.table(tab)
 
 ```
 ## winners
-##     0     1     2     3 
-## 0.592 0.307 0.086 0.015
+##     0     1     2     3     4 
+## 0.618 0.279 0.083 0.019 0.001
 ```
 
 ![Number of people that win the lottery obtained from Monte Carlo simulation.](../fig/lottery_winners_outcomes.png)

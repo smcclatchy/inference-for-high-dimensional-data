@@ -3,8 +3,8 @@
 # Instead, please edit 10-principal-component-analysis.md in _episodes_rmd/
 source: Rmd
 title: "Principal Components Analysis"
-teaching: 0
-exercises: 0
+teaching: 30
+exercises: 30
 questions:
 - "How can researchers simplify or streamline EDA in high-throughput data sets?"
 - "What is principal component analysis (PCA) and when can it be used?"
@@ -454,7 +454,7 @@ $$
 $a_1$ and $a_2$ represent principal component loadings in this equation.
 A loading can be thought of as the 'weight' each variable has on the calculation
 of the principal component. Note that in our example using the `Prostate`
-dataset `lcavol` and `lpsa` are the variables that contribute most to the first
+dataset `lcavol` (log-transformed cancer volume) and `lpsa` (log-tranformed prostate specific antigen in blood) are the variables that contribute most to the first
 principal component.
 
 We can better understand what the principal components represent in terms of
