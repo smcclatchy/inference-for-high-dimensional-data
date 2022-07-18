@@ -389,7 +389,7 @@ $$
 $a_1$ and $a_2$ represent principal component loadings in this equation.
 A loading can be thought of as the 'weight' each variable has on the calculation
 of the principal component. Note that in our example using the `Prostate`
-dataset `lcavol` and `lpsa` are the variables that contribute most to the first
+dataset `lcavol` (log-transformed cancer volume) and `lpsa` (log-tranformed prostate specific antigen in blood) are the variables that contribute most to the first
 principal component.
 
 We can better understand what the principal components represent in terms of
